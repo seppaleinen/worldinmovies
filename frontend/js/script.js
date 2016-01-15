@@ -1,4 +1,5 @@
 $( document ).ready(function() {
+
 jQuery('#vmap').vectorMap(
 {
     map: 'world_en',
@@ -25,4 +26,5 @@ jQuery('#vmap').vectorMap(
         alert(message);
     }
 });
+
 });
