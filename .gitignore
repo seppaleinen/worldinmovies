@@ -3,3 +3,5 @@ _site
 .jekyll-metadata
 *.iml
 Gemfile.lock
+
+backend/target/
