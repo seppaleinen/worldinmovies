@@ -10,7 +10,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>se.david.lab</groupId>
+    <groupId>se.david.labs</groupId>
     <artifactId>worldinmovies-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -285,5 +285,5 @@
             </build>
         </profile>
     </profiles>
-    
+
 </project>

@@ -12,6 +12,7 @@
     <description>A webapp finding movies from around the world</description>
 
     <modules>
+        <module>frontend</module>
         <module>backend</module>
     </modules>
 

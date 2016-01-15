@@ -4,4 +4,4 @@ _site
 *.iml
 Gemfile.lock
 
-backend/target/
+**/target/

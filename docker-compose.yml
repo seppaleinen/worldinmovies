@@ -1,0 +1,16 @@
+worldinmovies-frontend:
+  image: seppaleinen/worldinmovies-frontend
+  ports:
+   - "4000:4000"
+  links:
+   - worldinmovies-backend
+worldinmovies-backend:
+  image: seppaleinen/worldinmovies-backend
+  ports:
+   - "10080:10080"
+  links:
+   - mongo
+mongo:
+  image: mongo
+  ports:
+   - "27017:27017"
