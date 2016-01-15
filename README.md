@@ -12,3 +12,11 @@ If the user is not logged in, the default page should show the top rated movies 
 When a user logs in, the user should be able to vote on a movie and add to the public map
 And a user should be able to create their own map with movies that they've watched.
 
+
+To start docker instances by maven
+```
+mvn clean install -Pdocker
+docker-compose up
+```
+
+
