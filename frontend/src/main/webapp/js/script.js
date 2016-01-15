@@ -8,6 +8,7 @@ jQuery('#vmap').vectorMap(
     borderOpacity: 0.25,
     borderWidth: 1,
     color: '#f4f3f0',
+    //colors: map med land-kod (underscore) och hexkodad färg
     enableZoom: true,
     hoverColor: '#c9dfaf',
     hoverOpacity: null,
@@ -24,7 +25,17 @@ jQuery('#vmap').vectorMap(
             + code.toUpperCase();
 
         alert(message);
-    }
+        //show info
+        //add movie button
+    },
+    onLoad: function(event, map)
+    {
+        //load data
+    },
+    onRegionOver: function(event, code, region)
+    {
+        //show info
+    },
 });
 
 });
