@@ -1,7 +1,7 @@
 # Worldinmovies
 
 ##Todo
-* Check out frameworks for interactive world maps (http://jvectormap.com/)
+* Check out frameworks for interactive world maps (http://jvectormap.com/) (https://github.com/manifestinteractive/jqvmap)
 * Figure out a way to host site and database
 * Decide on database
 * Decide on web-framework
