@@ -7,6 +7,9 @@ module.exports = function(defaults) {
     // Add options here
   });
 
+  app.import('bower_components/jvectormap/jquery.jvectormap.min.js')
+  app.import('bower_components/jvectormap/jquery-jvectormap.css')
+  app.import('vendor/shims/jquery-jvectormap-world-mill.js')
   // Use `app.import` to add additional libraries to the generated
   // output files.
   //
