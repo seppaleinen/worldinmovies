@@ -36,6 +36,10 @@ jQuery('#vmap').vectorMap(
     {
         //show info
     },
+    onLabelShow: function(event, label, code)
+    {
+        //show info
+    },
 });
 
 });

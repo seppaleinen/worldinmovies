@@ -2,6 +2,7 @@ package se.david.backend.controllers;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
+import com.mongodb.util.JSON;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,11 +17,14 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import se.david.backend.WorldInMoviesApplication;
-import se.david.backend.controllers.repository.MapRepository;
-import se.david.backend.controllers.repository.entities.MapEntity;
+import se.david.backend.controllers.repository.CountryRepository;
+import se.david.backend.controllers.repository.entities.CountryEntity;
 
+
+import java.util.List;
 
 import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -32,7 +36,7 @@ import static org.junit.Assert.*;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class MapControllerIT {
     @Autowired
-    private MapRepository repository;
+    private CountryRepository repository;
 
     @Value("${local.server.port}")
     private int port;
@@ -61,15 +65,43 @@ public class MapControllerIT {
                 then().statusCode(HttpStatus.METHOD_NOT_ALLOWED.value());
 
 
-        MapEntity mapEntity = new MapEntity();
-        mapEntity.setParam("paramvalue");
-        mapEntity.setId("idvalue");
+        CountryEntity countryEntity = new CountryEntity();
+        countryEntity.setCode("paramvalue");
+        countryEntity.setId("idvalue");
 
-        repository.save(mapEntity);
+        repository.save(countryEntity);
 
         Response response = given().param("id", "idvalue").when().get("/find");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-        assertEquals(mapEntity.getParam(), response.getBody().print());
+        assertEquals(countryEntity.getCode(), response.getBody().print());
     }
+
+    @Test
+    public void canFindAllCountries() {
+        when().post(MapController.FIND_COUNTRIES).
+                then().statusCode(HttpStatus.METHOD_NOT_ALLOWED.value());
+        when().delete(MapController.FIND_COUNTRIES).
+                then().statusCode(HttpStatus.METHOD_NOT_ALLOWED.value());
+        when().put(MapController.FIND_COUNTRIES).
+                then().statusCode(HttpStatus.METHOD_NOT_ALLOWED.value());
+        when().patch(MapController.FIND_COUNTRIES).
+                then().statusCode(HttpStatus.METHOD_NOT_ALLOWED.value());
+
+
+        CountryEntity countryEntity = new CountryEntity();
+        countryEntity.setCode("paramvalue");
+        countryEntity.setId("idvalue");
+
+        repository.save(countryEntity);
+
+        Response response = when().get(MapController.FIND_COUNTRIES);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+
+        List<CountryEntity> result = response.getBody().as(List.class);
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+    }
+
 }

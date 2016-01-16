@@ -4,10 +4,12 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
+
 @Document
 @Data
-public class MapEntity {
+public class MovieEntity {
     @Id
     private String id;
-    private String param;
+    private String name;
 }
