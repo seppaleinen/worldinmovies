@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import se.david.backend.controllers.repository.entities.MovieEntity;
 
+import java.io.File;
+import java.net.URL;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -20,7 +22,9 @@ public class ImdbControllerIT {
 
     @Test
     public void canReadCountriesList() {
-        List<MovieEntity> result = imdbController.parseImdbMovieList();
+        URL url = ImdbControllerIT.class.getClassLoader().getResource("countries.list");
+
+        List<MovieEntity> result = imdbController.parseImdbMovieList(url);
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -35,5 +39,17 @@ public class ImdbControllerIT {
         assertNotNull("Result should not be null", result);
         assertEquals("Goosebumps: Escape from Horrorland ", result.getName());
         assertEquals("1996", result.getYear());
+    }
+
+    @Test
+    public void canGetRssFeedFromImdb() {
+        String path = ImdbControllerIT.class.getClassLoader().getResource("ratings.csv").getPath();
+        File file = new File(path);
+        List<MovieEntity> result = imdbController.getRssFeed(file);
+
+        assertNotNull(result);
+        assertEquals(1818, result.size());
+        assertEquals("Time of the Wolf", result.get(0).getName());
+        assertEquals("2003", result.get(0).getYear());
     }
 }
