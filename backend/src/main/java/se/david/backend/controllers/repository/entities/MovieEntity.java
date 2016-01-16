@@ -12,4 +12,6 @@ public class MovieEntity {
     @Id
     private String id;
     private String name;
+    private String year;
+    private CountryEntity countryEntity;
 }

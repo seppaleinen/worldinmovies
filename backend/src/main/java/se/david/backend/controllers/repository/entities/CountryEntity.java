@@ -4,8 +4,6 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
-
 @Document(collection = "CountryEntity")
 @Data
 public class CountryEntity {
@@ -13,5 +11,4 @@ public class CountryEntity {
     private String id;
     private String code;
     private String name;
-    private List<MovieEntity> movieEntityList;
 }
