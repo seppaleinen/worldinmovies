@@ -9,74 +9,28 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import se.david.backend.controllers.repository.entities.CountryEntity;
 import se.david.backend.controllers.repository.entities.MovieEntity;
+import se.david.backend.controllers.services.ImdbUserRatingsService;
 
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@RestController
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
 @Log
 public class ImdbController {
-    public List<MovieEntity> parseImdbMovieList(URL url){
-        List<MovieEntity> movieEntityList = new ArrayList<>();
+    @Autowired
+    private ImdbUserRatingsService imdbUserRatingsService;
 
-        if(url != null) {
-            try {
-                Stream<String> result = Files.lines(Paths.get(url.getPath()), StandardCharsets.ISO_8859_1);
-
-                for (String string : result.collect(Collectors.toList())) {
-                    MovieEntity movieEntity = parseMovieEntity(string);
-                    movieEntityList.add(movieEntity);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return movieEntityList;
-    }
-
-    private static final String regex = "([a-zA-Z\\: ]*).*([0-9]{4,4}).*";
-    private static final Pattern pattern = Pattern.compile(regex);
-
-
-    public MovieEntity parseMovieEntity(String line) {
-        MovieEntity movieEntity = null;
-
-        Matcher matcher = pattern.matcher(line);
-
-        if(matcher.find()) {
-            movieEntity = new MovieEntity();
-            movieEntity.setName(matcher.group(1));
-            movieEntity.setYear(matcher.group(2));
-        }
-
-        return movieEntity;
-    }
-
-    public List<MovieEntity> getRssFeed(File file){
-        List<MovieEntity> movieEntityList = null;
-
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line = null;
-            movieEntityList = new ArrayList<>();
-            while((line = br.readLine()) != null) {
-                String[] split = line.split(",");
-                if(!split[0].contains("position")) {
-                    MovieEntity movieEntity = new MovieEntity();
-                    movieEntity.setName(split[5].replaceAll("\"", ""));
-                    movieEntity.setYear(split[11].replaceAll("\"", ""));
-                    movieEntityList.add(movieEntity);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        return movieEntityList;
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public void userRatings(@RequestParam File file) {
+        imdbUserRatingsService.parseFromUserRatingsFile(file);
     }
 }

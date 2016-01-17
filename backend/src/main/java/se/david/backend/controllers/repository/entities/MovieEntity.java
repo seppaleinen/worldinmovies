@@ -14,4 +14,6 @@ public class MovieEntity {
     private String name;
     private String year;
     private CountryEntity countryEntity;
+
+
 }
