@@ -43,7 +43,7 @@ $(document).ready(function() {
             onLoad: function(event, map) {
                 //load data
                 $.ajax({
-                    url: 'http://localhost:10080/findCountries',
+                    url: 'http://backend:10080/findCountries',
                     type: 'GET',
                     //data: 'ID=1&Name=John&Age=10', // or $('#myform').serializeArray()
                     success: function(data) {
