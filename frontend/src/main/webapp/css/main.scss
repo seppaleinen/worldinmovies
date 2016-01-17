@@ -43,7 +43,22 @@ $on-laptop:        800px;
     }
 }
 
-
+.ontop {
+	z-index: 999;
+	width: 200px;
+	height: 200px;
+	margin: auto;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	display: none;
+	position: absolute;
+	background-color: black;
+	color: white;
+	opacity: .4;
+    filter: alpha(opacity = 50);
+}
 
 // Import partials from `sass_dir` (defaults to `_sass`)
 @import

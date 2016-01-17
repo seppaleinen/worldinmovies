@@ -3,6 +3,20 @@
 $(document).ready(function() {
     var default_color = "#8B0000";
 
+    function deselect(e) {
+        $('.pop').slideFadeToggle(function() {
+            e.removeClass('selected');
+        });
+    }
+
+    $.fn.slideFadeToggle = function(easing, callback) {
+        return this.animate({
+            opacity: 'toggle',
+            height: 'toggle'
+        }, 'fast', easing, callback);
+    };
+
+
     function renderMap() {
         jQuery('#vmap').vectorMap({
             map: 'world_en',
@@ -11,7 +25,18 @@ $(document).ready(function() {
             onRegionClick: function(element, code, region) {
                 var message = 'You clicked "' + region + '" which has the code: ' + code.toUpperCase();
 
-                alert(message);
+                jQuery('#popup').text(message);
+                if ($(this).hasClass('selected')) {
+                    deselect($(this));
+                } else {
+                    $(this).addClass('selected');
+                    $('.pop').slideFadeToggle();
+                }
+
+                $('.close').on('click', function() {
+                    deselect($('#contact'));
+                    return false;
+                });
                 //show info
                 //add movie button
             },
@@ -39,6 +64,7 @@ $(document).ready(function() {
             },
             onLabelShow: function(event, label, code) {
                 //show info
+                //label.text = "HEJ";
             },
         });
     }
