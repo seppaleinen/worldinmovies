@@ -43,8 +43,9 @@ $(document).ready(function() {
             onLoad: function(event, map) {
                 //load data
                 $.ajax({
-                    url: 'http://backend:10080/findCountries',
+                    url: 'http://backend:10080/map/findCountries',
                     type: 'GET',
+                    crossDomain: true,
                     //data: 'ID=1&Name=John&Age=10', // or $('#myform').serializeArray()
                     success: function(data) {
                         var colors = {};
@@ -56,6 +57,18 @@ $(document).ready(function() {
                             }
                         }
                         console.log(Object.keys(colors).length);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var message = 'Call to backend failed';
+
+                        jQuery('#popup').text(message);
+                        $(this).addClass('selected');
+                        $('.pop').slideFadeToggle();
+
+                        $('.close').on('click', function() {
+                            deselect($('#contact'));
+                            return false;
+                        });
                     }
                 });
             },

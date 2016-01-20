@@ -8,6 +8,8 @@
     <artifactId>worldinmovies-frontend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
+    <name>World in movies - Frontend</name>
+
     <properties>
         <webapp.directory>${project.basedir}/src/main/webapp</webapp.directory>
         <webclient.tomcat.port>9090</webclient.tomcat.port>

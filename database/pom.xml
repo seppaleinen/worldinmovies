@@ -8,6 +8,8 @@
     <artifactId>worldinmovies-database</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
+    <name>World in movies - Database</name>
+
     <profiles>
         <profile>
             <id>docker</id>
