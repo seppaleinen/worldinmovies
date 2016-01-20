@@ -1,9 +1,13 @@
 package se.david.backend.controllers.services;
 
-import se.david.backend.controllers.repository.entities.CountryEntity;
+import org.apache.commons.net.ftp.FTPClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import se.david.backend.controllers.repository.CountryRepository;
+import se.david.backend.controllers.repository.MovieRepository;
 import se.david.backend.controllers.repository.entities.MovieEntity;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -16,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
 
 /**
  * 1. Download countries.list.gz (ftp://ftp.sunet.se/pub/tv+movies/imdb/countries.list.gz)
@@ -23,6 +28,7 @@ import java.util.stream.Stream;
  * 3. Parse all movies to MovieEntity
  * 4. Persist list of movies
  */
+@Service
 public class ImdbMovieListService {
     private static final String regexNameAndYear = "\"?(.*?)\"?\\s+\\(([0-9?]{4})\\)?";
     private static final String regexCountry = "\\t([\\w \\.\\-\\(\\)]+)[\\s]*$";
@@ -30,12 +36,76 @@ public class ImdbMovieListService {
     private static final Pattern patternNameAndYear = Pattern.compile(regexNameAndYear);
     private static final Pattern patternCountry = Pattern.compile(regexCountry);
 
-    List<MovieEntity> parseImdbMovieList(URL url) throws Exception {
+    @Autowired
+    private CountryRepository countryRepository;
+    @Autowired
+    private MovieRepository movieRepository;
+
+    public void setCountryRepository(CountryRepository countryRepository) {
+        this.countryRepository = countryRepository;
+    }
+
+    public void init() throws Exception {
+        URL url = ImdbMovieListService.class.getClassLoader().getResource("countries.list");
+        downloadFtp();
+        unzipFile();
+        List<MovieEntity> result = parseImdbMovieList(url);
+        movieRepository.save(result);
+    }
+
+    void downloadFtp() {
+        FileOutputStream fileOutputStream = null;
+        FTPClient ftpClient = null;
+        try {
+            ftpClient = new FTPClient();
+            ftpClient.connect("ftp.sunet.se");
+
+            fileOutputStream = new FileOutputStream("/Users/seppa/Workspace/worldinmovies/downloaded.gz");
+            ftpClient.retrieveFile("/pub/tv+movies/imdb/countries.list.gz", fileOutputStream);
+        } catch (IOException e) {
+            System.out.println("You suck!");
+        } finally {
+            try {
+                if (fileOutputStream != null) {
+                    fileOutputStream.close();
+                }
+                ftpClient.disconnect();
+            } catch (IOException e) {
+                System.out.println("FUCK!");
+            }
+        }
+    }
+
+    void unzipFile() {
+        try {
+            byte[] buffer = new byte[1024];
+
+            GZIPInputStream gzis =
+                    new GZIPInputStream(new FileInputStream("/Users/seppa/Workspace/worldinmovies/downloaded.gz"));
+
+            FileOutputStream out =
+                    new FileOutputStream("/Users/seppa/Workspace/worldinmovies/downloaded.txt");
+
+            int len;
+            while ((len = gzis.read(buffer)) > 0) {
+                out.write(buffer, 0, len);
+            }
+
+            gzis.close();
+            out.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    List<MovieEntity> parseImdbMovieList(URL url2) throws Exception {
         List<MovieEntity> movieEntityList = new ArrayList<>();
 
-        if(url != null) {
+        String path = new File("/Users/seppa/Workspace/worldinmovies/downloaded.txt").getAbsolutePath();
+        if("" != null) {
             try {
-                Stream<String> result = Files.lines(Paths.get(url.getPath()), StandardCharsets.ISO_8859_1);
+                Stream<String> result = Files.lines(Paths.get(path), StandardCharsets.ISO_8859_1);
 
                 for (String string : result.skip(16).collect(Collectors.toList())) {
                     if(!string.equals("--------------------------------------------------------------------------------")) {
@@ -63,9 +133,8 @@ public class ImdbMovieListService {
             Matcher countryMatcher = patternCountry.matcher(line);
 
             if(countryMatcher.find()) {
-                CountryEntity countryEntity = new CountryEntity();
-                countryEntity.setName(countryMatcher.group(0).trim());
-                movieEntity.setCountryEntity(countryEntity);
+                String countryName = mapCountries(countryMatcher.group(0).trim());
+                movieEntity.setCountryEntity(countryRepository.findByName(countryName));
             } else {
                 throw new Exception("Coult not parse country: " + line);
             }
@@ -76,7 +145,7 @@ public class ImdbMovieListService {
         return movieEntity;
     }
 
-    public void mapCountries() {
+    public static String mapCountries(String imdbCountryName) {
         Map<String, String> specialCountries = new HashMap<>();
         specialCountries.put("Netherlands Antilles",    "Netherlands");
         specialCountries.put("Burma",                   "Myanmar");
@@ -92,6 +161,10 @@ public class ImdbMovieListService {
         specialCountries.put("Vietnam",                 "Viet nam");
         specialCountries.put("Yugoslavia",              "Serbia");
         specialCountries.put("Zaire",                   "Congo, the Democratic Republic of the");
+
+        String result = specialCountries.get(imdbCountryName);
+
+        return result != null ? result : imdbCountryName;
     }
 
 }

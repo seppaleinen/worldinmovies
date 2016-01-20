@@ -6,4 +6,5 @@ import se.david.backend.controllers.repository.entities.CountryEntity;
 
 @Repository
 public interface CountryRepository extends MongoRepository<CountryEntity, String> {
+    CountryEntity findByName(String name);
 }

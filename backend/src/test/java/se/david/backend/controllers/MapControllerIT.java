@@ -71,7 +71,7 @@ public class MapControllerIT {
 
         repository.save(countryEntity);
 
-        Response response = given().param("id", "idvalue").when().get("/find");
+        Response response = given().param("id", "idvalue").when().get(MapController.FIND_URL);
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
         assertEquals(countryEntity.getCode(), response.getBody().print());

@@ -11,8 +11,10 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import se.david.backend.controllers.repository.MovieRepository;
 import se.david.backend.controllers.repository.entities.CountryEntity;
 import se.david.backend.controllers.repository.entities.MovieEntity;
+import se.david.backend.controllers.services.ImdbMovieListService;
 import se.david.backend.controllers.services.ImdbUserRatingsService;
 
 import java.util.List;
@@ -26,11 +28,30 @@ import java.util.stream.Stream;
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
 @Log
 public class ImdbController {
+    private static final String ROOT_URL = "/imdb";
+    public static final String USER_RATINGS_URL = ROOT_URL + "/userRatings";
+    public static final String INIT_URL = ROOT_URL + "/init";
+    public static final String FIND_MOVIES_URL = ROOT_URL + "/findMovies";
     @Autowired
     private ImdbUserRatingsService imdbUserRatingsService;
+    @Autowired
+    private ImdbMovieListService imdbMovieListService;
+    @Autowired
+    private MovieRepository movieRepository;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = USER_RATINGS_URL, method = RequestMethod.GET)
     public void userRatings(@RequestParam File file) {
         imdbUserRatingsService.parseFromUserRatingsFile(file);
     }
+
+    @RequestMapping(value = INIT_URL, method = RequestMethod.GET)
+    public void init() throws Exception {
+        imdbMovieListService.init();
+    }
+
+    @RequestMapping(value = FIND_MOVIES_URL, method = RequestMethod.GET)
+    public List<MovieEntity> findMovies() throws Exception {
+        return movieRepository.findAll();
+    }
+
 }

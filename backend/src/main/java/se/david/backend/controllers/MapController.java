@@ -2,6 +2,7 @@ package se.david.backend.controllers;
 
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se.david.backend.controllers.repository.CountryRepository;
 import se.david.backend.controllers.repository.entities.CountryEntity;
@@ -12,9 +13,10 @@ import java.util.List;
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
 @Log
 public class MapController {
-    public static final String SAVE_URL = "/save";
-    public static final String FIND_URL = "/find";
-    public static final String FIND_COUNTRIES = "/findCountries";
+    private static final String ROOT_URL = "/map";
+    public static final String SAVE_URL = ROOT_URL + "/save";
+    public static final String FIND_URL = ROOT_URL + "/find";
+    public static final String FIND_COUNTRIES = ROOT_URL + "/findCountries";
     @Autowired
     private CountryRepository countryRepository;
 
