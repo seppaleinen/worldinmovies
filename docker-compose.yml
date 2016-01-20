@@ -6,11 +6,7 @@ frontend:
    - backend
 backend:
   image: seppaleinen/worldinmovies-backend
-  ports:
-   - "10080:10080"
   links:
    - mongo
 mongo:
   image: seppaleinen/worldinmovies-database
-  ports:
-   - "27017:27017"
