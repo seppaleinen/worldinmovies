@@ -1,12 +1,19 @@
 frontend:
   image: seppaleinen/worldinmovies-frontend
+  container_name: frontend_container
   ports:
    - "80:80"
   links:
    - backend
 backend:
   image: seppaleinen/worldinmovies-backend
+  container_name: backend_container
   links:
    - mongo
+  expose:
+   - "10080"
 mongo:
   image: seppaleinen/worldinmovies-database
+  container_name: database_container
+  expose:
+   - "27017"
