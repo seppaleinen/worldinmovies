@@ -43,7 +43,7 @@ $(document).ready(function() {
             onLoad: function(event, map) {
                 //load data
                 $.ajax({
-                    url: 'http://backend:10080/map/findCountries',
+                    url: 'http://worldinmovies.duckdns.org:10080/map/findCountries',
                     type: 'GET',
                     crossDomain: true,
                     //data: 'ID=1&Name=John&Age=10', // or $('#myform').serializeArray()

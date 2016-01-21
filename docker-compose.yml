@@ -8,11 +8,9 @@ frontend:
 backend:
   image: seppaleinen/worldinmovies-backend
   restart: always
+  ports:
+   - "10080:10080"
   links:
    - mongo
-  expose:
-   - "10080"
 mongo:
   image: seppaleinen/worldinmovies-database
-  expose:
-   - "27017"
