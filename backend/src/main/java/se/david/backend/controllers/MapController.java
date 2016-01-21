@@ -14,20 +14,10 @@ import java.util.List;
 @Log
 public class MapController {
     private static final String ROOT_URL = "/map";
-    public static final String SAVE_URL = ROOT_URL + "/save";
     public static final String FIND_URL = ROOT_URL + "/find";
     public static final String FIND_COUNTRIES = ROOT_URL + "/findCountries";
     @Autowired
     private CountryRepository countryRepository;
-
-    @RequestMapping(value = SAVE_URL, method = RequestMethod.GET)
-    public String save(@RequestParam String code) {
-        log.fine("yeah: ");
-        CountryEntity countryEntity = new CountryEntity();
-        countryEntity.setCode(code);
-        CountryEntity savedEntity = countryRepository.save(countryEntity);
-        return savedEntity.getId();
-    }
 
     @RequestMapping(value = FIND_URL, method = RequestMethod.GET)
     public String find(@RequestParam String id) {

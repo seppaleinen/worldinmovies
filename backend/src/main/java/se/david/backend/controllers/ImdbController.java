@@ -39,12 +39,14 @@ public class ImdbController {
     @Autowired
     private MovieRepository movieRepository;
 
-    @RequestMapping(value = USER_RATINGS_URL, method = RequestMethod.GET)
+    // @TODO http://stackoverflow.com/questions/25699727/multipart-file-upload-spring-boot
+    @RequestMapping(value = USER_RATINGS_URL, method = RequestMethod.POST)
     public void userRatings(@RequestParam File file) {
         imdbUserRatingsService.parseFromUserRatingsFile(file);
     }
 
-    @RequestMapping(value = INIT_URL, method = RequestMethod.GET)
+    @Deprecated
+    @RequestMapping(value = INIT_URL, method = RequestMethod.POST)
     public void init() throws Exception {
         imdbMovieListService.init();
     }
