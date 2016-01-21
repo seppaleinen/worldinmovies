@@ -23,3 +23,7 @@ docker-compose up
 ```
 
 
+sudo git clone https://github.com/letsencrypt/letsencrypt \
+    /opt/letsencrypt /opt/letsencrypt/letsencrypt-auto \
+     certonly -t --keep --authenticator webroot \
+      -w /var/www/cybermoose.org/public_html -d cybermoose.org -d www.cybermoose.org
