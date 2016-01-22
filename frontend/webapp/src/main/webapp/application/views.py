@@ -15,9 +15,17 @@ def findCountries():
     return Response(json.dumps(response),  mimetype='application/json')
 
 
-@app.route('/user/<user>')
-def show_user(user):
-    return 'User %s' % user
+@app.route('/uploadFile', methods=['POST'])
+def uploadFile():
+    file = request.files['file']
+    if file:
+        response = requests.post('http://backend:10080/imdb/userRatings', files=file).json()
+        return response
+    else:
+        return '''
+            <!doctype html>
+            <p>SOMETIN WONG</p>
+            '''
 
 @app.route('/post_id/<int:post_id>')
 def show_post(post_id):

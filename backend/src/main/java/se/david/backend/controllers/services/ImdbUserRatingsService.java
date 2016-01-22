@@ -1,14 +1,18 @@
 package se.david.backend.controllers.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import se.david.backend.controllers.repository.CountryRepository;
+import se.david.backend.controllers.repository.MovieRepository;
+import se.david.backend.controllers.repository.entities.CountryEntity;
 import se.david.backend.controllers.repository.entities.MovieEntity;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -24,17 +28,23 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ImdbUserRatingsService {
-    public List<MovieEntity> parseFromUserRatingsFile(File file){
+    @Autowired
+    private MovieRepository movieRepository;
+
+    public List<MovieEntity> parseFromUserRatingsFile(MultipartFile file){
         List<MovieEntity> movieEntityList = new ArrayList<>();
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
+            BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
 
             for(String line : br.lines().skip(1).collect(Collectors.toList())) {
                 String[] split = line.split(",");
-                MovieEntity movieEntity = new MovieEntity();
-                movieEntity.setName(split[5].replaceAll("\"", ""));
-                movieEntity.setYear(split[11].replaceAll("\"", ""));
+
+                String movieName = split[5].replaceAll("\"", "");
+                String movieYear = split[11].replaceAll("\"", "");
+
+                MovieEntity movieEntity = movieRepository.findByNameAndYear(movieName, movieYear);
+
                 movieEntityList.add(movieEntity);
             }
         } catch (IOException e) {
@@ -43,4 +53,27 @@ public class ImdbUserRatingsService {
 
         return movieEntityList;
     }
+
+    String mapCountries(String imdbCountryName) {
+        Map<String, String> specialCountries = new HashMap<>();
+        specialCountries.put("Netherlands Antilles",    "Netherlands");
+        specialCountries.put("Burma",                   "Myanmar");
+        specialCountries.put("Ivory Coast",             "Côte d'Ivoire");
+        specialCountries.put("Czechoslovakia",          "Czech Republic");
+        specialCountries.put("Kosovo",                  "Serbia");
+        specialCountries.put("Laos",                    "Lao People's Democratic Republic");
+        specialCountries.put("Reunion",                 "Réunion");
+        specialCountries.put("Siam",                    "Thailand");
+        specialCountries.put("UK",                      "United Kingdom");
+        specialCountries.put("USA",                     "United States");
+        specialCountries.put("Soviet Union",            "Russian Federation");
+        specialCountries.put("Vietnam",                 "Viet nam");
+        specialCountries.put("Yugoslavia",              "Serbia");
+        specialCountries.put("Zaire",                   "Congo, the Democratic Republic of the");
+
+        String regularCountryName = specialCountries.get(imdbCountryName);
+
+        return regularCountryName != null ? regularCountryName : imdbCountryName;
+    }
+
 }

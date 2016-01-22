@@ -1,4 +1,4 @@
-FROM java:8
+FROM anapsix/alpine-java:8
 VOLUME /tmp
 ADD worldinmovies-backend.jar app.jar
 RUN bash -c 'touch /app.jar'

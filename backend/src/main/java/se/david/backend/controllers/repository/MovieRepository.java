@@ -6,4 +6,5 @@ import se.david.backend.controllers.repository.entities.MovieEntity;
 
 @Repository
 public interface MovieRepository extends MongoRepository<MovieEntity, String> {
+    MovieEntity findByNameAndYear(String name, String year);
 }

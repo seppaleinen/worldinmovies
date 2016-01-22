@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import se.david.backend.controllers.repository.MovieRepository;
 import se.david.backend.controllers.repository.entities.CountryEntity;
 import se.david.backend.controllers.repository.entities.MovieEntity;
@@ -41,7 +42,7 @@ public class ImdbController {
 
     // @TODO http://stackoverflow.com/questions/25699727/multipart-file-upload-spring-boot
     @RequestMapping(value = USER_RATINGS_URL, method = RequestMethod.POST)
-    public void userRatings(@RequestParam File file) {
+    public void userRatings(@RequestParam("file") MultipartFile file) {
         imdbUserRatingsService.parseFromUserRatingsFile(file);
     }
 
