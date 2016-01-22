@@ -43,9 +43,9 @@ $(document).ready(function() {
             onLoad: function(event, map) {
                 //load data
                 $.ajax({
-                    url: 'http://worldinmovies.duckdns.org:10080/map/findCountries',
+                    url: '/findCountries',
                     type: 'GET',
-                    crossDomain: true,
+                    crossDomain: false,
                     //data: 'ID=1&Name=John&Age=10', // or $('#myform').serializeArray()
                     success: function(data) {
                         var colors = {};

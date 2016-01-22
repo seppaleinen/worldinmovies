@@ -1,16 +1,33 @@
-frontend:
-  image: seppaleinen/worldinmovies-frontend
+nginx:
   restart: always
+  image: seppaleinen/worldinmovies-nginx
   ports:
-   - "80:80"
+    - "80:80"
+  volumes:
+    - /www/static
+  volumes_from:
+    - web
   links:
-   - backend
+    - web:web
+
+web:
+  restart: always
+  image: seppaleinen/worldinmovies-webapp
+  ports:
+   - "8000:8000"
+  expose:
+    - "8000"
+  links:
+    - backend:backend
+  volumes:
+    - /usr/src/app/application/static
+  command: /usr/local/bin/gunicorn --config=gunicorn.config.py wsgi:app
+
 backend:
   image: seppaleinen/worldinmovies-backend
   restart: always
-  ports:
-   - "10080:10080"
   links:
    - mongo
+
 mongo:
   image: seppaleinen/worldinmovies-database
