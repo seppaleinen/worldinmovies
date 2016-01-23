@@ -19,8 +19,10 @@ def findCountries():
 def uploadFile():
     file = request.files['file']
     if file:
-        response = requests.post('http://backend:10080/imdb/userRatings', files=file).json()
-        return response
+        print(file.readable())
+        file_ = {'file': ('file', file)}
+        response = requests.post('http://backend:10080/imdb/userRatings', files=file_)
+        return json.dumps(response.content.decode("utf-8"))
     else:
         return '''
             <!doctype html>
@@ -30,7 +32,3 @@ def uploadFile():
 @app.route('/post_id/<int:post_id>')
 def show_post(post_id):
     return 'Post %d' % post_id
-
-@app.route('/post', methods=['POST'])
-def post():
-    return 'POST'

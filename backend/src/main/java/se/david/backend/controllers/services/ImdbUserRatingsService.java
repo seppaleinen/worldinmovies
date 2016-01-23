@@ -1,5 +1,6 @@
 package se.david.backend.controllers.services;
 
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
  * 7. attach list of movies to user
  */
 @Service
+@Log
 public class ImdbUserRatingsService {
     @Autowired
     private MovieRepository movieRepository;
@@ -37,19 +40,25 @@ public class ImdbUserRatingsService {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
 
+            log.log(Level.INFO, "READ LINES");
             for(String line : br.lines().skip(1).collect(Collectors.toList())) {
+                log.log(Level.INFO, "READ LINE " + line);
                 String[] split = line.split(",");
 
                 String movieName = split[5].replaceAll("\"", "");
                 String movieYear = split[11].replaceAll("\"", "");
 
-                MovieEntity movieEntity = movieRepository.findByNameAndYear(movieName, movieYear);
+                // MovieEntity movieEntity = movieRepository.findByNameAndYear(movieName, movieYear);
+                MovieEntity movieEntity = new MovieEntity();
+                movieEntity.setName(movieName);
+                movieEntity.setYear(movieYear);
 
                 movieEntityList.add(movieEntity);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        log.log(Level.INFO, "returning " + movieEntityList.size() + movieEntityList);
 
         return movieEntityList;
     }

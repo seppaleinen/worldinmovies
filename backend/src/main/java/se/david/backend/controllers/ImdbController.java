@@ -42,8 +42,8 @@ public class ImdbController {
 
     // @TODO http://stackoverflow.com/questions/25699727/multipart-file-upload-spring-boot
     @RequestMapping(value = USER_RATINGS_URL, method = RequestMethod.POST)
-    public void userRatings(@RequestParam("file") MultipartFile file) {
-        imdbUserRatingsService.parseFromUserRatingsFile(file);
+    public List<MovieEntity> userRatings(@RequestParam("file") MultipartFile file) {
+        return imdbUserRatingsService.parseFromUserRatingsFile(file);
     }
 
     @Deprecated
