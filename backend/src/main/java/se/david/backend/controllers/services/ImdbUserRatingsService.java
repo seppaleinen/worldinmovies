@@ -40,25 +40,22 @@ public class ImdbUserRatingsService {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
 
-            log.log(Level.INFO, "READ LINES");
             for(String line : br.lines().skip(1).collect(Collectors.toList())) {
-                log.log(Level.INFO, "READ LINE " + line);
+                log.log(Level.INFO, "Reading line: " + line);
                 String[] split = line.split(",");
 
                 String movieName = split[5].replaceAll("\"", "");
                 String movieYear = split[11].replaceAll("\"", "");
 
-                // MovieEntity movieEntity = movieRepository.findByNameAndYear(movieName, movieYear);
-                MovieEntity movieEntity = new MovieEntity();
-                movieEntity.setName(movieName);
-                movieEntity.setYear(movieYear);
+                MovieEntity movieEntity = movieRepository.findByNameAndYear(movieName, movieYear);
 
-                movieEntityList.add(movieEntity);
+                if(movieEntity != null ) {
+                    movieEntityList.add(movieEntity);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        log.log(Level.INFO, "returning " + movieEntityList.size() + movieEntityList);
 
         return movieEntityList;
     }
