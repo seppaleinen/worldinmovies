@@ -11,7 +11,7 @@ def home():
 
 @app.route("/findCountries", methods=['GET'])
 def findCountries():
-    response = requests.get('http://backend:10080/map/findCountries').json()
+    response = requests.get('http://api:10080/map/findCountries').json()
     return Response(json.dumps(response),  mimetype='application/json')
 
 
@@ -21,7 +21,7 @@ def uploadFile():
     if file:
         print(file.readable())
         file_ = {'file': ('file', file)}
-        response = requests.post('http://backend:10080/imdb/userRatings', files=file_)
+        response = requests.post('http://api:10080/imdb/userRatings', files=file_)
         return json.dumps(response.content.decode("utf-8"))
     else:
         return '''

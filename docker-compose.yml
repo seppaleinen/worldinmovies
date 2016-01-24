@@ -18,13 +18,19 @@ web:
   expose:
     - "8000"
   links:
-    - backend:backend
+    - api:api
   volumes:
     - /usr/src/app/application/static
   command: /usr/local/bin/gunicorn --config=gunicorn.config.py wsgi:app
 
-backend:
-  image: seppaleinen/worldinmovies-backend
+api:
+  image: seppaleinen/worldinmovies-api
+  restart: always
+  links:
+   - mongo
+
+batch:
+  image: seppaleinen/worldinmovies-batch
   restart: always
   links:
    - mongo
