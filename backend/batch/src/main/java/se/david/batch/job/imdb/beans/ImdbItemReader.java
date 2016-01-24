@@ -1,4 +1,4 @@
-package se.david.batch.imdb.beans;
+package se.david.batch.job.imdb.beans;
 
 import lombok.extern.java.Log;
 import org.springframework.batch.item.*;

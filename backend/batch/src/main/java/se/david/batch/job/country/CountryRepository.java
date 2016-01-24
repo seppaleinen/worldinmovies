@@ -1,4 +1,4 @@
-package se.david.batch.countries;
+package se.david.batch.job.country;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

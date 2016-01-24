@@ -1,13 +1,7 @@
-package se.david.batch.countries;
+package se.david.batch.job.country;
 
-import lombok.extern.java.Log;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -18,24 +12,22 @@ import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import se.david.batch.countries.beans.CountryItemWriter;
-import se.david.batch.countries.beans.CountryProcessor;
+import org.springframework.stereotype.Service;
+import se.david.batch.job.country.beans.CountryItemWriter;
+import se.david.batch.job.country.beans.CountryProcessor;
 import se.david.commons.Country;
 
 import javax.sql.DataSource;
 
-@Configuration
-@EnableBatchProcessing
-@Log
-public class CountryBatchConfiguration {
+@Service
+public class CountriesStep {
     @Autowired
     private CountryProcessor countryProcessor;
     @Autowired
     private CountryItemWriter countryItemWriter;
 
-    @Bean
+    @Bean(name = "countryReader")
     public ItemReader<Country> reader() {
         FlatFileItemReader<Country> reader = new FlatFileItemReader<>();
 
@@ -65,22 +57,12 @@ public class CountryBatchConfiguration {
     }
     // end::readerwriterprocessor[]
 
-    // tag::jobstep[]
-    @Bean
-    public Job importNewCountries(JobBuilderFactory jobs, Step s1, @Qualifier(value = "countryBatchListener") JobExecutionListener listener) {
-        return jobs.get("ImportNewCountries")
-                .incrementer(new RunIdIncrementer())
-                .listener(listener)
-                .flow(s1)
-                .end()
-                .build();
-    }
 
-    @Bean
+    @Bean(name = "countryStep")
     public Step convertNewCountries(StepBuilderFactory stepBuilderFactory,
-                      ItemReader<Country> reader,
-                      ItemWriter<Country> writer,
-                      ItemProcessor<Country, Country> processor) {
+                                    @Qualifier(value = "countryReader") ItemReader<Country> reader,
+                                    ItemWriter<Country> writer,
+                                    ItemProcessor<Country, Country> processor) {
         return stepBuilderFactory.get("convertNewCountries")
                 .<Country, Country> chunk(10)
                 .reader(reader)

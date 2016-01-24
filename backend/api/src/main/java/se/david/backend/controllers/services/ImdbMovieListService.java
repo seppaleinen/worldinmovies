@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 /**
- * 1. Download countries.list.gz (ftp://ftp.sunet.se/pub/tv+movies/imdb/countries.list.gz)
+ * 1. Download job.list.gz (ftp://ftp.sunet.se/pub/tv+movies/imdb/countries.list.gz)
  * 2. Unzip
  * 3. Parse all movies to MovieEntity
  * 4. Persist list of movies
@@ -46,7 +46,7 @@ public class ImdbMovieListService {
     }
 
     public void init() throws Exception {
-        URL url = ImdbMovieListService.class.getClassLoader().getResource("countries.list");
+        URL url = ImdbMovieListService.class.getClassLoader().getResource("job.list");
         downloadFtp();
         unzipFile();
         List<Movie> result = parseImdbMovieList(url);
@@ -61,7 +61,7 @@ public class ImdbMovieListService {
             ftpClient.connect("ftp.sunet.se");
 
             fileOutputStream = new FileOutputStream("/Users/seppa/Workspace/worldinmovies/downloaded.gz");
-            ftpClient.retrieveFile("/pub/tv+movies/imdb/countries.list.gz", fileOutputStream);
+            ftpClient.retrieveFile("/pub/tv+movies/imdb/job.list.gz", fileOutputStream);
         } catch (IOException e) {
             System.out.println("You suck!");
         } finally {

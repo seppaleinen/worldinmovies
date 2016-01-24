@@ -1,4 +1,4 @@
-package se.david.batch.countries.beans;
+package se.david.batch.job.country.beans;
 
 import lombok.extern.java.Log;
 import org.springframework.batch.item.*;
@@ -6,7 +6,6 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import se.david.commons.Country;
@@ -18,9 +17,7 @@ public class CountryItemReader implements ItemReader<Country>, ItemStream {
 
     @Override
     public Country read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        /**
-         * http://data.okfn.org/data/core/country-list/r/data.csv
-         */
+         // http://data.okfn.org/data/core/country-list/r/data.csv
         reader.setResource(new ClassPathResource("countries.csv"));
         reader.setLineMapper(new DefaultLineMapper<Country>() {{
             setLineTokenizer(new DelimitedLineTokenizer() {{

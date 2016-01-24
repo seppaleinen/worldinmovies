@@ -1,4 +1,4 @@
-package se.david.batch.imdb.beans;
+package se.david.batch.job.imdb.beans;
 
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.FieldSet;

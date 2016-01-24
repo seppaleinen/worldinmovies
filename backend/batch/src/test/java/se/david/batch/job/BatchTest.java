@@ -1,4 +1,4 @@
-package se.david.batch.countries;
+package se.david.batch.job;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,6 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import se.david.batch.WorldInMoviesBatchApplication;
+import se.david.batch.job.country.CountryRepository;
 import se.david.commons.Country;
 
 import java.util.List;

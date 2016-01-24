@@ -1,4 +1,4 @@
-package se.david.batch.countries.beans;
+package se.david.batch.job.country.beans;
 
 import lombok.extern.java.Log;
 import org.springframework.batch.item.ItemProcessor;

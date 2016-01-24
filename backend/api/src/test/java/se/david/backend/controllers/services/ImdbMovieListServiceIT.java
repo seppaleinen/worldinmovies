@@ -33,7 +33,7 @@ public class ImdbMovieListServiceIT {
     @Ignore
     @Test
     public void canReadCountriesList() throws Exception {
-        URL url = ImdbMovieListServiceIT.class.getClassLoader().getResource("countries.list");
+        URL url = ImdbMovieListServiceIT.class.getClassLoader().getResource("job.list");
 
         Country countryEntity = new Country();
         countryEntity.setName("name");

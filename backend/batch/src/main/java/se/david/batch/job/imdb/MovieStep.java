@@ -1,10 +1,8 @@
-package se.david.batch.imdb;
+package se.david.batch.job.imdb;
 
-import lombok.extern.java.Log;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -12,32 +10,21 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.item.file.transform.RegexLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.JdbcTemplate;
-import se.david.batch.countries.beans.CountryItemReader;
-import se.david.batch.countries.beans.CountryItemWriter;
-import se.david.batch.countries.beans.CountryProcessor;
-import se.david.batch.imdb.beans.*;
-import se.david.commons.Country;
+import org.springframework.stereotype.Service;
+import se.david.batch.job.imdb.beans.*;
 import se.david.commons.Movie;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.net.URL;
 import java.util.regex.Pattern;
 
-//@Configuration
-//@EnableBatchProcessing
-@Log
-public class ImdbBatchConfiguration {
+@Service
+public class MovieStep {
     @Autowired
     private ImdbProcessor imdbProcessor;
     @Autowired
@@ -60,7 +47,7 @@ public class ImdbBatchConfiguration {
         RegexLineTokenizer regexLineTokenizer = new RegexLineTokenizer();
         regexLineTokenizer.setPattern(patternNameAndYear);
 
-        reader.setResource(new ClassPathResource("countries.list"));
+        reader.setResource(new ClassPathResource("job.list"));
 
         DefaultLineMapper<Movie> defaultLineMapper = new DefaultLineMapper<>();
         defaultLineMapper.setLineTokenizer(regexLineTokenizer);
@@ -83,19 +70,8 @@ public class ImdbBatchConfiguration {
     }
     // end::readerwriterprocessor[]
 
-    // tag::jobstep[]
-    @Bean
-    public Job importNewCountries(JobBuilderFactory jobs, Step s1, @Qualifier(value = "ImdbBatchListener") JobExecutionListener listener) {
-        return jobs.get("ImportNewMovies")
-                .incrementer(new RunIdIncrementer())
-                .listener(listener)
-                .flow(s1)
-                .end()
-                .build();
-    }
-
-    @Bean
-    public Step convertNewCountries(StepBuilderFactory stepBuilderFactory,
+    @Bean(name = "movieSteps")
+    public Step convertNewMovies(StepBuilderFactory stepBuilderFactory,
                                     ItemReader<Movie> reader,
                                     ItemWriter<Movie> writer,
                                     ItemProcessor<Movie, Movie> processor) {

@@ -1,4 +1,4 @@
-package se.david.batch.imdb;
+package se.david.batch.job.imdb;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
