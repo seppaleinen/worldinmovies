@@ -9,8 +9,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import se.david.batch.WorldInMoviesApplication;
-import se.david.batch.countries.CountryRepository;
+import se.david.batch.WorldInMoviesBatchApplication;
 import se.david.commons.Country;
 
 import java.util.List;
@@ -19,7 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {WorldInMoviesApplication.class})
+@SpringApplicationConfiguration(classes = {WorldInMoviesBatchApplication.class})
 // NOTE!! order is important
 @IntegrationTest("server.port:0")
 @TestPropertySource(locations = "classpath:application-test.properties")

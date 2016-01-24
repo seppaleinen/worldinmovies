@@ -15,6 +15,8 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -23,12 +25,16 @@ import se.david.batch.countries.beans.CountryProcessor;
 import se.david.commons.Country;
 
 import javax.sql.DataSource;
-import java.util.logging.Level;
 
 @Configuration
 @EnableBatchProcessing
 @Log
 public class CountryBatchConfiguration {
+    @Autowired
+    private CountryProcessor countryProcessor;
+    @Autowired
+    private CountryItemWriter countryItemWriter;
+
     @Bean
     public ItemReader<Country> reader() {
         FlatFileItemReader<Country> reader = new FlatFileItemReader<>();
@@ -50,19 +56,19 @@ public class CountryBatchConfiguration {
 
     @Bean
     public ItemProcessor<Country, Country> processor() {
-        return new CountryProcessor();
+        return countryProcessor;
     }
 
     @Bean
     public ItemWriter<Country> writer(DataSource dataSource) {
-        return new CountryItemWriter();
+        return countryItemWriter;
     }
     // end::readerwriterprocessor[]
 
     // tag::jobstep[]
     @Bean
-    public Job importUserJob(JobBuilderFactory jobs, Step s1, JobExecutionListener listener) {
-        return jobs.get("importUserJob")
+    public Job importNewCountries(JobBuilderFactory jobs, Step s1, @Qualifier(value = "countryBatchListener") JobExecutionListener listener) {
+        return jobs.get("ImportNewCountries")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .flow(s1)
@@ -71,11 +77,11 @@ public class CountryBatchConfiguration {
     }
 
     @Bean
-    public Step step1(StepBuilderFactory stepBuilderFactory,
+    public Step convertNewCountries(StepBuilderFactory stepBuilderFactory,
                       ItemReader<Country> reader,
                       ItemWriter<Country> writer,
                       ItemProcessor<Country, Country> processor) {
-        return stepBuilderFactory.get("step1")
+        return stepBuilderFactory.get("convertNewCountries")
                 .<Country, Country> chunk(10)
                 .reader(reader)
                 .processor(processor)
