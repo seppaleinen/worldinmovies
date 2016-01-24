@@ -37,3 +37,13 @@ batch:
 
 mongo:
   image: seppaleinen/worldinmovies-database
+  restart: always
+  volumes_from:
+   - data
+
+data:
+  image: seppaleinen/worldinmovies-database
+  restart: always
+  volumes:
+    - /data/db
+  command: echo ''
