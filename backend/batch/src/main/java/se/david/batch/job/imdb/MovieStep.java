@@ -1,11 +1,7 @@
 package se.david.batch.job.imdb;
 
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -13,11 +9,14 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.RegexLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import se.david.batch.job.imdb.beans.*;
+import se.david.batch.job.imdb.beans.CustomFieldSetMapper;
+import se.david.batch.job.imdb.beans.Helper;
+import se.david.batch.job.imdb.beans.ImdbItemReader;
+import se.david.batch.job.imdb.beans.ImdbItemWriter;
+import se.david.batch.job.imdb.beans.ImdbProcessor;
 import se.david.commons.Movie;
 
 import javax.sql.DataSource;

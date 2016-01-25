@@ -19,12 +19,13 @@ import se.david.backend.WorldInMoviesApplication;
 import se.david.backend.controllers.repository.CountryRepository;
 import se.david.commons.Country;
 
-
 import java.util.List;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {WorldInMoviesApplication.class})
@@ -98,7 +99,7 @@ public class MapControllerIT {
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
 
-        List<Country> result = response.getBody().as(List.class);
+        List result = response.getBody().as(List.class);
         assertNotNull(result);
         assertFalse(result.isEmpty());
     }
