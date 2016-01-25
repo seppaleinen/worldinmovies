@@ -31,6 +31,9 @@ public class Helper {
     private static final Pattern patternNameAndYear = Pattern.compile(regexNameAndYear);
     private static final Pattern patternCountry = Pattern.compile(regexCountry);
 
+    private static final String ULTIMATE_REGEX = "\"?(.*?)\"?\\s+\\(([0-9?]{4})\\)?.*\\s([\\w \\.\\-\\(\\)]+)[\\s]*$";
+    private static final Pattern ULTIMATE_PATTERN = Pattern.compile(ULTIMATE_REGEX);
+
     @Autowired
     private CountryRepository countryRepository;
     @Autowired

@@ -1,5 +1,6 @@
 package se.david.batch.job.imdb;
 
+import lombok.extern.java.Log;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemProcessor;
@@ -23,6 +24,7 @@ import javax.sql.DataSource;
 import java.util.regex.Pattern;
 
 @Service
+@Log
 public class MovieStep {
     @Autowired
     private ImdbProcessor imdbProcessor;
@@ -39,14 +41,18 @@ public class MovieStep {
     private static final Pattern patternNameAndYear = Pattern.compile(regexNameAndYear);
     private static final Pattern patternCountry = Pattern.compile(regexCountry);
 
+    private static final String ULTIMATE_REGEX = "\"?(.*?)\"?\\s+\\(([0-9?]{4})\\)?.*\\s([\\w \\.\\-\\(\\)]+)[\\s]*$";
+    private static final Pattern ULTIMATE_PATTERN = Pattern.compile(ULTIMATE_REGEX);
+
     @Bean
     public ItemReader<Movie> reader() {
+        log.info("READER");
         FlatFileItemReader<Movie> reader = new FlatFileItemReader<>();
 
         RegexLineTokenizer regexLineTokenizer = new RegexLineTokenizer();
-        regexLineTokenizer.setPattern(patternNameAndYear);
+        regexLineTokenizer.setPattern(ULTIMATE_PATTERN);
 
-        reader.setResource(new ClassPathResource("job.list"));
+        reader.setResource(new ClassPathResource("countries.list"));
 
         DefaultLineMapper<Movie> defaultLineMapper = new DefaultLineMapper<>();
         defaultLineMapper.setLineTokenizer(regexLineTokenizer);

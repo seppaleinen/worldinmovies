@@ -25,7 +25,7 @@ public class BatchConfiguration {
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .flow(s1)
-                //.next(s2)
+                .next(s2)
                 .end()
                 .build();
     }
