@@ -8,6 +8,7 @@ import se.david.batch.job.country.CountryRepository;
 import se.david.commons.Country;
 
 import java.util.List;
+import java.util.logging.Level;
 
 @Service
 @Log
@@ -19,7 +20,7 @@ public class CountryItemWriter implements ItemWriter<Country> {
     public void write(List<? extends Country> list) throws Exception {
         for(Country countryEntity : list) {
             if(countryRepository.findByCode(countryEntity.getCode()) == null) {
-                log.info("Saving new country: " + countryEntity.getName());
+                log.log(Level.FINE, "Saving new country: " + countryEntity.getName());
                 countryRepository.save(countryEntity);
             }
         }

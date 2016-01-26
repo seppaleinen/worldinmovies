@@ -21,7 +21,6 @@ import se.david.commons.Movie;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
-import java.util.regex.Pattern;
 
 @Service
 @Log
@@ -35,9 +34,6 @@ public class MovieStep {
     @Autowired
     private ImdbItemReader imdbItemReader;
 
-    private static final String ULTIMATE_REGEX = "\"?(.*?)\"?\\s+\\(([0-9?]{4})\\)?.*\\s([\\w \\.\\-\\(\\)]+)[\\s]*$";
-    private static final Pattern ULTIMATE_PATTERN = Pattern.compile(ULTIMATE_REGEX);
-
     @Bean
     public ItemReader<String> reader() {
         FlatFileItemReader<String> reader = new FlatFileItemReader<>();
@@ -45,7 +41,7 @@ public class MovieStep {
         reader.setResource(new ClassPathResource("countries.list"));
         LineMapper<String> lineMapper = new PassThroughLineMapper();
         reader.setLineMapper(lineMapper);
-        reader.setLinesToSkip(15);
+        reader.setLinesToSkip(14);
         reader.setEncoding(StandardCharsets.ISO_8859_1.name());
 
         return reader;

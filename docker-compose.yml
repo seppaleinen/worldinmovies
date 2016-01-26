@@ -13,8 +13,6 @@ nginx:
 web:
   restart: always
   image: seppaleinen/worldinmovies-webapp
-  ports:
-   - "8000:8000"
   expose:
     - "8000"
   links:
