@@ -9,6 +9,7 @@ import se.david.commons.Movie;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,30 +19,9 @@ public class ImdbProcessor implements ItemProcessor<String, Movie> {
     private static final String ULTIMATE_REGEX = "\"?(.*?)\"?\\s+\\(([0-9?]{4})\\)?.*\\s([\\w \\.\\-\\(\\)]+)[\\s]*$";
     private static final Pattern ULTIMATE_PATTERN = Pattern.compile(ULTIMATE_REGEX);
 
-    @Autowired
-    private CountryRepository countryRepository;
+    private static final Map<String, String> specialCountries = new HashMap<>();
 
-    @Override
-    public Movie process(String string) throws Exception {
-        Movie movie = null;
-
-        Matcher matcher = ULTIMATE_PATTERN.matcher(string);
-        if(matcher.matches()) {
-            log.fine("Matched: " + string);
-            movie = new Movie();
-            movie.setName(matcher.group(1));
-            movie.setYear(matcher.group(2));
-            String country = mapCountries(matcher.group(3));
-            movie.setCountry(countryRepository.findByName(country));
-        } else {
-            log.fine("No Matched: " + string);
-        }
-        //log.log(Level.INFO, "Processing: " + countryEntity);
-        return movie;
-    }
-
-    static String mapCountries(String imdbCountryName) {
-        Map<String, String> specialCountries = new HashMap<>();
+    static {
         specialCountries.put("Netherlands Antilles",    "Netherlands");
         specialCountries.put("Burma",                   "Myanmar");
         specialCountries.put("Ivory Coast",             "Côte d'Ivoire");
@@ -56,10 +36,33 @@ public class ImdbProcessor implements ItemProcessor<String, Movie> {
         specialCountries.put("Vietnam",                 "Viet nam");
         specialCountries.put("Yugoslavia",              "Serbia");
         specialCountries.put("Zaire",                   "Congo, the Democratic Republic of the");
+    }
 
-        String result = specialCountries.get(imdbCountryName);
+    @Autowired
+    private CountryRepository countryRepository;
 
-        return result != null ? result : imdbCountryName;
+    @Override
+    public Movie process(String string) throws Exception {
+        Movie movie = null;
+
+        Matcher matcher = ULTIMATE_PATTERN.matcher(string);
+        if(matcher.matches()) {
+            log.log(Level.INFO, "Matched: " + string);
+            movie = new Movie();
+            movie.setName(matcher.group(1));
+            movie.setYear(matcher.group(2));
+            String country = specialCountries.get(matcher.group(3));
+            if(country == null) {
+                movie.setCountry(countryRepository.findByName(matcher.group(3)));
+            } else {
+                movie.setCountry(countryRepository.findByName(country));
+            }
+            movie.setId(movie.getName() + ":" + movie.getYear());
+        } else {
+            log.log(Level.INFO, "No Matched: " + string);
+        }
+
+        return movie;
     }
 }
 

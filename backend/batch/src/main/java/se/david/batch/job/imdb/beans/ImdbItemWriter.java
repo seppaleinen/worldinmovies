@@ -8,7 +8,6 @@ import se.david.batch.job.imdb.MovieRepository;
 import se.david.commons.Movie;
 
 import java.util.List;
-import java.util.logging.Level;
 
 @Service
 @Log
@@ -18,11 +17,6 @@ public class ImdbItemWriter implements ItemWriter<Movie> {
 
     @Override
     public void write(List<? extends Movie> list) throws Exception {
-        for(Movie movie : list) {
-            if(movieRepository.findByNameAndYear(movie.getName(), movie.getYear()) == null) {
-                log.log(Level.FINE, "Saving new movie: " + movie.getName());
-                movieRepository.save(movie);
-            }
-        }
+        movieRepository.save(list);
     }
 }

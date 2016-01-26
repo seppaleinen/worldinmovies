@@ -9,8 +9,9 @@ import se.david.commons.Country;
 @Log
 public class CountryProcessor implements ItemProcessor<Country, Country> {
     @Override
-    public Country process(Country countryEntity) throws Exception {
-        //log.log(Level.INFO, "Processing: " + countryEntity);
-        return countryEntity;
+    public Country process(Country country) throws Exception {
+        //log.log(Level.INFO, "Processing: " + country);
+        country.setId(country.getCode());
+        return country;
     }
 }
