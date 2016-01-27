@@ -29,7 +29,7 @@ api:
 
 batch:
   image: seppaleinen/worldinmovies-batch
-  restart: always
+  restart: never
   links:
    - mongo
 

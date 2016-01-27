@@ -40,19 +40,20 @@ public class ImdbUserRatingsService {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
 
+            List<String> idList = new ArrayList<>();
+
             for(String line : br.lines().skip(1).collect(Collectors.toList())) {
-                log.log(Level.INFO, "Reading line: " + line);
+                log.log(Level.FINE, "Reading line: " + line);
                 String[] split = line.split(",");
 
                 String movieName = split[5].replaceAll("\"", "");
                 String movieYear = split[11].replaceAll("\"", "");
 
-                Movie movieEntity = movieRepository.findByNameAndYear(movieName, movieYear);
-
-                if(movieEntity != null ) {
-                    movieEntityList.add(movieEntity);
-                }
+                idList.add(movieName + ":" + movieYear);
             }
+
+            Iterable<Movie> movieIterable = movieRepository.findAll(idList);
+            movieIterable.iterator().forEachRemaining(movieEntityList::add);
         } catch (IOException e) {
             e.printStackTrace();
         }
