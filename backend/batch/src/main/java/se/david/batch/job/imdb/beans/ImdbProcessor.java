@@ -47,16 +47,18 @@ public class ImdbProcessor implements ItemProcessor<String, Movie> {
 
         Matcher matcher = ULTIMATE_PATTERN.matcher(string);
         if(matcher.matches()) {
-            log.log(Level.INFO, "Matched: " + string);
+            log.log(Level.FINE, "Matched: " + string);
             movie = new Movie();
             movie.setName(matcher.group(1));
             movie.setYear(matcher.group(2));
+            /**
             String country = specialCountries.get(matcher.group(3));
             if(country == null) {
                 movie.setCountry(countryRepository.findByName(matcher.group(3)));
             } else {
                 movie.setCountry(countryRepository.findByName(country));
             }
+             **/
             movie.setId(movie.getName() + ":" + movie.getYear());
         } else {
             log.log(Level.INFO, "No Matched: " + string);

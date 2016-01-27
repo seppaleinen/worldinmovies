@@ -9,6 +9,7 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.PassThroughLineMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.PathResource;
@@ -39,11 +40,11 @@ public class MovieStep {
     public ItemReader<String> reader() {
         FlatFileItemReader<String> reader = new FlatFileItemReader<>();
 
-        //getInputStream();
-        //unzipFile();
-        //reader.setResource(new PathResource(System.getProperty("user.home") + "/" + "countries.list"));
+        getInputStream();
+        unzipFile();
+        reader.setResource(new PathResource(System.getProperty("user.home") + "/" + "countries.list"));
 
-        reader.setResource(new ClassPathResource("countries.list"));
+        //reader.setResource(new ClassPathResource("countries.list"));
         reader.setLineMapper(new PassThroughLineMapper());
         reader.setLinesToSkip(14);
         reader.setEncoding(StandardCharsets.ISO_8859_1.name());
