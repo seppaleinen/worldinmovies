@@ -11,5 +11,5 @@ public class Movie {
     private String id;
     private String name;
     private String year;
-    private Country country;
+    private String country;
 }

@@ -45,14 +45,15 @@ public class ImdbUserRatingsServiceIT {
         Movie movieEntity = new Movie();
         movieEntity.setName("Time of the Wolf");
         movieEntity.setYear("2003");
+        movieEntity.setId(movieEntity.getName() + ":" + movieEntity.getYear());
         movieRepository.save(movieEntity);
+
         String path = ImdbUserRatingsServiceIT.class.getClassLoader().getResource("small_ratings.csv").getPath();
         File file = new File(path);
 
         FileInputStream input = new FileInputStream(file);
         MultipartFile multipartFile = new MockMultipartFile("file",
                 file.getName(), "text/plain", IOUtils.toByteArray(input));
-
 
         List<Movie> result = imdbUserRatingsService.parseFromUserRatingsFile(multipartFile);
 

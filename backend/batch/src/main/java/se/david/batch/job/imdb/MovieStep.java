@@ -62,7 +62,7 @@ public class MovieStep {
 
         try{
             long before = System.currentTimeMillis();
-            log.info("Starging download of countries.list.gz");
+            log.info("Starting download of countries.list.gz");
             URL url = new URL(ftpUrl);
             URLConnection conn = url.openConnection();
             inputStream = conn.getInputStream();
