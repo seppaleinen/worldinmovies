@@ -19,8 +19,6 @@ public class ImdbProcessor implements ItemProcessor<String, Movie> {
     private static final String ULTIMATE_REGEX = "\"?(.*?)\"?\\s+\\(([0-9?]{4})\\)?.*\\s([\\w \\.\\-\\(\\)]+)[\\s]*$";
     private static final Pattern ULTIMATE_PATTERN = Pattern.compile(ULTIMATE_REGEX);
 
-    private static final MapConverter mapConverter = new MapConverter();
-
     @Override
     public Movie process(String string) throws Exception {
         Movie movie = null;
@@ -31,7 +29,7 @@ public class ImdbProcessor implements ItemProcessor<String, Movie> {
             movie = new Movie();
             movie.setName(matcher.group(1));
             movie.setYear(matcher.group(2));
-            movie.setCountry(mapConverter.countryCode(matcher.group(3)));
+            movie.setCountry(MapConverter.countryCode(matcher.group(3)));
             movie.setId(movie.getName() + ":" + movie.getYear());
         } else {
             log.log(Level.INFO, "No Matched: " + string);

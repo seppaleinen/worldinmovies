@@ -3,7 +3,7 @@ package se.david.batch.job.imdb.beans;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapConverter {
+public final class MapConverter {
     private static final Map<String, String> countryMap = new HashMap<>();
 
     static {
@@ -58,7 +58,7 @@ public class MapConverter {
         countryMap.put("Croatia", "HR");
         countryMap.put("Cuba", "CU");
         countryMap.put("Cyprus", "CY");
-        countryMap.put("Czechoslovakia", null);
+        countryMap.put("Czechoslovakia", "CZ");
         countryMap.put("Czech Republic", "CZ");
         countryMap.put("Democratic Republic of the Congo", "CD");
         countryMap.put("Denmark", "DK");
@@ -75,7 +75,7 @@ public class MapConverter {
         countryMap.put("Ethiopia", "ET");
         countryMap.put("Falkland Islands", "FK");
         countryMap.put("Faroe Islands", "FO");
-        countryMap.put("Federal Republic of Yugoslavia", null);
+        countryMap.put("Federal Republic of Yugoslavia", "RS");
         countryMap.put("Federated States of Micronesia", "FM");
         countryMap.put("Fiji", "FJ");
         countryMap.put("Finland", "FI");
@@ -163,7 +163,7 @@ public class MapConverter {
         countryMap.put("North Korea", "KR");
         countryMap.put("North Vietnam", "VN");
         countryMap.put("Norway", "NO");
-        countryMap.put("Occupied Palestinian Territory", null);
+        countryMap.put("Occupied Palestinian Territory", "PS");
         countryMap.put("Oman", "OM");
         countryMap.put("Pakistan", "PK");
         countryMap.put("Palau", "PW");
@@ -192,7 +192,7 @@ public class MapConverter {
         countryMap.put("Saudi Arabia", "SA");
         countryMap.put("Senegal", "SN");
         countryMap.put("Serbia", "RS");
-        countryMap.put("Serbia and Montenegro", null);
+        countryMap.put("Serbia and Montenegro", "RS");
         countryMap.put("Seychelles", "SC");
         countryMap.put("Siam", "TH");
         countryMap.put("Sierra Leone", "SL");
@@ -214,7 +214,7 @@ public class MapConverter {
         countryMap.put("Sweden", "SE");
         countryMap.put("Switzerland", "CH");
         countryMap.put("Syria", "SY");
-        countryMap.put("Taiwan", null);
+        countryMap.put("Taiwan", "CN");
         countryMap.put("Tajikistan", "TJ");
         countryMap.put("Tanzania", "TZ");
         countryMap.put("Thailand", "TH");
@@ -233,10 +233,10 @@ public class MapConverter {
         countryMap.put("United Arab Emirates", "AE");
         countryMap.put("Uruguay", "UY");
         countryMap.put("USA", "US");
-        countryMap.put("U.S. Virgin Islands", null);
+        countryMap.put("U.S. Virgin Islands", "US");
         countryMap.put("Uzbekistan", "UZ");
         countryMap.put("Vanuatu", "VU");
-        countryMap.put("Venezuela", null);
+        countryMap.put("Venezuela", "VE");
         countryMap.put("Vietnam", "VN");
         countryMap.put("Western Sahara", "EH");
         countryMap.put("West Germany", "GE");
@@ -247,7 +247,9 @@ public class MapConverter {
         countryMap.put("Zimbabwe", "ZW");
     }
 
-    public String countryCode(String country) {
+    public static String countryCode(String country) {
         return countryMap.get(country);
     }
+
+    private MapConverter(){}
 }
