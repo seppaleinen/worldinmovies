@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 @IntegrationTest("server.port:0")
 @TestPropertySource(locations = "classpath:application-test.properties")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class BatchTest {
+public class BatchIT {
     @Autowired
     private CountryRepository repository;
 

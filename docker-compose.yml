@@ -19,7 +19,7 @@ web:
     - api:api
   volumes:
     - /usr/src/app/application/static
-  command: /usr/local/bin/gunicorn --config=gunicorn.config.py wsgi:app
+  command: gunicorn --config=gunicorn.config.py wsgi:app
 
 api:
   image: seppaleinen/worldinmovies-api
