@@ -1,6 +1,7 @@
 package se.david.batch.job;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ public class BatchIT {
     public void setup() {
     }
 
+    @Ignore
     @Test
     public void canFindMapByGet() {
         List<Country> result = repository.findAll();
