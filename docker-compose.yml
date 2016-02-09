@@ -6,6 +6,8 @@ nginx:
     - "443:443"
   volumes:
     - /www/static
+    - /etc/letsencrypt:/etc/letsencrypt
+   
   volumes_from:
     - web
   links:

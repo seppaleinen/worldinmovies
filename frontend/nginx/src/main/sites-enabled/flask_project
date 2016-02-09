@@ -6,6 +6,8 @@ server {
 
     ssl_certificate /etc/nginx/certs/server.crt;
     ssl_certificate_key /etc/nginx/certs/server.key;
+#    ssl_certificate /etc/letsencrypt/live/worldinmovies.duckdns.org/fullchain.pem;
+#    ssl_certificate_key /etc/letsencrypt/live/worldinmovies.duckdns.org/privkey.pem;
 
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     ssl_prefer_server_ciphers on;
