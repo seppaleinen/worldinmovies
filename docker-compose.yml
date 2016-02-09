@@ -19,7 +19,7 @@ web:
   links:
     - api:api
   volumes:
-    - /usr/src/app/application/static
+    - /webapp/application/static
   command: gunicorn --config=gunicorn.config.py wsgi:app
 
 api:

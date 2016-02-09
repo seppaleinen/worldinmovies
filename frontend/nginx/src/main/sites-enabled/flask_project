@@ -12,7 +12,7 @@ server {
     ssl_ciphers 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
 
     location /static {
-        alias /usr/src/app/application/static;
+        alias /webapp/application/static;
     }
 
     location / {
