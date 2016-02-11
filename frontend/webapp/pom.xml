@@ -6,15 +6,15 @@
 
     <parent>
         <groupId>se.david.labs</groupId>
-        <artifactId>worldinmovies-frontend</artifactId>
+        <artifactId>frontend</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>worldinmovies-webapp</artifactId>
+    <artifactId>webapp</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <name>World in movies - Frontend - webapp</name>
+    <name>World in movies - Frontend - Webapp</name>
 
     <properties>
         <webapp.directory>${project.basedir}/src/main/webapp</webapp.directory>
