@@ -7,6 +7,8 @@ And countries that you haven't seen yet appears as red.
 For now the only way to add which movies that you've seen is to upload the 
 "rated movies" export file from imdb
 
+Prototype version is up at https://worldinmovies.duckdns.org/
+
 ##Todo
 * Figure out a way to show results from imdb.csv on map
 * Complete the batch regex
