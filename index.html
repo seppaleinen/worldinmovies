@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="viewport" content="width=640">
@@ -13,18 +13,18 @@
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script type="text/javascript" src="javascripts/headsmart.min.js"></script>
     <script type="text/javascript">
-      $(document).ready(function () {
-        $('#main_content').headsmart()
-      })
+        $(document).ready(function () {
+            $('#main_content').headsmart()
+        })
     </script>
     <title>Worldinmovies by seppaleinen</title>
-  </head>
+</head>
 
-  <body>
-    <a id="forkme_banner" href="https://github.com/seppaleinen/worldinmovies">View on GitHub</a>
-    <div class="shell">
+<body>
+<a id="forkme_banner" href="https://github.com/seppaleinen/worldinmovies">View on GitHub</a>
+<div class="shell">
 
-      <header>
+    <header>
         <span class="ribbon-outer">
           <span class="ribbon-inner">
             <h1>Worldinmovies</h1>
@@ -33,42 +33,51 @@
           <span class="left-tail"></span>
           <span class="right-tail"></span>
         </span>
-      </header>
+    </header>
 
-      <section id="downloads">
+    <section id="downloads">
         <span class="inner">
           <a href="https://github.com/seppaleinen/worldinmovies/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/seppaleinen/worldinmovies/tarball/master" class="tgz"><em>download</em> .TGZ</a>
         </span>
-      </section>
+    </section>
 
 
-      <span class="banner-fix"></span>
+    <span class="banner-fix"></span>
 
 
-      <section id="main_content">
+    <section id="main_content">
         <h1>
-<a id="worldinmovies" class="anchor" href="#worldinmovies" aria-hidden="true"><span class="octicon octicon-link"></span></a>worldinmovies</h1>
+            <a id="worldinmovies" class="anchor" href="#worldinmovies" aria-hidden="true">
+                <span class="octicon octicon-link"></span>
+            </a>
+            worldinmovies
+        </h1>
 
-<p>A map of the world and the movies from each country</p>
+        <p>A map of the world and the movies from each country</p>
 
-<h2>
-<a id="todo" class="anchor" href="#todo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Todo</h2>
+        <h2>
+            <a id="todo" class="anchor" href="#todo" aria-hidden="true">
+                <span class="octicon octicon-link"></span>
+            </a>
+            Todo
+        </h2>
 
-<ul>
-<li>Check out frameworks for interactive world maps (<a href="http://jvectormap.com/">http://jvectormap.com/</a>)</li>
-<li>Figure out a way to host site and database</li>
-<li>Decide on database</li>
-<li>Decide on web-framework</li>
-<li>Design database structure</li>
-</ul>
+        <p>This webapp project is for showing which parts of the world that you've seen movies from.</p>
+        <p>Countries that you've seen a movie from, appears as green. And countries that you haven't seen yet appears as red.</p>
+        <p>For now the only way to add which movies that you've seen is to upload the "rated movies" export file from imdb</p>
 
-<p>If the user is not logged in, the default page should show the top rated movies from each country</p>
 
-<p>When a user logs in, the user should be able to vote on a movie and add to the public map
-And a user should be able to create their own map with movies that they've watched.</p>
-      </section>
+        <ul>
+            <li>Figure out a way to show results from imdb.csv on map</li>
+            <li>Complete the batch regex</li>
+            <li>Figure out a way to map movies to countries a faster way</li>
+            <li>Import imdb ratings for the movies we've imported</li>
+            <li>New batch job for imdb ratings</li>
+        </ul>
 
-      <footer>
+    </section>
+
+    <footer>
         <span class="ribbon-outer">
           <span class="ribbon-inner">
             <p>this project by <a href="https://github.com/seppaleinen">seppaleinen</a> can be found on <a href="https://github.com/seppaleinen/worldinmovies">GitHub</a></p>
@@ -78,10 +87,10 @@ And a user should be able to create their own map with movies that they've watch
         </span>
         <p>Generated with <a href="https://pages.github.com">GitHub Pages</a> using Merlot</p>
         <span class="octocat"></span>
-      </footer>
+    </footer>
 
-    </div>
+</div>
 
-    
-  </body>
+
+</body>
 </html>
