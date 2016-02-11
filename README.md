@@ -1,32 +1,48 @@
 # Worldinmovies
 
+This webapp project is for showing which parts of the world that you've seen movies from.
+Countries that you've seen a movie from, appears as green.
+And countries that you haven't seen yet appears as red.
+
+For now the only way to add which movies that you've seen is to upload the 
+"rated movies" export file from imdb
+
 ##Todo
 * Figure out a way to show results from imdb.csv on map
 * Complete the batch regex
 * Figure out a way to map movies to countries a faster way
 * Import imdb ratings for the movies we've imported
+* New batch job for imdb ratings
 
 
-For the moment, ignore all things about users and just focus on making it work "stateless"
+For the moment, ignoring all things about users and just focus on making it work "stateless"
 1. Load top 5 movies from all countries at startpage
 2. When uploaded imdb csv-file then colorcode all countries if seen or not seen
 
 
-To start docker instances by maven
+##To start docker instances by maven:
+Dependencies:
+
+* Maven https://maven.apache.org/
+* Docker https://docs.docker.com/engine/installation/
+* Docker-compose https://docs.docker.com/compose/install/
+* MongoDB https://docs.mongodb.org/manual/administration/install-community/ # For maven tests only.. mvn clean install -Dmaven.test.skip=True to skip
 ```
 mvn clean install -Pdocker
 docker-compose up
 ```
 
-To start docker by dockerhub
+##To start docker by dockerhub
+Dependencies:
+
+* Docker https://docs.docker.com/engine/installation/
+* Docker-compose https://docs.docker.com/compose/install/
 ```
 docker-compose pull
 docker-compose up
 ```
 
 
+## General design
+![Architecture](worldinmovies-architecture.png)
 
-sudo git clone https://github.com/letsencrypt/letsencrypt \
-    /opt/letsencrypt /opt/letsencrypt/letsencrypt-auto \
-     certonly -t --keep --authenticator webroot \
-      -w /var/www/cybermoose.org/public_html -d cybermoose.org -d www.cybermoose.org
