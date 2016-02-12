@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>se.david.labs</groupId>
-    <artifactId>api</artifactId>
+    <artifactId>worldinmovies-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 

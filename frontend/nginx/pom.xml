@@ -11,7 +11,7 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>nginx</artifactId>
+    <artifactId>worldinmovies-nginx</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <name>World in movies - Frontend - Nginx</name>

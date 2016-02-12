@@ -11,7 +11,7 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>webapp</artifactId>
+    <artifactId>worldinmovies-webapp</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <name>World in movies - Frontend - Webapp</name>
