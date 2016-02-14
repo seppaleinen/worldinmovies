@@ -53,7 +53,7 @@ public class MovieStep {
     }
 
     private void getInputStream() {
-        final String ftpUrl = "ftp://ftp.sunet.se/pub/tv+movies/imdb/countries.list.gz";
+        final String ftpUrl = "ftp://ftp.funet.fi/pub/mirrors/ftp.imdb.com/pub/countries.list.gz";
         String userPath = System.getProperty("user.home");
 
         InputStream inputStream = null;

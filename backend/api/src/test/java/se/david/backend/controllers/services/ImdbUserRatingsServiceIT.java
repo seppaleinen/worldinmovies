@@ -45,7 +45,8 @@ public class ImdbUserRatingsServiceIT {
         Movie movieEntity = new Movie();
         movieEntity.setName("Time of the Wolf");
         movieEntity.setYear("2003");
-        movieEntity.setId(movieEntity.getName() + ":" + movieEntity.getYear());
+        movieEntity.setCountry("country");
+        movieEntity.setId(movieEntity.getName() + ":" + movieEntity.getYear() + ":country");
         movieRepository.save(movieEntity);
 
         String path = ImdbUserRatingsServiceIT.class.getClassLoader().getResource("small_ratings.csv").getPath();

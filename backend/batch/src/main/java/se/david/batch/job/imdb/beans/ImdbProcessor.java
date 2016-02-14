@@ -30,7 +30,7 @@ public class ImdbProcessor implements ItemProcessor<String, Movie> {
             movie.setName(matcher.group(1));
             movie.setYear(matcher.group(2));
             movie.setCountry(MapConverter.countryCode(matcher.group(3)));
-            movie.setId(movie.getName() + ":" + movie.getYear());
+            movie.setId(movie.getName() + ":" + movie.getYear() + ":" + movie.getCountry());
         } else {
             log.log(Level.INFO, "No Matched: " + string);
         }

@@ -20,21 +20,13 @@ import java.util.List;
 public class ImdbController {
     private static final String ROOT_URL = "/imdb";
     public static final String USER_RATINGS_URL = ROOT_URL + "/userRatings";
-    public static final String FIND_MOVIES_URL = ROOT_URL + "/findMovies";
     @Autowired
     private ImdbUserRatingsService imdbUserRatingsService;
     @Autowired
     private MovieRepository movieRepository;
 
-    // @TODO http://stackoverflow.com/questions/25699727/multipart-file-upload-spring-boot
     @RequestMapping(value = USER_RATINGS_URL, method = RequestMethod.POST)
     public List<Movie> userRatings(@RequestParam("file") MultipartFile file) {
         return imdbUserRatingsService.parseFromUserRatingsFile(file);
     }
-
-    @RequestMapping(value = FIND_MOVIES_URL, method = RequestMethod.GET)
-    public List<Movie> findMovies() throws Exception {
-        return movieRepository.findAll();
-    }
-
 }

@@ -1,6 +1,7 @@
 package se.david.backend.controllers.services;
 
 import lombok.extern.java.Log;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,38 +50,14 @@ public class ImdbUserRatingsService {
                 String movieName = split[5].replaceAll("\"", "");
                 String movieYear = split[11].replaceAll("\"", "");
 
-                idList.add(movieName + ":" + movieYear);
+                idList.add("^" + movieName + ":" + movieYear + ":");
             }
 
-            Iterable<Movie> movieIterable = movieRepository.findAll(idList);
-            movieIterable.iterator().forEachRemaining(movieEntityList::add);
+            movieEntityList = movieRepository.findByIdMultiple(idList);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return movieEntityList;
     }
-
-    String mapCountries(String imdbCountryName) {
-        Map<String, String> specialCountries = new HashMap<>();
-        specialCountries.put("Netherlands Antilles",    "Netherlands");
-        specialCountries.put("Burma",                   "Myanmar");
-        specialCountries.put("Ivory Coast",             "Côte d'Ivoire");
-        specialCountries.put("Czechoslovakia",          "Czech Republic");
-        specialCountries.put("Kosovo",                  "Serbia");
-        specialCountries.put("Laos",                    "Lao People's Democratic Republic");
-        specialCountries.put("Reunion",                 "Réunion");
-        specialCountries.put("Siam",                    "Thailand");
-        specialCountries.put("UK",                      "United Kingdom");
-        specialCountries.put("USA",                     "United States");
-        specialCountries.put("Soviet Union",            "Russian Federation");
-        specialCountries.put("Vietnam",                 "Viet nam");
-        specialCountries.put("Yugoslavia",              "Serbia");
-        specialCountries.put("Zaire",                   "Congo, the Democratic Republic of the");
-
-        String regularCountryName = specialCountries.get(imdbCountryName);
-
-        return regularCountryName != null ? regularCountryName : imdbCountryName;
-    }
-
 }
