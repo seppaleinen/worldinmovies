@@ -2,6 +2,7 @@
 
 $(document).ready(function() {
     var default_color = "#8B0000";
+    var found_color = "#00ff00";
 
     function deselect(e) {
         $('.pop').slideFadeToggle(function() {
@@ -15,7 +16,6 @@ $(document).ready(function() {
             height: 'toggle'
         }, 'fast', easing, callback);
     };
-
 
     function renderMap() {
         jQuery('#vmap').vectorMap({
@@ -42,35 +42,52 @@ $(document).ready(function() {
             },
             onLoad: function(event, map) {
                 //load data
-                $.ajax({
-                    url: '/findCountries',
-                    type: 'GET',
-                    crossDomain: false,
-                    //data: 'ID=1&Name=John&Age=10', // or $('#myform').serializeArray()
-                    success: function(data) {
-                        var colors = {};
-                        for (var i in data) {
-                            colors[data[i].code] = default_color;
-                            var country = map.countries[data[i].code.toLowerCase()];
+                var data = jQuery('#data').text();
+
+                if ((data.length === 0 || !data.trim())) {
+                    $.ajax({
+                        url: '/findCountries',
+                        type: 'GET',
+                        crossDomain: false,
+                        //data: 'ID=1&Name=John&Age=10', // or $('#myform').serializeArray()
+                        success: function(data) {
+                            var colors = {};
+                            for (var i in data) {
+                                colors[data[i].code] = default_color;
+                                var country = map.countries[data[i].code.toLowerCase()];
+                                if (country != undefined) {
+                                    map.countries[data[i].code.toLowerCase()].setFill(default_color);
+                                }
+                            }
+                            console.log(Object.keys(colors).length);
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            var message = 'Call to backend failed';
+
+                            jQuery('#popup').text(message);
+                            $(this).addClass('selected');
+                            $('.pop').slideFadeToggle();
+
+                            $('.close').on('click', function() {
+                                deselect($('#contact'));
+                                return false;
+                            });
+                        }
+                    });
+                } else {
+                    var colors = {};
+                    data = jQuery.parseJSON(data);
+                    $.each(jQuery.parseJSON(data), function(key, value) {
+                        //console.log(value.name);
+                        colors[jQuery.parseJSON(data)[key].country] = default_color;
+                        if(jQuery.parseJSON(data)[key].country) {
+                            var country = map.countries[jQuery.parseJSON(data)[key].country.toLowerCase()];
                             if (country != undefined) {
-                                map.countries[data[i].code.toLowerCase()].setFill(default_color);
+                                map.countries[jQuery.parseJSON(data)[key].country.toLowerCase()].setFill(found_color);
                             }
                         }
-                        console.log(Object.keys(colors).length);
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        var message = 'Call to backend failed';
-
-                        jQuery('#popup').text(message);
-                        $(this).addClass('selected');
-                        $('.pop').slideFadeToggle();
-
-                        $('.close').on('click', function() {
-                            deselect($('#contact'));
-                            return false;
-                        });
-                    }
-                });
+                    });
+                }
             },
             onRegionOver: function(event, code, region) {
                 //show info

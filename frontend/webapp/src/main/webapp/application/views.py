@@ -22,7 +22,8 @@ def uploadFile():
         print(file.readable())
         file_ = {'file': ('file', file)}
         response = requests.post('http://api:10080/imdb/userRatings', files=file_)
-        return json.dumps(response.content.decode("utf-8"))
+        data = json.dumps(response.content.decode("utf-8"))
+        return render_template('index.html', data=data)
     else:
         return '''
             <!doctype html>
