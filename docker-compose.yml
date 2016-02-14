@@ -44,7 +44,7 @@ mongo:
 
 data:
   image: mongo
-  restart: always
+  restart: never
   volumes:
     - /data/db
   command: echo ''
