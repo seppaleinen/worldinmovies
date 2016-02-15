@@ -38,7 +38,6 @@ $(document).ready(function() {
                         $.each(data, function(key, value) {
                             message += value.name + ":" + value.year + '<br/>';
                         });
-
                         jQuery('#popup').html(message);
                         if ($(this).hasClass('selected')) {
                             deselect($(this));
@@ -55,8 +54,6 @@ $(document).ready(function() {
                         $('.pop').slideFadeToggle();
                     }
                 });
-
-                //show info
                 //add movie button
             },
             onLoad: function(event, map) {
@@ -67,7 +64,6 @@ $(document).ready(function() {
                         url: '/findCountries',
                         type: 'GET',
                         crossDomain: false,
-                        //data: 'ID=1&Name=John&Age=10', // or $('#myform').serializeArray()
                         success: function(data) {
                             $.each(data, function(key, value) {
                                 if (map.countries[value.code.toLowerCase()] != undefined) {
@@ -98,8 +94,6 @@ $(document).ready(function() {
             onRegionOver: function(event, code, region) {
                 //show info
                 var message = 'You hoovered "' + region + '" which has the code: ' + code.toUpperCase();
-
-                //console.log(message);
             },
             onLabelShow: function(event, label, code) {
                 //show info
@@ -109,6 +103,5 @@ $(document).ready(function() {
     }
 
     renderMap();
-
 });
 
