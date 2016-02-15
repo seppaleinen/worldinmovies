@@ -34,12 +34,10 @@ $(document).ready(function() {
                     type: 'GET',
                     crossDomain: false,
                     success: function(data) {
-                        //console.log(data);
-                        //var message = 'You clicked "' + region + '" which has the code: ' + code.toUpperCase();
                         var message = ''
-                        for(var i in data) {
-                            message = message + data[i].name + ":" + data[i].year + '<br/>';
-                        }
+                        $.each(data, function(key, value) {
+                            message += value.name + ":" + value.year + '<br/>';
+                        });
 
                         jQuery('#popup').html(message);
                         if ($(this).hasClass('selected')) {
@@ -48,7 +46,6 @@ $(document).ready(function() {
                             $(this).addClass('selected');
                             $('.pop').slideFadeToggle();
                         }
-
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         var message = 'Call to backend failed'
@@ -65,7 +62,6 @@ $(document).ready(function() {
             onLoad: function(event, map) {
                 //load data
                 var data = jQuery('#data').text();
-
                 if ((data.length === 0 || !data.trim())) {
                     $.ajax({
                         url: '/findCountries',
@@ -73,12 +69,11 @@ $(document).ready(function() {
                         crossDomain: false,
                         //data: 'ID=1&Name=John&Age=10', // or $('#myform').serializeArray()
                         success: function(data) {
-                            for (var i in data) {
-                                var country = map.countries[data[i].code.toLowerCase()];
-                                if (country != undefined) {
-                                    map.countries[data[i].code.toLowerCase()].setFill(default_color);
+                            $.each(data, function(key, value) {
+                                if (map.countries[value.code.toLowerCase()] != undefined) {
+                                    map.countries[value.code.toLowerCase()].setFill(default_color);
                                 }
-                            }
+                            });
                         },
                         error: function(jqXHR, textStatus, errorThrown) {
                             var message = 'Call to backend failed';
@@ -116,3 +111,4 @@ $(document).ready(function() {
     renderMap();
 
 });
+
