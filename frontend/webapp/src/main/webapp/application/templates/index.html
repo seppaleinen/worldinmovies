@@ -20,11 +20,6 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Options<span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
                         <li>
-                            <a href="#">link</a>
-                        </li>
-                        <li class="divider"></li>
-                        <li class="dropdown-header">Nav header</li>
-                        <li>
                             <a data-toggle="modal" data-target="#editModal">Imdb ratings</a>
                         </li>
                     </ul>
@@ -59,7 +54,26 @@
             </div>
             <form action="/uploadFile" method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
-                    <input type="file" name="file">
+                    <p>To upload your rated movies from imdb follow these steps</p>
+                    <ol>
+                        <li>Make sure that you've logged into your imdb-account</li>
+                        <li>Click the download button</li>
+                        <li>Choose the downloaded file named ratings.csv</li>
+                        <li>Click the upload button</li>
+                    </ol>
+                    <a href="http://www.imdb.com/list/export?list_id=ratings&author_id=ur32409321" target="_blank" class="btn btn-primary">
+                        download imdb ratings
+                    </a>
+
+                    <br/>
+
+                    <div style='height: 0px;width: 0px; overflow:hidden;'>
+                        <input id="file" type="file" name="file" style="hidden">
+                    </div>
+
+                    <button type="button" class="btn btn-primary" onclick="document.getElementById('file').click()">
+                        Choose file
+                    </button>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
