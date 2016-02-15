@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import se.david.backend.controllers.repository.MovieRepository;
+import se.david.backend.controllers.services.ImdbMoviesByCountryService;
 import se.david.backend.controllers.services.ImdbUserRatingsService;
 import se.david.commons.Movie;
 
@@ -20,13 +21,19 @@ import java.util.List;
 public class ImdbController {
     private static final String ROOT_URL = "/imdb";
     public static final String USER_RATINGS_URL = ROOT_URL + "/userRatings";
+    public static final String MOVIES_BY_COUNTRY = ROOT_URL + "/movies/country";
     @Autowired
     private ImdbUserRatingsService imdbUserRatingsService;
     @Autowired
-    private MovieRepository movieRepository;
+    private ImdbMoviesByCountryService imdbMoviesByCountryService;
 
     @RequestMapping(value = USER_RATINGS_URL, method = RequestMethod.POST)
     public List<Movie> userRatings(@RequestParam("file") MultipartFile file) {
         return imdbUserRatingsService.parseFromUserRatingsFile(file);
+    }
+
+    @RequestMapping(value = MOVIES_BY_COUNTRY, method = RequestMethod.GET)
+    public List<Movie> moviesByCountry(@RequestParam("country") String country) {
+        return imdbMoviesByCountryService.getMoviesByCountry(country);
     }
 }

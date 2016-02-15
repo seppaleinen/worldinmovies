@@ -27,8 +27,15 @@ public class MovieRepository  {
             Query query = new Query(Criteria.where("id").regex(id));
             movieList.addAll(mongoOperations.find(query, Movie.class));
         }
-        //BasicQuery query = new BasicQuery("{ _id: { $in: " + idList + " } }");
+
         return movieList;
+    }
+
+    public List<Movie> findMovieByCountry(String country, int maxResult) {
+        Query query = new Query(Criteria.where("country").is(country));
+        query.limit(maxResult);
+
+        return mongoOperations.find(query, Movie.class);
     }
 
     public void deleteAll() {
@@ -38,7 +45,4 @@ public class MovieRepository  {
     public void save(Movie movie) {
         mongoOperations.save(movie);
     }
-
-    //@Query(value = "{ _id: { $in: [ ?0 ] } }")
-    //List<Movie> findByIdMultiple(List<String> _id);
 }

@@ -23,20 +23,36 @@ $(document).ready(function() {
             hoverOpacity: 0.7,
             hoverColor: false,
             onRegionClick: function(element, code, region) {
-                var message = 'You clicked "' + region + '" which has the code: ' + code.toUpperCase();
+                $.ajax({
+                    url: '/findMoviesByCountry/' + code,
+                    type: 'GET',
+                    crossDomain: false,
+                    success: function(data) {
+                        //console.log(data);
+                        //var message = 'You clicked "' + region + '" which has the code: ' + code.toUpperCase();
+                        var message = ''
+                        for(var i in data) {
+                            message = message + data[i].name + ":" + data[i].year + '<br/>';
+                        }
 
-                jQuery('#popup').text(message);
-                if ($(this).hasClass('selected')) {
-                    deselect($(this));
-                } else {
-                    $(this).addClass('selected');
-                    $('.pop').slideFadeToggle();
-                }
+                        jQuery('#popup').html(message);
+                        if ($(this).hasClass('selected')) {
+                            deselect($(this));
+                        } else {
+                            $(this).addClass('selected');
+                            $('.pop').slideFadeToggle();
+                        }
 
-                $('.close').on('click', function() {
-                    deselect($('#contact'));
-                    return false;
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var message = 'Call to backend failed'
+
+                        jQuery('#popup').text(message);
+                        $(this).addClass('selected');
+                        $('.pop').slideFadeToggle();
+                    }
                 });
+
                 //show info
                 //add movie button
             },
@@ -59,7 +75,6 @@ $(document).ready(function() {
                                     map.countries[data[i].code.toLowerCase()].setFill(default_color);
                                 }
                             }
-                            console.log(Object.keys(colors).length);
                         },
                         error: function(jqXHR, textStatus, errorThrown) {
                             var message = 'Call to backend failed';
@@ -67,18 +82,12 @@ $(document).ready(function() {
                             jQuery('#popup').text(message);
                             $(this).addClass('selected');
                             $('.pop').slideFadeToggle();
-
-                            $('.close').on('click', function() {
-                                deselect($('#contact'));
-                                return false;
-                            });
                         }
                     });
                 } else {
                     var colors = {};
                     data = jQuery.parseJSON(data);
                     $.each(jQuery.parseJSON(data), function(key, value) {
-                        //console.log(value.name);
                         colors[jQuery.parseJSON(data)[key].country] = default_color;
                         if(jQuery.parseJSON(data)[key].country) {
                             var country = map.countries[jQuery.parseJSON(data)[key].country.toLowerCase()];
@@ -91,10 +100,13 @@ $(document).ready(function() {
             },
             onRegionOver: function(event, code, region) {
                 //show info
+                var message = 'You hoovered "' + region + '" which has the code: ' + code.toUpperCase();
+
+                //console.log(message);
             },
             onLabelShow: function(event, label, code) {
                 //show info
-                //label.text = "HEJ";
+                //label.text("HEJHEJ");
             },
         });
     }
