@@ -73,9 +73,7 @@ $(document).ready(function() {
                         crossDomain: false,
                         //data: 'ID=1&Name=John&Age=10', // or $('#myform').serializeArray()
                         success: function(data) {
-                            var colors = {};
                             for (var i in data) {
-                                colors[data[i].code] = default_color;
                                 var country = map.countries[data[i].code.toLowerCase()];
                                 if (country != undefined) {
                                     map.countries[data[i].code.toLowerCase()].setFill(default_color);
@@ -91,14 +89,12 @@ $(document).ready(function() {
                         }
                     });
                 } else {
-                    var colors = {};
                     data = jQuery.parseJSON(data);
                     $.each(jQuery.parseJSON(data), function(key, value) {
-                        colors[jQuery.parseJSON(data)[key].country] = default_color;
-                        if(jQuery.parseJSON(data)[key].country) {
-                            var country = map.countries[jQuery.parseJSON(data)[key].country.toLowerCase()];
-                            if (country != undefined) {
-                                map.countries[jQuery.parseJSON(data)[key].country.toLowerCase()].setFill(found_color);
+                        if(value.country) {
+                            var countryCode = value.country.toLowerCase()
+                            if (map.countries[countryCode]) {
+                                map.countries[countryCode].setFill(found_color);
                             }
                         }
                     });
