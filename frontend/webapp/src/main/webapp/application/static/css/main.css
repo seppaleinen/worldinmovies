@@ -14,6 +14,12 @@
   opacity: .4;
   filter: alpha(opacity=50); }
 
+#vmap {
+    top: 25px;
+    width: 1100px;
+    height: 800px;
+}
+
 /**
  * Reset some basic elements
  */
@@ -471,3 +477,28 @@ pre {
     color: #008080; }
   .highlight .il {
     color: #099; }
+
+
+
+/**
+ Loading gif
+**/
+#loading {
+   width: 100%;
+   height: 100%;
+   top: 0px;
+   left: 0px;
+   position: fixed;
+   display: block;
+   opacity: 0.7;
+   background-color: #fff;
+   z-index: 99;
+   text-align: center;
+}
+
+#loading-image {
+  position: absolute;
+  top: 100px;
+  left: 240px;
+  z-index: 100;
+}

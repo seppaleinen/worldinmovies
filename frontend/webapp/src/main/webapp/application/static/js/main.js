@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+$(window).load(function() {
+     $('#loading').hide();
+});
+**/
+
 $(document).ready(function() {
     var default_color = "#8B0000";
     var found_color = "#00ff00";
