@@ -29,13 +29,13 @@
                     <p>To upload your rated movies from imdb follow these steps</p>
                     <ol>
                         <li>Make sure that you've logged into your imdb-account</li>
+                        <li>Click on your user ratings menu</li>
+                        <li>Copy the id after /user/ in the url:  <input type="text" id="userid"/></li>
                         <li>Click the download button</li>
                         <li>Choose the downloaded file named ratings.csv</li>
                         <li>Click the upload button</li>
                     </ol>
-                    <a href="http://www.imdb.com/list/export?list_id=ratings&author_id=ur32409321" target="_blank" class="btn btn-primary">
-                        download imdb ratings
-                    </a>
+                    <button type="button" class="btn btn-primary" onclick="window.open('http://www.imdb.com/list/export?list_id=ratings&author_id=' + document.getElementById('userid').value);">Download</button>
 
                     <br/>
 
