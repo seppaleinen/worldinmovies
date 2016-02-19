@@ -21,3 +21,10 @@ To build docker image
 ```
 mvn clean install -Pdocker
 ```
+
+
+## Todo
+IMDB-Country info:
+name,year,version,country
+IMDB-Rating info
+name,year,version,rating
