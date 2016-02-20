@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Configuration;
 @EnableBatchProcessing
 @Log
 public class BatchConfiguration {
-    // tag::jobstep[]
     @Bean
     public Job importNewCountries(JobBuilderFactory jobs,
                                   @Qualifier(value = "countryStep") Step s1,
