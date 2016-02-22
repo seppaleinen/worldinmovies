@@ -8,7 +8,6 @@ function ChartItem(value, color, highlight, label) {
 }
 
 $(document).ready(function() {
-
     function deselect(e) {
         $('.pop').slideFadeToggle(function() {
             e.removeClass('selected');
@@ -34,11 +33,10 @@ $(document).ready(function() {
                     var countryCode = value.country.toLowerCase();
                     var i = map[countryCode];
                     if (i != undefined && i.length > 0) {
-                        console.log(i);
                         i.push(value.name);
                         map[countryCode] = i;
                     } else {
-                        var array = [];
+                        var array = [];
                         array.push(value.name);
                         map[countryCode] = array;
                     }
@@ -48,11 +46,45 @@ $(document).ready(function() {
             for (var key in map) {
                 if (map.hasOwnProperty(key)) {
                     data.push(new ChartItem(map[key].length, "#F7464A", "#FF5A5E", key));
-                    //alert(key + " -> " + p[key]);
                 }
             }
             var ctx2 = document.getElementById("chart-area").getContext("2d");
-            window.myPie = new Chart(ctx2).Pie(data);
+            window.myPie = new Chart(ctx2).Pie(data, {
+                animationEasing: "easeOutBounce",
+                animateRotate: true,
+                animateScale: false,
+                customTooltips: function(tooltip) {
+                    var tooltipEl = $('#chartjs-tooltip');
+                    // Hide if no tooltip
+                    if (!tooltip) {
+                        tooltipEl.css({
+                            opacity: 0
+                        });
+                        return;
+                    }
+                    // Set caret Position
+                    tooltipEl.removeClass('above below');
+                    tooltipEl.addClass(tooltip.yAlign);
+                    // Set Text
+                    tooltipEl.html(tooltip.text + " countries");
+                    // Find Y Location on page
+                    var top;
+                    if (tooltip.yAlign == 'above') {
+                        top = tooltip.y - tooltip.caretHeight - tooltip.caretPadding;
+                    } else {
+                        top = tooltip.y + tooltip.caretHeight + tooltip.caretPadding;
+                    }
+                    // Display, position, and set styles for font
+                    tooltipEl.css({
+                        opacity: 1,
+                        left: tooltip.chart.canvas.offsetLeft + tooltip.x + 'px',
+                        top: tooltip.chart.canvas.offsetTop + top + 'px',
+                        fontFamily: tooltip.fontFamily,
+                        fontSize: tooltip.fontSize,
+                        fontStyle: tooltip.fontStyle,
+                    });
+                }
+            });
         }
     }
 
