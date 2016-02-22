@@ -1,9 +1,6 @@
 from application import app
-from flask import Flask
-import requests
-from flask import request, render_template
-from flask import Response
-import json
+import json, requests
+from flask import request, render_template, Response, session, Flask
 
 BACKEND = 'http://api:10080'
 
@@ -19,6 +16,7 @@ def uploadFile():
         file_ = {'file': ('file', file)}
         response = requests.post(BACKEND + '/imdb/userRatings', files=file_)
         data = json.dumps(response.content.decode("utf-8"))
+        #session[request.environ['REMOTE_ADDR']] = data
         return render_template('index.html', data=data)
     else:
         return render_template('index.html')
@@ -32,3 +30,7 @@ def findCountries():
 def findMoviesByCountry(country):
     response = requests.get(BACKEND + '/imdb/movies/country', params={'country': country.upper()})
     return Response(json.dumps(response.json()), mimetype='application/json')
+
+@app.route('/chart', methods=['GET'])
+def char():
+    return render_template('chart.html')
