@@ -27,37 +27,32 @@ $(document).ready(function() {
         if (data.length === 0 || !data.trim()) {
             $('#imdbRatings').click();
         } else {
-            $.ajax({
-                url: '/findCountries',
-                type: 'GET',
-                crossDomain: false,
-                success: function(result) {
-                    data = [];
-                    $.each(result, function(key, value) {
-                        data.push(new ChartItem(1, "#F7464A", "#FF5A5E", value.name));;
-                    });
-                    var ctx2 = document.getElementById("chart-area").getContext("2d");
-                    window.myPie = new Chart(ctx2).Pie(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    var message = 'Call to backend failed ';
-
-                    jQuery('#popup').text(message);
-                    $(this).addClass('selected');
-                    $('.pop').slideFadeToggle();
-                }
-            });
-            /**
+            var map = {};
             data = jQuery.parseJSON(data);
             $.each(jQuery.parseJSON(data), function(key, value) {
                 if (value.country) {
-                    var countryCode = value.country.toLowerCase()
-                    if (map.countries[countryCode]) {
-                        map.countries[countryCode].setFill(found_color);
+                    var countryCode = value.country.toLowerCase();
+                    var i = map[countryCode];
+                    if (i != undefined && i.length > 0) {
+                        console.log(i);
+                        i.push(value.name);
+                        map[countryCode] = i;
+                    } else {
+                        var array = [];
+                        array.push(value.name);
+                        map[countryCode] = array;
                     }
                 }
             });
-            **/
+            var data = [];
+            for (var key in map) {
+                if (map.hasOwnProperty(key)) {
+                    data.push(new ChartItem(map[key].length, "#F7464A", "#FF5A5E", key));
+                    //alert(key + " -> " + p[key]);
+                }
+            }
+            var ctx2 = document.getElementById("chart-area").getContext("2d");
+            window.myPie = new Chart(ctx2).Pie(data);
         }
     }
 

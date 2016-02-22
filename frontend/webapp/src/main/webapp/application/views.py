@@ -1,6 +1,6 @@
 from application import app
 import json, requests
-from flask import request, render_template, Response, session, Flask
+from flask import request, render_template, Response, session, Flask, make_response
 
 BACKEND = 'http://api:10080'
 
@@ -21,6 +21,9 @@ def map():
 
 @app.route('/uploadFile', methods=['POST'])
 def uploadFile():
+    path = request.args.get('path')
+    path = 'chart' if 'chart' in path else 'map'
+
     file = request.files['file']
     if file and '.csv' in file.filename:
         print(file.readable())
@@ -28,9 +31,9 @@ def uploadFile():
         response = requests.post(BACKEND + '/imdb/userRatings', files=file_)
         data = response.content.decode("utf-8")
         #session[request.environ['REMOTE_ADDR']] = data
-        return render_template('map.html', data=json.dumps(data))
+        return render_template(path + '.html', data=json.dumps(data))
     else:
-        return render_template('map.html')
+        return render_template(path + '.html')
 
 
 @app.route("/findCountries", methods=['GET'])

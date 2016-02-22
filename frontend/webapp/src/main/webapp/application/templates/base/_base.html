@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -68,7 +67,7 @@
                 </button>
                 <h4 class="modal-title" id="editModalLabel">Imdb ratings</h4>
             </div>
-            <form action="/uploadFile" method="POST" enctype="multipart/form-data">
+            <form action="/uploadFile?path={{ request.path }}" method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
                     <p>To upload your rated movies from imdb follow these steps</p>
                     <ol>
