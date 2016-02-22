@@ -26,11 +26,11 @@ def uploadFile():
         print(file.readable())
         file_ = {'file': ('file', file)}
         response = requests.post(BACKEND + '/imdb/userRatings', files=file_)
-        data = json.dumps(response.content.decode("utf-8"))
+        data = response.content.decode("utf-8")
         #session[request.environ['REMOTE_ADDR']] = data
-        return render_template('index.html', data=data)
+        return render_template('map.html', data=json.dumps(data))
     else:
-        return render_template('index.html')
+        return render_template('map.html')
 
 
 @app.route("/findCountries", methods=['GET'])

@@ -6,6 +6,18 @@ $(window).load(function() {
 });
 **/
 
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+    }
+    return "";
+}
+
+
 $(document).ready(function() {
     var default_color = "#8B0000";
     var found_color = "#00ff00";
@@ -57,8 +69,8 @@ $(document).ready(function() {
                 //add movie button
             },
             onLoad: function(event, map) {
-                //load data
                 var data = jQuery('#data').text();
+
                 if ((data.length === 0 || !data.trim())) {
                     $.ajax({
                         url: '/findCountries',

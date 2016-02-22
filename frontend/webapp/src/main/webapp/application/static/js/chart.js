@@ -25,6 +25,8 @@ $(document).ready(function() {
         var data = jQuery('#data').text();
 
         if (data.length === 0 || !data.trim()) {
+            $('#imdbRatings').click();
+        } else {
             $.ajax({
                 url: '/findCountries',
                 type: 'GET',
@@ -45,8 +47,8 @@ $(document).ready(function() {
                     $('.pop').slideFadeToggle();
                 }
             });
-        } else {
-                data = jQuery.parseJSON(data);
+            /**
+            data = jQuery.parseJSON(data);
             $.each(jQuery.parseJSON(data), function(key, value) {
                 if (value.country) {
                     var countryCode = value.country.toLowerCase()
@@ -55,6 +57,7 @@ $(document).ready(function() {
                     }
                 }
             });
+            **/
         }
     }
 
