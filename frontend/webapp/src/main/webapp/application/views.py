@@ -8,6 +8,17 @@ BACKEND = 'http://api:10080'
 def home():
     return render_template('index.html')
 
+
+@app.route('/chart', methods=['GET'])
+def chart():
+    return render_template('chart.html')
+
+
+@app.route('/map', methods=['GET'])
+def map():
+    return render_template('map.html')
+
+
 @app.route('/uploadFile', methods=['POST'])
 def uploadFile():
     file = request.files['file']
@@ -21,16 +32,14 @@ def uploadFile():
     else:
         return render_template('index.html')
 
+
 @app.route("/findCountries", methods=['GET'])
 def findCountries():
     response = requests.get(BACKEND + '/map/findCountries').json()
     return Response(json.dumps(response),  mimetype='application/json')
 
+
 @app.route('/findMoviesByCountry/<country>', methods=['GET'])
 def findMoviesByCountry(country):
     response = requests.get(BACKEND + '/imdb/movies/country', params={'country': country.upper()})
     return Response(json.dumps(response.json()), mimetype='application/json')
-
-@app.route('/chart', methods=['GET'])
-def char():
-    return render_template('chart.html')

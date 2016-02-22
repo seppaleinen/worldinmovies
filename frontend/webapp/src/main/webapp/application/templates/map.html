@@ -1,13 +1,13 @@
-{% extends "base/_base_chart.html" %}
+{% extends "base/_base_map.html" %}
 
 {% block content %}
 
 <div class="home">
-    <div id="canvas-holder">
-        <canvas id="chart-area" width="600" height="600" ></canvas>
-    </div>
+
+    <div id="vmap"></div>
 
     <div id="popup" class="messagepop pop ontop"></div>
+
 </div>
 
 <div id="data" hidden>

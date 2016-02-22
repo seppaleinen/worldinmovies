@@ -1,59 +1,16 @@
-{% extends "base/_base_map.html" %}
+{% extends "base/_base.html" %}
 
 {% block content %}
 
 <div class="home">
 
-    <div id="vmap"></div>
+    <h1>Welcome to the world in movies</h1>
 
-    <div id="popup" class="messagepop pop ontop"></div>
-
+    <p>
+        This website is for visualizing the movies that you've seen,
+        and hopefully in an interesting way.
+    </p>
 </div>
 
-<div id="data" hidden>
-    {{ data }}
-</div>
-
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">&times;</span>
-                    <span class="sr-only">Close</span>
-                </button>
-                <h4 class="modal-title" id="editModalLabel">Imdb ratings</h4>
-            </div>
-            <form action="/uploadFile" method="POST" enctype="multipart/form-data">
-                <div class="modal-body">
-                    <p>To upload your rated movies from imdb follow these steps</p>
-                    <ol>
-                        <li>Make sure that you've logged into your imdb-account</li>
-                        <li>Click on your user ratings menu</li>
-                        <li>Copy the id after /user/ in the url:  <input type="text" id="userid"/></li>
-                        <li>Click the download button</li>
-                        <li>Choose the downloaded file named ratings.csv</li>
-                        <li>Click the upload button</li>
-                    </ol>
-                    <button type="button" class="btn btn-primary" onclick="window.open('http://www.imdb.com/list/export?list_id=ratings&author_id=' + document.getElementById('userid').value);">Download</button>
-
-                    <br/>
-
-                    <div style='height: 0px;width: 0px; overflow:hidden;'>
-                        <input id="file" type="file" name="file" style="hidden">
-                    </div>
-
-                    <button type="button" class="btn btn-primary" onclick="document.getElementById('file').click()">
-                        Choose file
-                    </button>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" id="btnUpdate" class="btn btn-primary">Upload</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 {% endblock %}
