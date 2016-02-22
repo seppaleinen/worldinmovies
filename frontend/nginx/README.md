@@ -14,3 +14,6 @@ sudo git clone https://github.com/letsencrypt/letsencrypt \
      certonly -t --keep --authenticator webroot \
       -w /var/www/cybermoose.org/public_html -d cybermoose.org -d www.cybermoose.org
 ```
+
+Local CDN
+https://jesus.perezpaz.es/2014/02/configure-subdomain-as-cdn-in-nginx-wordpress-w3-total-cache-configurations/
