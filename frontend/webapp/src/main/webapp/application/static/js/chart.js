@@ -63,17 +63,12 @@ $(document).ready(function() {
                         return;
                     }
                     // Set caret Position
-                    tooltipEl.removeClass('above below');
+                    tooltipEl.removeClass('above');
                     tooltipEl.addClass(tooltip.yAlign);
                     // Set Text
                     tooltipEl.html(tooltip.text + " countries");
                     // Find Y Location on page
-                    var top;
-                    if (tooltip.yAlign == 'above') {
-                        top = tooltip.y - tooltip.caretHeight - tooltip.caretPadding;
-                    } else {
-                        top = tooltip.y + tooltip.caretHeight + tooltip.caretPadding;
-                    }
+                    var top = tooltip.y - tooltip.caretHeight - tooltip.caretPadding;;
                     // Display, position, and set styles for font
                     tooltipEl.css({
                         opacity: 1,
