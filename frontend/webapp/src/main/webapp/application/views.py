@@ -18,6 +18,9 @@ def chart():
 def map():
     return render_template('map.html')
 
+@app.route('/map2', methods=['GET'])
+def map2():
+    return render_template('map2.html')
 
 @app.route('/uploadFile', methods=['POST'])
 def uploadFile():
