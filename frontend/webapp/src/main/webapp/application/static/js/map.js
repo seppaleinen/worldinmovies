@@ -15,6 +15,53 @@ $(document).ready(function() {
         }, 'fast', easing, callback);
     };
 
+    function Color(_r, _g, _b) {
+        var r, g, b;
+        var setColors = function(_r, _g, _b) {
+            r = _r;
+            g = _g;
+            b = _b;
+        };
+
+        setColors(_r, _g, _b);
+        this.getColors = function() {
+            var colors = {
+                r: r,
+                g: g,
+                b: b
+            };
+            return colors;
+        };
+    }
+
+    function Interpolate(start, end, steps, count) {
+        var s = start,
+            e = end,
+            final = s + (((e - s) / steps) * count);
+        return Math.floor(final);
+    }
+
+    function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+
+    function valueFormat(d) {
+        if (d > 1000000000) {
+            return Math.round(d / 1000000000 * 10) / 10 + "B";
+        } else if (d > 1000000) {
+            return Math.round(d / 1000000 * 10) / 10 + "M";
+        } else if (d > 1000) {
+            return Math.round(d / 1000 * 10) / 10 + "K";
+        } else {
+            return d;
+        }
+    }
+
     d3.csv("static/population.csv", function(err, data) {
         if (err) {
             var message = 'Call to backend failed'
@@ -42,52 +89,6 @@ $(document).ready(function() {
 
         var COLOR_COUNTS = 9;
 
-        function Interpolate(start, end, steps, count) {
-            var s = start,
-                e = end,
-                final = s + (((e - s) / steps) * count);
-            return Math.floor(final);
-        }
-
-        function Color(_r, _g, _b) {
-            var r, g, b;
-            var setColors = function(_r, _g, _b) {
-                r = _r;
-                g = _g;
-                b = _b;
-            };
-
-            setColors(_r, _g, _b);
-            this.getColors = function() {
-                var colors = {
-                    r: r,
-                    g: g,
-                    b: b
-                };
-                return colors;
-            };
-        }
-
-        function hexToRgb(hex) {
-            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : null;
-        }
-
-        function valueFormat(d) {
-            if (d > 1000000000) {
-                return Math.round(d / 1000000000 * 10) / 10 + "B";
-            } else if (d > 1000000) {
-                return Math.round(d / 1000000 * 10) / 10 + "M";
-            } else if (d > 1000) {
-                return Math.round(d / 1000 * 10) / 10 + "K";
-            } else {
-                return d;
-            }
-        }
 
         var COLOR_FIRST = config.color0,
             COLOR_LAST = config.color1;
@@ -111,9 +112,6 @@ $(document).ready(function() {
             colors.push(new Color(r, g, b));
         }
 
-        var MAP_KEY = config.data0;
-        var MAP_VALUE = config.data1;
-
         var projection = d3.geo.mercator()
             .scale((width + 1) / 2 / Math.PI)
             .translate([width / 2, height / 2])
@@ -133,11 +131,10 @@ $(document).ready(function() {
             .attr("class", "graticule")
             .attr("d", path);
 
-        var valueHash = {};
+        var MAP_KEY = config.data0;
+        var MAP_VALUE = config.data1;
 
-        function log10(val) {
-            return Math.log(val);
-        }
+        var valueHash = {};
 
         data.forEach(function(d) {
             valueHash[d[MAP_KEY]] = +d[MAP_VALUE];
