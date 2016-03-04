@@ -1,50 +1,53 @@
-nginx:
-  restart: always
-  image: seppaleinen/worldinmovies-nginx
-  ports:
-    - "80:80"
-    - "443:443"
-  volumes:
-    - /www/static
-    - /etc/letsencrypt:/etc/letsencrypt
-   
-  volumes_from:
-    - web
-  links:
-    - web:web
+version: "2"
 
-web:
-  restart: always
-  image: seppaleinen/worldinmovies-webapp
-  expose:
-    - "8000"
-  links:
-    - api:api
-  volumes:
-    - /webapp/application/static
-  command: gunicorn --config=gunicorn.config.py wsgi:app
+services:
+  nginx:
+    restart: always
+    image: seppaleinen/worldinmovies-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /www/static
+      - /etc/letsencrypt:/etc/letsencrypt
 
-api:
-  image: seppaleinen/worldinmovies-api
-  restart: always
-  links:
-   - mongo
+    volumes_from:
+      - web
+    links:
+      - web:web
 
-batch:
-  image: seppaleinen/worldinmovies-batch
-  restart: never
-  links:
-   - mongo
+  web:
+    restart: always
+    image: seppaleinen/worldinmovies-webapp
+    expose:
+      - "8000"
+    links:
+      - api:api
+    volumes:
+      - /webapp/application/static
+    command: gunicorn --config=gunicorn.config.py wsgi:app
 
-mongo:
-  image: mongo
-  restart: always
-  volumes_from:
-   - data
+  api:
+    image: seppaleinen/worldinmovies-api
+    restart: always
+    links:
+     - mongo
 
-data:
-  image: mongo
-  restart: never
-  volumes:
-    - /data/db
-  command: echo ''
+  batch:
+    image: seppaleinen/worldinmovies-batch
+    restart: never
+    links:
+     - mongo
+
+  mongo:
+    image: mongo
+    restart: always
+    volumes_from:
+     - data
+
+  data:
+    image: mongo
+    restart: never
+    volumes:
+      - /data/db
+    command: echo ''
