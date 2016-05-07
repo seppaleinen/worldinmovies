@@ -14,3 +14,20 @@ sudo git clone https://github.com/letsencrypt/letsencrypt \
 ```
 
 [Local CDN in nGinx](https://jesus.perezpaz.es/2014/02/configure-subdomain-as-cdn-in-nginx-wordpress-w3-total-cache-configurations/)
+
+
+Renewing letsencrypt
+512 mb ram is too small for letsencrypt so first we boost it with a swapfile
+then kill the server for letsencrypt to be able to manage the keys
+kill the swapfile and start the server again
+```
+sudo dd if=/dev/zero of=/swapfile bs=1024 count=524288
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
+docker-compose stop nginx
+/opt/letsencrypt/letsencrypt-auto renew
+sudo swapoff /swapfile
+docker-compose up -d nginx
+```
