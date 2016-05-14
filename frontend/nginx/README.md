@@ -13,6 +13,8 @@ sudo git clone https://github.com/letsencrypt/letsencrypt \
       -w /var/www/cybermoose.org/public_html -d cybermoose.org -d www.cybermoose.org
 ```
 
+letsencrypt-auto certonly --standalone --agree-tos --redirect --duplicate --text --email admin@purpleturtles.com -d purpleturtles.com -d www.purpleturtles.com
+
 [Local CDN in nGinx](https://jesus.perezpaz.es/2014/02/configure-subdomain-as-cdn-in-nginx-wordpress-w3-total-cache-configurations/)
 
 
