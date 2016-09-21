@@ -25,10 +25,10 @@ env:
   - secure: "EvRtQsJ3po1cKD8MPXHcGwAK6g3aBJ+MEMg4lc1Vm/L8HRXwnI/RDCWzOI7zMZI/vvvdeeifeeiRpaED+tQk1zK49rp+N19v0EBj3CeYNupfU2JwnTVgGrpxeMoCOWorQWJ2JXPJisjlrK5GAJb5JvkcJlYoDlEMUUikWfLAKZAFIpXeWnzgE0B1qw4CHZImt722EiJFszngW467Oh5xu5NHpVMrQXI9cNUxWR1fP/c4Tci4pzvm1rHsWf1iQLjzCGNv9frXteu+VdrzUHLDfGZDEPrWpUnncPLWLdCDS4lNhfC+xWF5H8cco23lKUZJwrpDMKHxMB6JRFsNSZ/tJYM+fw7UKq4TVP1IIVQvSe4fTs6WhTP5/AN00v9iXB5IdnyCyNafLv15eSl06OR+C8vGAOAjnX1DESmHLXyamXKYKsc/ZBXKTBE3zqN7z3y10JRLNM5jVYRpYY0v6JqZQzW2jgS+Zee4HhObZUpyFfE8pBUKAn3ztGiYNZP+x7CvXOtio/KuqNVNt4HMkzwNH+7jyFPIvaL0nPqreae1LXebB6y3lk2wisRLsMnAR5JkuF2IXgc78BzbDoiddLmp4OdZUc4tf0Qua0S0T9DunxSiRbhniKM/Qip8Pv4nYleZsptUXe7TnirxVGwVmJq4ZL3otg95w9hU2Ul/lYYg9hg=" #DOCKER_EMAIL
   - secure: "hFzsx5R1Rn20FwF+szY3WLaE2BcnqTHfwfmWrGgaXLcbyiRgrW0tc2oS6lRiaMk+yll2asJuWuoOj8pUB3/hNtV1wIMmXopBTh6tajhFB18Eq/w0E4Cfm2auq0RLd+VY4RSGTI1VYDdwiEqFvCUp6yZG1OFkXGhycN14YkiWxbler8S8ajnSE2fYBeDDQW/bkx+rEyBWSttvzAIs/6Ep3KOXueXALXA1yUD7HyG2EEHerl2F0cUCKelyfPgr5RN0gnAZHboBWBYAT4IHKMd1mpY5QI9kHzrql/pl00xD2lVjh2K06VMImKbiZXbZiV7kznBeV1S9QvCMTZkTSataGhkKJJ/gONlM1tnEXqHyXdn++XUlHcs5yvObrixQ1LYpIDa1P0WIqkNXDGPuT6sn+qKzz6IiCUSmlhGiU5or2n3ahpwN2ZiRSm/S2lV6VvQggfT246EVfuLh/YI7oQiPbUhIQwHHYEjyQ9DiwYPXt59CU1YYbdo2CAQvwNJ1lLa/x77yR6MTnagFI9Hd/V43nzs7nI9lN3Wl6JlCY2w5cOO8B5W0t1R8fc3G1eyjNMH9vgc15Iy/c1pknexzzHY0FW1+BRpiJqXDYDV32TcVVlVXm0m87mQx8u7n3gRY282XMvWQiJe5+jdQC/SIBBHXqQm4QfvDANHTT/AUeyEt1PE=" #DOCKER_USER
   - secure: "SY+mGR4k8nhDiTwrMClqVhv5WjqkohEvrXyHQiQhXy1NvYjM1FlWJ2OLCOLObCAidyyfNgVgItf3z+kUpXNStVkIhppnr+uaNsUz2ZKCGPVEp7CDW28LK1b6lPxZzBDYx4V69Ofa0j5Qcn5VTB4FaFWYIrjLICOoL3zdfB8kKlyyN2tPjrB2V+vnAjqFMwVXY6Zik3HZOVcBeAWOCwI7fSfCvA6kTDzz8CV45BwDyXKki8QG0g4Y7ZwW131MUhIbi+DyRjWBj56aq30wRurtajwnpVR8Onn2TEb3U7ARV4nQxFoVrM1obFUMEHbnUChJcvn7I/Wv7IY+WWhXTxQubQsvPhw1sWgghw13irSMfA8y37QpRGm9k8uZZ0PF6Qe7nBGPHSu+3MDJzzPC11F0+lE/FJtuEUxHH2GhBr7BfLS2qlAsqOav7ApS864JJaECjSvNpwFycVpb6p9E7rc/eIxPkPkg2hjBGDboOKsDYF7D4mdBEihAZpGLehy5ATW5Ksteaxc+7GFhyLmftwtq5RKI921/bH/kfrz81XHUlF0vUK2yYaUxFrb/iHjOZBHR/CnAV2X8j4kSHz0wmShwce+Ov98lz/2V05li27taIYfYEca5kks76XuvxfC3XFYaSH+6ewdrGMR/URUuz3Y3ipe/rgqqq3EWILcg+jEobQI=" #DOCKER_PASS
-#  - secure: "hAd2tmT6Twox74S0zXZlMYfWVFTBzjIXQ0ocL/l/SgBG6kw4C+5nrAMNIhPRqyaQUA8PcAeucVP8P7JTrJaLX5jTGqB3L6NZtohCaGKyI8zoqxW6sJwv8VCrJBapgrQBib0mpphdR7f1+L6d6As05PdyXSEWZfBHjWfZD7ydzEC9jFNz3eY+sIvxaecVLpbLdVbxh2nEre4SzJfIfB5jw1s9TiSR6iLmh/ZC9XD87QBPx0LnowpKimgA9qYgAE8KdTjFJ/ef0h3JtlxVCniz6jy/SjSrSk52Cor7fJ05qKg8oBGzcXB6G9jku/RFGwtPuxu75KNk3yPK8FifIiYbeRHyLxzQDFKWIaJrkWj+Cm2OKX67Q0V/cxVpIom+LHl0ldCCBIB7W23hX3zlwm7NnqsRCol744WfJn28P28+zKzZB3+6fOEIhUhAR/QVU7voIWUZzqXCM6EHUn7fqn85ztz+9AaDkY15q0/mr+KcqsoiiTClMQ+M4retqi4EikDRt4he/nlOkC/Mh0Dmd6ol1RHxkFg/kHpHUsSYQxZs/vzKus+S8LlS3rF5xpIMnxWB10My4Fvyf4nCXTyqt/k5mGUr3rzO2o2fR7Gfx/dWzjkhcVCyRXem3g4SJ4vSC2o/lhhRWbxC/ugqSHzazX44XezVhuNIjc6DsI1jUPGAsrs=" #DEPLOY_HOST
-#  - secure: "MUlfe4dCOgLIXk6eiMIBZ4Yp31Kmo7VDsCUtM3TKorGZKvpprQTx4ZaeU4F++ObatI15CvhL6LkO185wr18IkZTk/XR4W0RSnFwET3roGKb8qy2UIvGOlylvYxbzI1X8oeou9ezu0ICJ6BJPkEBoCj9clDUoHJk6oqcRdj09l1z2nRO5v2GRXxblh093ZmdA7G6ho0T6ZSBobe4R41XcUQXU8y3/Imv/khf3x6m+SPGJPUFEptOKac23eLs2vS8rTdC+eUZarPUxkjvo5rmoxVNPCflJuJfkAqLBED6a+UNjYzEfAoAjPjh2Cd/bk//8wcDDgqA2xP1z8n6Hy/2AGMSCyZExQ2+TT43C7grKdfC8QixeOvyGl0tAgUOBijtkr+wH/FpkoGrz4SVGIi1T4ZbEg824Mb/aZmdxdV9EN0r+/jPxdeGJO2su/2YT+HkUBQnp0RAsnOzh1jTWZT6WTRiiILrttyIoDalFCF/a9kq/QwCHcSZxVbdv7kfWGsXzDGbcAB9iOBKvUCQydxehxeMhvAfwiUkyqfizxi1lVyxNh8VWilJCL8EUoHM6F7pMk41A9/NvTrOZAHXbPASJ/5H+9r1LM4CMYboPz9vDeWCLuP0PKQGuzSnAiH5DH7T5W7lDJ5HtZHQAB0exqrmRChdztCMgJHVTA/wrf9eXUV4=" #DEPLOY_PATH
-#  - secure: "K1N83oYsHsNiXmZAgfMlef/pUORG/ecZwD60t7cz7fWN0i4i1z3xoBXZm05wHjosA2Jf8kus0v0hyxM5jaG43+LbPLgOEvE4FsFFMQLejA9RVTOoRn9Q0SF4ytn/fBu0ctKEnNrQkbklw7hK3cHSIFuYGELrT6ju9AljHiZjLOiUFIhr/+QbiAAVgK4wUsr4doe2+NLJcXPPjLKLcmnXACPVYE9HNKun6zf+UT/vi8OQ8gsieJAPf4MvN6XueIdzKFPeraeynCDEG1nw2ZUsayLLF4XBEzfFdRExJjLBgEIcTk0wzyq2UF5WXXeZ/7S9zUloYMEqttX/uShm56oUx852Z6VBoc7k+YkN7zg8H5MbjmJBJgglsR89tBzod0Nn7iNdKi/W3az7NIWJXT9RwWj2RluxcEgpje6ZXIkX3QIvCD/Kr1saFeYb+fh/nmuTlcZx5jTSe3sdL7iQIvaQ8mRHmmTZf64UtVWajGI+TT6hWXIw9jdS601Wj3QH62oq03UHCDNk/P4deIdnDhpP+rI7b1FBXjz6QeBqwgIyS6OYMMZtKgeHwFMYfunOOLfQ086yTfiL4Myd/lIstvQ4JX6SWb3ftEFAjKmy39T4Iwfrrsha8kJD5N27KAFpSr69B7q6aO/A5b+dlS9zCTBd5Su7jQORveU2sN3SJbDz9cM=" #DEPLOY_USER
-#  - secure: "U2ZokSfxlmNTZOAH9+Av+x5jnpBDA5PeNDcnVNNvxTquPYwAtvkEM5uUKgxcUlYvq7+WejLPoWfmYrl7nvVLBKC1C7RqiuLb66lDYQ6XJApWr0BDW6dJpVJHYWMkfbPO6JjBlmV2l02JYhK1hPDzOr8/H9KSekyq3od1397Qy0ujTJUTNVdhqS+wiRMtePr25I/Aou5uBgW59vrV6F1Nzw7kf9bv6a3xY+mtAcRnyfXRQTfwfQ/F7/MjqN+9StKOAKZPavRBQI4VOfjLn6vQJED5Q0iaYUZX4o0bb860QiWlGeFj0y1O5KJATKcfbQ+Y0SdiVPy1SCgQZgZnofb7jKKyg0vKg570SsibN1nG0DSZv3wZjSC7jMqbQW7Ntz3HMe2Z+Ixyne4w2kZssUps2qyN+jBI582NwOb8IfU3gb+fWzCrn926DyXFBzmpl/uE5i7X9Q5ojtVp4mnlVfYJtnIwHBZ6EWdY7GksrlEV/EHXVtcSXn2IO08P9T8yx0k5ol03t6dZ6nu1R6otfnMh38dkRw/2+x7I3U9RWdyCcgGuHfl2uSN1e2Bj6dAXX22AjdptQ/LpD1LTiHin+2wmZmdEaXFXd3HZ5OjgqmoQp7b++n1rjm+q3rNubjXi3HVVSfFdpBOvrmld5MNBrddfPb0ZLMqKwTJUWFsOWpmxDEs=" #DEPLOY_PATH
+  - secure: "KDgk5y1UdIgahFxSb2yUiEPI37/lQibYxtADLFlbB0nyLFFmZgRXYo50MsWNNt4Ws+9H0a+0j4et+HQLh3G4Lyv6bIw7k6Kc1aO55p4zxNv+3sc0vhg4CjCIGd61AJ+18huWbes7DNXL4elJJ5PSkRXp4IIY9nOpGk20vhjph1j67SgjGRVVN2ndo5YebJhAZ5SC7hlllzmMusc135WWFCF8EEkzOtmdQLfYhWQWDQ4dQGp7TGn7lGWB/ns56jbgGEOYhybmobMWVULd9WJJ44fZWAzPL/rp6EZebd62e2hBmLT7NlpqLNvmJ6FjBcYbnbj0JxSAdrjVLGtDsWOixTVJJeeXuKlYCQ/JDtJ/krbvJhML5jkSs2i3O1cqi1rFpaRjy1I4l/slrppRghI2Ymp/UzbjZttIT8yMxSSle4rYpbodX2aX8mM5Ecac218wDqvXKZjVwpdnNB0GJYGVhCR9s2un+p5GKE0Lwru+hKyUJanADyo6Qbod+I/5SqIdv/bzWezjHrbDL6ZW5DqdRf0DugQa1jMEYWiB5bTtvKwVYRXseO5Q+HvFyIU6Hc8EovLkMKv8wnZMwXff60Fay/mbovlcHz8b/ULRspV9166T+va5fkGsLlkTM57t9l3elBSXDMelSg6Orl/iqFFfQGGUprJeGCnmS7C2pRKCGqw=" #DEPLOY_HOST
+  - secure: "ThI+TwfAm0yTQ2mcxAOlDn7fQF8Qwq7EB0LZV6T0bq4pxC+2+K6emcNgErMMhTjwZanZHqpAUPpOFmlVk3c0IQHe1GqXcGJcwqHCyzYLzH7x0j9RcYQiVppbn/djl6ULUDUyeFG650SP7uVFp+2fnEkoVjJBu5Am5ghpRuwlYm0DvNdxJkiCrsFb8bIMgnGFvkmcnCK5c5BidDhBUM99vC4h0X1R7lHMN2LzPCLtEiKTVOKWcxLle+9bII2SYlH5b4Pe1SE0iwNU3yuLWDdOzjNKCiX0VXRs7fre2Yk+u3xrHtoP2swjiV1/U/EOplOXagxDpLf/XoYXhwGdIj5oz2KpIMq9m750d/R0leZD/NRUb5QUTsq2T/CxKCyXebYBWi3o2L8X99JhEt61I7if1OhiD5OLWKDI890EcNaaU10VPrt8TreFYjX580cpcdPqyM1zAQE6RzLRYEL3WZmOmo4ttG30I/Eo4RJN/Sf3u1ISUHJmuHqHZIfQOZlgcQha6Ls7cUxv+sfV/CMvzGY5PJdNVelUwZshgkehHZGYz+BX0HMzMw1CKhzuemNgtD7wSQWJj7VcguszqIwaJyIbO+kfRLQ7b7V7VP2kWNzQBad9Xq/g4ls36uqS1+Phfqi6RgLcr+8mjJVlRVBX/HLWk8mbKn8x03Vy3mJwYOcYl6I=" #DEPLOY_PATH
+  - secure: "ub5CwZqE3nmZF/QDy18NSzLwYl9ciGB4vM2s6Qjc4JWg/fIaKcU1pl2fsyRY1fqJSYU8Z4kmVslH3sHAdDv4SLog1I3mrovpHBWIUPlA1kFYHmGGv1hsRg84vE/ywoxtXl+ZGvR43TMTlxID0olzG1zYGSWdHxwpHWqmqcxX9BjUOTz6LQoZuoMpsIQNnKCiy2M8g5U4Mpzi2+VYGuvgWyBGdFSGtsavuzD8ReKJM77ow1VRfY2FNJ/SALotVz860iYrspB/0fuyN7nz4Eco1+A8BE7kwXfbVYd02k/X/vHs2KXyy83x5fAJxJ3YatxVfGByr4kgWbcjdiQySCKSKLpAt81i7OoPfxQ2cvPfNK6EGUHbvvHlH4KS2Y+NLJaVv0/ifAgFmkdJeuw4fDXa7oiA2GsPdxDslUl0+QQGHBSY2055MVAwE8gjTF0GVw6PpdxB7rQS5F8qqAJeri9DT9XOHhnAjUsCRuw2VmWH90FoxVKtL6ldWcv3AYDoHSyXYMVjjIslvJCOCrZnr+iIeMovlXSyF61w0U+GhI75bK+nlFXIhn+I2vReonUIImRGtYb8UpUS9ph0qlia+F8Qbd5sKeuOB2hkCM44RAH6CbT/epo7UbyqRD2zg/sGboVrOqZKg0hfgjZ5NVRur9pQxyR5nlMNZhFTVF0um9yHRe8=" #DEPLOY_USER
+  - secure: "TUeYoDMZ2FO7L1L/rhlA99lz+7em9U2EXAE43X6WUrybJmBmGNB7Nv1URu1J458xqoTKNAqszMy4FiXgO0ZYM8/13WnH8v0ioq0rEUM7kZDZ2iq2osSzVwguMf01KCRQjt4cVc5Q5xB5nLmL24KsiVku6slKKOwaVKtJaLBH2NfQV5W+x6YvZ8FuWofXmYHeZndI3C0KFCKuUjNp5Ldv4hP8VLrXiW7Hp5F77uUJQudavg7GanpbztjeX835HNYCoX1ykiIOpknFG28A25MRBGZC40FFXv/WiEdNoqoeCQmaHfD2+OlcRtOVu0w09ZPUfHz+lmU2XQP8q8l17yQoodxKrhqpO+1GbByStFdNMAoBz3DKon9Yja5YcV6ITJk8Grh1xSRbQO6GPrgb94xk557lu9mrVZ4wSLVRS7RqwvLCnrY5PWIRGQIWXUX3TWVXDFMjkCufO/rplPhXJleIuib+DhjPw3SeRsSjCz3uqa57SEmniugVVbd7ME03oxKvb4gt9GbeavydIhfXHC65E+2larwdJhulUq2v3qZlmEkMDav2OCQk6jynS8DX9n4xq9zXs/lD5WP6O5r/fBZoim4wwvYCmokWZjvd1aQ5HsBUH39BDGODIXkHiqcUNXuu2t2T9aZ7pjfsesulbjny6tgZGvB2BnQb75LMxtDrhS0=" #DEPLOY_PASS
   - COMMIT=${TRAVIS_COMMIT::8}
 
 before_install:
@@ -42,24 +42,24 @@ script:
 after_success:
   - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH != "master" && exit
   - mvn install -DskipTests=true -Pdocker
-#  - echo "test"
-#  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
-#  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+  - echo "test"
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
 # docker push api
-#  - export API_REPO=seppaleinen/worldinmovies-api
-#  - docker tag $API_REPO $API_REPO:$TAG
-#  - docker tag $API_REPO $API_REPO:travis-$TRAVIS_BUILD_NUMBER
-#  - docker push $API_REPO
+  - export API_REPO=seppaleinen/worldinmovies-api
+  - docker tag $API_REPO $API_REPO:$TAG
+  - docker tag $API_REPO $API_REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $API_REPO
 # docker push batch
-#  - export BATCH_REPO=seppaleinen/worldinmovies-batch
-#  - docker tag $BATCH_REPO $BATCH_REPO:$TAG
-#  - docker tag $BATCH_REPO $BATCH_REPO:travis-$TRAVIS_BUILD_NUMBER
-#  - docker push $BATCH_REPO
+  - export BATCH_REPO=seppaleinen/worldinmovies-batch
+  - docker tag $BATCH_REPO $BATCH_REPO:$TAG
+  - docker tag $BATCH_REPO $BATCH_REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $BATCH_REPO
 # docker push webapp
-#  - export WEBAPP_REPO=seppaleinen/worldinmovies-webapp
-#  - docker tag $WEBAPP_REPO $WEBAPP_REPO:$TAG
-#  - docker tag $WEBAPP_REPO $WEBAPP_REPO:travis-$TRAVIS_BUILD_NUMBER
-#  - docker push $WEBAPP_REPO
+  - export WEBAPP_REPO=seppaleinen/worldinmovies-webapp
+  - docker tag $WEBAPP_REPO $WEBAPP_REPO:$TAG
+  - docker tag $WEBAPP_REPO $WEBAPP_REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $WEBAPP_REPO
 # ssh into server and run deployscript
 #  - export SSHPASS=$DEPLOY_PASS
 #  - sshpass -e ssh -o stricthostkeychecking=no $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && git pull; docker-compose kill; docker ps -a | grep -E 'api|batch|webapp' | awk '{print $1}' | xargs docker rm -f; docker-compose pull && docker-compose build && docker-compose up -d && docker images -qf 'dangling=true' | xargs docker rmi -f"
