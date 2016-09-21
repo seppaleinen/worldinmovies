@@ -33,5 +33,13 @@ server {
 server {
     listen 80;
     server_name worldinmovies.duckdns.org;
-    return 301 https://$host$request_uri;
+
+    location .well-known/acme-challenge {
+            default_type "text/plain";
+            root /tmp/lets-encrypt-auto;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
 }

@@ -45,16 +45,21 @@ after_success:
 #  - echo "test"
 #  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
 #  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-# docker push backend
-#  - export BACKEND_REPO=seppaleinen/krogrouletten-backend
-#  - docker tag $BACKEND_REPO $BACKEND_REPO:$TAG
-#  - docker tag $BACKEND_REPO $BACKEND_REPO:travis-$TRAVIS_BUILD_NUMBER
-#  - docker push $BACKEND_REPO
+# docker push api
+#  - export API_REPO=seppaleinen/worldinmovies-api
+#  - docker tag $API_REPO $API_REPO:$TAG
+#  - docker tag $API_REPO $API_REPO:travis-$TRAVIS_BUILD_NUMBER
+#  - docker push $API_REPO
+# docker push batch
+#  - export BATCH_REPO=seppaleinen/worldinmovies-batch
+#  - docker tag $BATCH_REPO $BATCH_REPO:$TAG
+#  - docker tag $BATCH_REPO $BATCH_REPO:travis-$TRAVIS_BUILD_NUMBER
+#  - docker push $BATCH_REPO
 # docker push webapp
-#  - export WEBAPP_REPO=seppaleinen/krogrouletten-webapp
+#  - export WEBAPP_REPO=seppaleinen/worldinmovies-webapp
 #  - docker tag $WEBAPP_REPO $WEBAPP_REPO:$TAG
 #  - docker tag $WEBAPP_REPO $WEBAPP_REPO:travis-$TRAVIS_BUILD_NUMBER
 #  - docker push $WEBAPP_REPO
 # ssh into server and run deployscript
 #  - export SSHPASS=$DEPLOY_PASS
-#  - sshpass -e ssh -o stricthostkeychecking=no $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && git pull; docker-compose kill; docker ps -a | grep -E 'backend|webapp' | awk '{print $1}' | xargs docker rm -f; docker-compose pull && docker-compose build && docker-compose up -d && docker images -qf 'dangling=true' | xargs docker rmi -f"
+#  - sshpass -e ssh -o stricthostkeychecking=no $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && git pull; docker-compose kill; docker ps -a | grep -E 'api|batch|webapp' | awk '{print $1}' | xargs docker rm -f; docker-compose pull && docker-compose build && docker-compose up -d && docker images -qf 'dangling=true' | xargs docker rmi -f"
