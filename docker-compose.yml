@@ -4,7 +4,6 @@ services:
   nginx:
     restart: always
     build: frontend/nginx/src/main
-    image: seppaleinen/worldinmovies-nginx
     ports:
       - "80:80"
       - "443:443"

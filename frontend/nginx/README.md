@@ -4,32 +4,20 @@ To make it easier to integrate a real ssl-certificate on a server, I've
 installed a self-signed certificate in the docker-image, which I exchange
 later for the real certificate.
 
-TODO:
-A way to automatically update letsencrypt ssl certificate.
-```
-sudo git clone https://github.com/letsencrypt/letsencrypt \
-    /opt/letsencrypt && /opt/letsencrypt/letsencrypt-auto \
-     certonly -t --keep --authenticator webroot \
-      -w /var/www/cybermoose.org/public_html -d cybermoose.org -d www.cybermoose.org
-```
-
-letsencrypt-auto certonly --standalone --agree-tos --redirect --duplicate --text --email admin@purpleturtles.com -d purpleturtles.com -d www.purpleturtles.com
 
 [Local CDN in nGinx](https://jesus.perezpaz.es/2014/02/configure-subdomain-as-cdn-in-nginx-wordpress-w3-total-cache-configurations/)
 
 
-Renewing letsencrypt
-512 mb ram is too small for letsencrypt so first we boost it with a swapfile
-then kill the server for letsencrypt to be able to manage the keys
-kill the swapfile and start the server again
 ```
-sudo dd if=/dev/zero of=/swapfile bs=1024 count=524288
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
+git clone https://github.com/letsencrypt/letsencrypt
+mkdir /tmp/letsencrypt-auto
+letsencrypt/letsencrypt-auto certonly --server https://acme-v01.api.letsencrypt.org/directory -a webroot --webroot-path=/tmp/letsencrypt-auto --agree-dev-preview -d worldinmovies.duckdns.org -d www.worldinmovies.duckdns.org
+cd krog-rouletten
+```
 
-docker-compose stop nginx
-/opt/letsencrypt/letsencrypt-auto renew
-sudo swapoff /swapfile
-docker-compose up -d nginx
+```
+docker-compose stop
+letsencrypt/letsencrypt-auto --renew-by-default certonly --server https://acme-v01.api.letsencrypt.org/directory -a webroot --webroot-path=/tmp/letsencrypt-auto --agree-dev-preview -d worldinmovies.duckdns.org -d www.worldinmovies.duckdns.org
+cd krog-rouletten
+docker-compose up nginx -d
 ```
