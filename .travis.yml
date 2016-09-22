@@ -61,5 +61,5 @@ after_success:
   - docker tag $WEBAPP_REPO $WEBAPP_REPO:travis-$TRAVIS_BUILD_NUMBER
   - docker push $WEBAPP_REPO
 # ssh into server and run deployscript
-#  - export SSHPASS=$DEPLOY_PASS
-#  - sshpass -e ssh -o stricthostkeychecking=no $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && git pull; docker-compose kill; docker ps -a | grep -E 'api|batch|webapp' | awk '{print $1}' | xargs docker rm -f; docker-compose pull && docker-compose build && docker-compose up -d && docker images -qf 'dangling=true' | xargs docker rmi -f"
+  - export SSHPASS=$DEPLOY_PASS
+  - sshpass -e ssh -o stricthostkeychecking=no $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && git pull; docker-compose kill; docker ps -a | grep -E 'api|batch|webapp' | awk '{print $1}' | xargs docker rm -f; docker-compose pull && docker-compose build && docker-compose up -d && docker images -qf 'dangling=true' | xargs docker rmi -f"
