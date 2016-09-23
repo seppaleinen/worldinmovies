@@ -16,6 +16,8 @@ Prototype version is up at https://worldinmovies.duckdns.org/
 * Figure out a way to map movies to countries a faster way
 * Import imdb ratings for the movies we've imported
 * New batch job for imdb ratings
+* Create admin page
+* Move batch jobs to functions from admin page
 
 
 For the moment, ignoring all things about users and just focus on making it work "stateless"
@@ -42,7 +44,9 @@ Dependencies:
 * Docker-compose https://docs.docker.com/compose/install/
 ```
 docker-compose pull
+docker-compose build
 docker-compose up
+docker-compose kill
 ```
 
 
