@@ -49,7 +49,6 @@ docker-compose up
 docker-compose kill
 ```
 
-
 ## General design
 ![Architecture](worldinmovies-architecture.png)
 

@@ -170,6 +170,11 @@
             <version>2.9.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.getsentry.raven</groupId>
+            <artifactId>raven-logback</artifactId>
+            <version>7.7.0</version>
+        </dependency>
 
         <!-- Fake mongodb for unit tests -->
         <dependency>
