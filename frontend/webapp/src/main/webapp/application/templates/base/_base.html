@@ -112,6 +112,11 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
         integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<script src="https://cdn.ravenjs.com/3.7.0/raven.min.js"></script>
+<script>
+    Raven.config('https://34ce8ef3cc3740339cac1d70afae7d54@sentry.io/100439').install()
+</script>
+
 {% block js %}{% endblock %}
 
 </body>
