@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -16,40 +15,23 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.david.batch.WorldInMoviesBatchApplication;
-import se.david.batch.job.country.CountryRepository;
 import se.david.batch.job.imdb.MovieRepository;
 import se.david.batch.job.imdb.MovieStep;
 import se.david.batch.job.imdb.beans.ImdbItemReaderHelper;
-import se.david.commons.Country;
 import se.david.commons.Movie;
 
 import java.io.IOException;
-import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {WorldInMoviesBatchApplication.class})
-// NOTE!! order is important
-//@WebAppConfiguration
-@IntegrationTest("server.port:0")
-@TestPropertySource(locations = "classpath:application-test.properties")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-@ActiveProfiles("int-test")
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = WorldInMoviesBatchApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "classpath:application-test.properties")
 public class BatchIT {
     @Autowired
     private MovieRepository repository;
@@ -79,5 +61,10 @@ public class BatchIT {
 
         Movie movie = repository.findByNameAndYear("Chas oborotnya", "1990");
         assertNotNull(movie);
+    }
+
+    @Test
+    public void canStartServer() {
+        assertTrue(true);
     }
 }
