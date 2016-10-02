@@ -50,6 +50,7 @@ public class ImportControllerIT {
         RestAssured.port = port;
     }
 
+    @Ignore
     @Test
     public void test() {
         ResponseBody result = when().post(ImportController.IMDB_COUNTRIES).getBody();
