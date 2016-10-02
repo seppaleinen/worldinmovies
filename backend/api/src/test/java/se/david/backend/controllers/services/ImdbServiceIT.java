@@ -5,8 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
@@ -29,9 +29,9 @@ import static org.junit.Assert.assertNotNull;
 // NOTE!! order is important
 @TestPropertySource(locations = "classpath:application-test.properties")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class ImdbUserRatingsServiceIT {
+public class ImdbServiceIT {
     @Autowired
-    private ImdbUserRatingsService imdbUserRatingsService;
+    private ImdbService imdbService;
     @Autowired
     private MovieRepository movieRepository;
 
@@ -48,14 +48,14 @@ public class ImdbUserRatingsServiceIT {
         movieEntity.setId(movieEntity.getName() + ":" + movieEntity.getYear() + ":country");
         movieRepository.save(movieEntity);
 
-        String path = ImdbUserRatingsServiceIT.class.getClassLoader().getResource("small_ratings.csv").getPath();
+        String path = ImdbServiceIT.class.getClassLoader().getResource("small_ratings.csv").getPath();
         File file = new File(path);
 
         FileInputStream input = new FileInputStream(file);
         MultipartFile multipartFile = new MockMultipartFile("file",
                 file.getName(), "text/plain", IOUtils.toByteArray(input));
 
-        List<Movie> result = imdbUserRatingsService.parseFromUserRatingsFile(multipartFile);
+        List<Movie> result = imdbService.parseFromUserRatingsFile(multipartFile);
 
         assertNotNull(result);
         assertEquals(1, result.size());

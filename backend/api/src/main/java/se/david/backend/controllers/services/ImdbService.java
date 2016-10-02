@@ -31,7 +31,9 @@ import java.util.stream.Collectors;
  */
 @Service
 @Log
-public class ImdbUserRatingsService {
+public class ImdbService {
+    private static final int MAX_RESULT = 5;
+
     @Autowired
     private MovieRepository movieRepository;
 
@@ -59,5 +61,10 @@ public class ImdbUserRatingsService {
         }
 
         return movieEntityList;
+    }
+
+
+    public List<Movie> getMoviesByCountry(String country) {
+        return movieRepository.findMovieByCountry(country, MAX_RESULT);
     }
 }

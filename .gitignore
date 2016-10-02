@@ -6,3 +6,5 @@ Gemfile.lock
 backend.log
 **/target/
 *.pyc
+
+.DS_Store

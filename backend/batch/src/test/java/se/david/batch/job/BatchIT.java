@@ -63,6 +63,7 @@ public class BatchIT {
         assertNotNull(movie);
     }
 
+    @Ignore
     @Test
     public void canStartServer() {
         assertTrue(true);

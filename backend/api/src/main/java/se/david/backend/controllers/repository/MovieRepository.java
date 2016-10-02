@@ -45,4 +45,8 @@ public class MovieRepository  {
     public void save(Movie movie) {
         mongoOperations.save(movie);
     }
+
+    public void save(List<Movie> movieList) {
+        mongoOperations.insertAll(movieList);
+    }
 }
