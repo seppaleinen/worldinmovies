@@ -18,7 +18,7 @@ import java.util.List;
 @Log
 public class CountriesImporter {
     private Resource resource = new ClassPathResource("countries.csv");
-    
+
     /**
      * http://data.okfn.org/data/core/country-list/r/data.csv
      */

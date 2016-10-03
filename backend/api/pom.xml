@@ -31,13 +31,6 @@
             <artifactId>commons-net</artifactId>
             <version>3.4</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>se.david.labs</groupId>
-            <artifactId>commons</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
@@ -104,7 +97,6 @@
             <version>${jackson.version}</version>
         </dependency>
 
-
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -155,19 +147,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Fake mongodb for unit tests -->
-        <dependency>
-            <groupId>com.github.fakemongo</groupId>
-            <artifactId>fongo</artifactId>
-            <version>${fongo.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.lordofthejars</groupId>
-            <artifactId>nosqlunit-mongodb</artifactId>
-            <version>${nosqlunit-mongodb.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
