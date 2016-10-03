@@ -52,22 +52,24 @@ def findMoviesByCountry(country):
 
 
 @app.route('/admin/startImdbImport', methods=['GET'])
-def startImdbImport():
-    async_task = AsyncGitTask(url='/admin/startCountriesImport')
+def start_imdb_import():
+    async_task = AsyncImdbTask()
     async_task.start()
     return render_template('index.html')
 
 
 @app.route('/admin/startCountriesImport', methods=['GET'])
-def startCountriesImport():
-    async_task = AsyncGitTask(url='/admin/startCountriesImport')
+def start_countries_import():
+    async_task = AsyncCountriesTask()
     async_task.start()
     return render_template('index.html')
 
 
-class AsyncGitTask(threading.Thread):
-    def __init__(self, url):
-        self.url = url
-
+class AsyncImdbTask(threading.Thread):
     def run(self):
-        requests.post(BACKEND + self.url)
+        requests.post(BACKEND + '/import/startImdbImport')
+
+
+class AsyncCountriesTask(threading.Thread):
+    def run(self):
+        requests.post(BACKEND + '/import/startCountriesImport')

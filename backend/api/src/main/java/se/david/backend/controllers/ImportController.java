@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import se.david.backend.controllers.services.ImportService;
 
 @RestController
-@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+@CrossOrigin(origins = "*", methods = {RequestMethod.POST})
 @Log
 public class ImportController {
     private static final String ROOT_URL = "/import";
