@@ -6,6 +6,11 @@ import java.util.Map;
 public final class MapConverter {
     private static final Map<String, String> countryMap = new HashMap<>();
 
+    /**
+     * Republic of Macedonia
+     * Moldova
+     * Nauru
+     */
     static {
         countryMap.put("Afghanistan", "AF");
         countryMap.put("Albania", "AL");
@@ -142,7 +147,7 @@ public final class MapConverter {
         countryMap.put("Mauritania", "MR");
         countryMap.put("Mauritius", "MU");
         countryMap.put("Mexico", "MX");
-        countryMap.put("Moldova", null);
+        countryMap.put("Moldova", "MD");
         countryMap.put("Monaco", "MC");
         countryMap.put("Mongolia", "MN");
         countryMap.put("Montenegro", "ME");
@@ -177,7 +182,7 @@ public final class MapConverter {
         countryMap.put("Portugal", "PT");
         countryMap.put("Puerto Rico", "PR");
         countryMap.put("Qatar", "QA");
-        countryMap.put("Republic of Macedonia", null);
+        countryMap.put("Republic of Macedonia", "MK");
         countryMap.put("Reunion", "RE");
         countryMap.put("Romania", "RO");
         countryMap.put("Russia", "RU");

@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import se.david.backend.WorldInMoviesApplication;
 import se.david.backend.controllers.repository.CountryRepository;
-import se.david.commons.Country;
+import se.david.backend.controllers.repository.entities.Country;
 
 import java.util.List;
 

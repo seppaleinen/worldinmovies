@@ -25,7 +25,7 @@ public class ImdbInterface {
         return new PathResource(System.getProperty("user.home") + "/" + "countries.list");
     }
 
-    void getInputStream() {
+    private void getInputStream() {
         String userPath = System.getProperty("user.home");
 
         InputStream inputStream = null;
@@ -64,7 +64,7 @@ public class ImdbInterface {
         }
     }
 
-    void unzipFile() {
+    private void unzipFile() {
         String userPath = System.getProperty("user.home");
 
         FileInputStream fileInputStream = null;

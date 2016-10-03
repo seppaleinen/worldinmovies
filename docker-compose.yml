@@ -44,14 +44,6 @@ services:
     depends_on:
      - mongo
 
-  batch:
-    image: seppaleinen/worldinmovies-batch
-    restart: never
-    links:
-     - mongo
-    depends_on:
-     - mongo
-
   mongo:
     image: mongo
     restart: always

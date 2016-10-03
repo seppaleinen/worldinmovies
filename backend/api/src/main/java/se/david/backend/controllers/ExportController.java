@@ -4,8 +4,8 @@ import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import se.david.backend.controllers.repository.entities.Movie;
 import se.david.backend.controllers.services.ImdbService;
-import se.david.commons.Movie;
 
 import java.util.List;
 

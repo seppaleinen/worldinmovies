@@ -3,13 +3,10 @@ package se.david.backend.controllers.repository;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import se.david.commons.Movie;
+import se.david.backend.controllers.repository.entities.Movie;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,5 +45,9 @@ public class MovieRepository  {
 
     public void save(List<Movie> movieList) {
         mongoOperations.insertAll(movieList);
+    }
+
+    public long count() {
+        return mongoOperations.count(new Query(), Movie.class);
     }
 }

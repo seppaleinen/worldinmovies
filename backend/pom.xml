@@ -19,8 +19,6 @@
 
     <modules>
         <module>api</module>
-        <module>batch</module>
-        <module>commons</module>
     </modules>
 
     <properties>

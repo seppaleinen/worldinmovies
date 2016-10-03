@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.multipart.MultipartFile;
 import se.david.backend.WorldInMoviesApplication;
 import se.david.backend.controllers.repository.MovieRepository;
-import se.david.commons.Movie;
+import se.david.backend.controllers.repository.entities.Movie;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,9 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {WorldInMoviesApplication.class})
-// NOTE!! order is important
-@TestPropertySource(locations = "classpath:application-test.properties")
+@SpringBootTest(classes = WorldInMoviesApplication.class, properties = "classpath:application-test.properties")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class ImdbServiceIT {
     @Autowired
@@ -37,6 +35,7 @@ public class ImdbServiceIT {
 
     @Before
     public void setup() {
+        movieRepository.deleteAll();
     }
 
     @Test

@@ -1,4 +1,4 @@
-package se.david.commons;
+package se.david.backend.controllers.repository.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,13 +9,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Movie {
+@Builder
+public class Country {
     @Id
     private String id;
+    private String code;
     private String name;
-    private String year;
-    private String country;
 }

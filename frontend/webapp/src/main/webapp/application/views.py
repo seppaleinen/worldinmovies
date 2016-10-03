@@ -1,5 +1,5 @@
 from application import app
-import json, requests
+import json, requests, threading
 from flask import request, render_template, Response, session, Flask, make_response
 
 BACKEND = 'http://api:10080'
@@ -49,3 +49,25 @@ def findCountries():
 def findMoviesByCountry(country):
     response = requests.get(BACKEND + '/imdb/movies/country', params={'country': country.upper()})
     return Response(json.dumps(response.json()), mimetype='application/json')
+
+
+@app.route('/admin/startImdbImport', methods=['GET'])
+def startImdbImport():
+    async_task = AsyncGitTask('/admin/startCountriesImport')
+    async_task.start()
+    return render_template('index.html')
+
+
+@app.route('/admin/startCountriesImport', methods=['GET'])
+def startCountriesImport():
+    async_task = AsyncGitTask('/admin/startCountriesImport')
+    async_task.start()
+    return render_template('index.html')
+
+
+class AsyncGitTask(threading.Thread):
+    def __init__(self, url):
+        self.url = url
+
+    def run(self):
+        requests.post(BACKEND + self.url)

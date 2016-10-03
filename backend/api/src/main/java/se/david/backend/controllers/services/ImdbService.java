@@ -1,20 +1,17 @@
 package se.david.backend.controllers.services;
 
 import lombok.extern.java.Log;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import se.david.backend.controllers.repository.MovieRepository;
-import se.david.commons.Movie;
+import se.david.backend.controllers.repository.entities.Movie;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 

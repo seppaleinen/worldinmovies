@@ -2,7 +2,7 @@ package se.david.backend.controllers.services.util;
 
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Component;
-import se.david.commons.Movie;
+import se.david.backend.controllers.repository.entities.Movie;
 
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 @Component
 @Log
 public class ImdbProcessor {
-    private static final String ULTIMATE_REGEX = "\"?(.*?)\"?\\s+\\(([0-9?]{4})\\)?.*\\s([\\w \\.\\-\\(\\)]+)[\\s]*$";
+    private static final String ULTIMATE_REGEX = "^\\\"?(.*?)\\\"?\\s+\\(([\\d\\?]{4})\\)?.*\\t([\\w\\ \\.\\-\\(\\)]+)\\s?$";
     private static final Pattern ULTIMATE_PATTERN = Pattern.compile(ULTIMATE_REGEX);
 
     public Movie process(String string) {

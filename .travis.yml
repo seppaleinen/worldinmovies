@@ -49,11 +49,6 @@ after_success:
   - docker tag $API_REPO $API_REPO:$TAG
   - docker tag $API_REPO $API_REPO:travis-$TRAVIS_BUILD_NUMBER
   - docker push $API_REPO
-# docker push batch
-  - export BATCH_REPO=seppaleinen/worldinmovies-batch
-  - docker tag $BATCH_REPO $BATCH_REPO:$TAG
-  - docker tag $BATCH_REPO $BATCH_REPO:travis-$TRAVIS_BUILD_NUMBER
-  - docker push $BATCH_REPO
 # docker push webapp
   - export WEBAPP_REPO=seppaleinen/worldinmovies-webapp
   - docker tag $WEBAPP_REPO $WEBAPP_REPO:$TAG

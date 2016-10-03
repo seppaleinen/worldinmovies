@@ -4,10 +4,12 @@ import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import se.david.backend.controllers.repository.CountryRepository;
 import se.david.backend.controllers.repository.MovieRepository;
+import se.david.backend.controllers.repository.entities.Movie;
+import se.david.backend.controllers.services.util.CountriesImporter;
 import se.david.backend.controllers.services.util.ImdbInterface;
 import se.david.backend.controllers.services.util.ImdbProcessor;
-import se.david.commons.Movie;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -26,18 +28,28 @@ public class ImportService {
     @Autowired
     private MovieRepository movieRepository;
 
+    @Autowired
+    private CountryRepository countryRepository;
+    @Autowired
+    private CountriesImporter countriesImporter;
+
     public void importImdbCountries() {
         Resource result = imdbInterface.getResource();
         try (Stream<String> stream = Files.lines(Paths.get(result.getFile().getPath()), StandardCharsets.ISO_8859_1)) {
-            for(String row: stream.skip(14).collect(Collectors.toList())) {
-                Movie movie = imdbProcessor.process(row);
-                movieRepository.save(movie);
-            }
+            stream.skip(14).forEach(this::save);
         } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
+            log.log(Level.SEVERE, e.getMessage(), e);
         }
-
-
     }
 
+    private void save(String row) {
+        Movie movie = imdbProcessor.process(row);
+        if(movie != null) {
+            movieRepository.save(movie);
+        }
+    }
+
+    public void importCountries() {
+        countryRepository.save(countriesImporter.importCountries());
+    }
 }
