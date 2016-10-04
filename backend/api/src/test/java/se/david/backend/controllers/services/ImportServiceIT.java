@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = {WorldInMoviesApplication.class}, properties = "classpath:application-test.properties")
 public class ImportServiceIT {
     @Autowired
-    private ImportService imdbService;
+    private ImportService importService;
     @Mock
     private ImdbInterface imdbInterface;
     @Autowired
@@ -34,7 +34,7 @@ public class ImportServiceIT {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         movieRepository.deleteAll();
-        ReflectionTestUtils.setField(imdbService, "imdbInterface", imdbInterface);
+        ReflectionTestUtils.setField(importService, "imdbInterface", imdbInterface);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class ImportServiceIT {
 
         assertEquals(0, movieRepository.count());
 
-        imdbService.importImdbCountries();
+        importService.importImdbCountries();
 
         assertEquals(1798, movieRepository.count());
     }
@@ -53,11 +53,11 @@ public class ImportServiceIT {
     @Ignore("Imports all of imdbs country list")
     @Test
     public void test_all_imdb() {
-        ReflectionTestUtils.setField(imdbService, "imdbInterface", realImdbInterface);
+        ReflectionTestUtils.setField(importService, "imdbInterface", realImdbInterface);
 
         assertEquals(0, movieRepository.count());
 
-        imdbService.importImdbCountries();
+        importService.importImdbCountries();
 
         assertEquals(1461606, movieRepository.count());
     }

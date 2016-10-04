@@ -5,20 +5,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.multipart.MultipartFile;
 import se.david.backend.WorldInMoviesApplication;
 import se.david.backend.controllers.repository.MovieRepository;
 import se.david.backend.controllers.repository.entities.Movie;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -40,19 +38,21 @@ public class ImdbServiceIT {
 
     @Test
     public void canParseUserRatingsFileFromImdb() throws IOException {
-        Movie movieEntity = new Movie();
-        movieEntity.setName("Time of the Wolf");
-        movieEntity.setYear("2003");
-        movieEntity.setCountry("country");
-        movieEntity.setId(movieEntity.getName() + ":" + movieEntity.getYear() + ":country");
+        Movie movieEntity = Movie.builder().
+                                name("Time of the Wolf").
+                                year("2003").
+                                country("country").
+                                id("Time of the Wolf:2003:country").
+                                build();
         movieRepository.save(movieEntity);
 
-        String path = ImdbServiceIT.class.getClassLoader().getResource("small_ratings.csv").getPath();
-        File file = new File(path);
+        InputStream file = new ClassPathResource("small_ratings.csv").getInputStream();
 
-        FileInputStream input = new FileInputStream(file);
-        MultipartFile multipartFile = new MockMultipartFile("file",
-                file.getName(), "text/plain", IOUtils.toByteArray(input));
+        MultipartFile multipartFile = new MockMultipartFile(
+                "file",
+                "filename",
+                "text/plain",
+                IOUtils.toByteArray(file));
 
         List<Movie> result = imdbService.parseFromUserRatingsFile(multipartFile);
 
