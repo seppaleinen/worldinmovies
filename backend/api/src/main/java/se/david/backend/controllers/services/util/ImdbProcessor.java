@@ -26,6 +26,13 @@ public class ImdbProcessor {
                     country(MapConverter.countryCode(matcher.group(3))).
                     build();
             movie.setId(movie.getName() + ":" + movie.getYear() + ":" + movie.getCountry());
+            if(movie.getName() == null ||
+               movie.getYear() == null ||
+               movie.getCountry() == null ||
+               movie.getId() == null) {
+                log.log(Level.INFO, "Movie missing values: " + string);
+                return null;
+            }
         } else {
             log.log(Level.INFO, "No Matched: " + string);
         }

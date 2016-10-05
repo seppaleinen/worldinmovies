@@ -40,7 +40,9 @@ public class MovieRepository  {
     }
 
     public void save(Movie movie) {
-        mongoOperations.save(movie);
+        if(movie != null) {
+            mongoOperations.save(movie);
+        }
     }
 
     public void save(List<Movie> movieList) {

@@ -22,7 +22,7 @@ public class CountriesImporter {
      * http://data.okfn.org/data/core/country-list/r/data.csv
      */
     public List<Country> importCountries(){
-        List<Country> countryList = new ArrayList<>();
+e        List<Country> countryList = new ArrayList<>();
         try {
             CsvSchema schema = CsvSchema.builder()
                     .addColumn("name")
@@ -30,8 +30,7 @@ public class CountriesImporter {
                     .build();
 
             CsvMapper mapper = new CsvMapper();
-            File file = resource.getFile();
-            MappingIterator<Country> mappingIterator = mapper.readerFor(Country.class).with(schema).readValues(file);
+            MappingIterator<Country> mappingIterator = mapper.readerFor(Country.class).with(schema).readValues(resource.getInputStream());
             countryList = mappingIterator.readAll();
         } catch (Exception e) {
             log.severe(e.getMessage());

@@ -16,7 +16,7 @@ public class ImportController {
     private ImportService importService;
 
     @RequestMapping(value = IMDB_COUNTRIES_URL, method = RequestMethod.POST)
-    public void importImdbCountyList() {
+    public void importImdbCountryList() {
         importService.importImdbCountries();
     }
 

@@ -44,7 +44,7 @@ public class ImdbService {
             it.readAll().
                     stream().
                     skip(1).
-                    forEach(row -> idList.add("^" + row[5] + ":" + row[11] + ":"));
+                    forEach(row -> addToList(idList, row));
 
             movieEntityList = movieRepository.findByIdMultiple(idList);
         } catch (IOException e) {
@@ -52,6 +52,12 @@ public class ImdbService {
         }
 
         return movieEntityList;
+    }
+
+    private void addToList(List<String> idList, String[] row) {
+        if(row.length > 11) {
+            idList.add("^" + row[5] + ":" + row[11] + ":");
+        }
     }
 
 
