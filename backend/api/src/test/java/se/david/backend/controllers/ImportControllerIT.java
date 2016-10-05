@@ -56,6 +56,6 @@ public class ImportControllerIT {
 
         ResponseBody result = when().post(ImportController.IMDB_COUNTRIES_URL).getBody();
 
-        assertEquals(1798, movieRepository.count());
+        assertEquals(1804, movieRepository.count());
     }
 }

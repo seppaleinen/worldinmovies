@@ -238,7 +238,7 @@ public final class MapConverter {
         countryMap.put("United Arab Emirates", "AE");
         countryMap.put("Uruguay", "UY");
         countryMap.put("USA", "US");
-        countryMap.put("U.S. Virgin Islands", "US");
+        countryMap.put("U.S. Virgin Islands", "US2");
         countryMap.put("Uzbekistan", "UZ");
         countryMap.put("Vanuatu", "VU");
         countryMap.put("Venezuela", "VE");

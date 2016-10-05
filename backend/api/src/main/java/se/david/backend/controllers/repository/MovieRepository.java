@@ -1,5 +1,6 @@
 package se.david.backend.controllers.repository;
 
+import com.mongodb.DBCollection;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -10,6 +11,7 @@ import se.david.backend.controllers.repository.entities.Movie;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 @Log
@@ -45,7 +47,8 @@ public class MovieRepository  {
         }
     }
 
-    public void save(List<Movie> movieList) {
+    public void save(Set<Movie> movieList) {
+        movieList.forEach(movie -> mongoOperations.remove(movie));
         mongoOperations.insertAll(movieList);
     }
 

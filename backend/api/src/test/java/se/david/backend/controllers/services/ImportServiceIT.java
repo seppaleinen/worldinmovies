@@ -47,7 +47,7 @@ public class ImportServiceIT {
 
         importService.importImdbCountries();
 
-        assertEquals(1798, movieRepository.count());
+        assertEquals(1804, movieRepository.count());
     }
 
     @Ignore("Imports all of imdbs country list")
