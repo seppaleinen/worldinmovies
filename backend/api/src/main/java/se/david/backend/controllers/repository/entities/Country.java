@@ -9,9 +9,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Country {
     @Id
     private String id;

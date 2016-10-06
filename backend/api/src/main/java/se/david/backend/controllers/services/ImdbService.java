@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import se.david.backend.controllers.repository.MovieRepository;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 /**
  * Takes file as argument from imdb ratings export function (http://www.imdb.com/list/export?list_id=ratings&author_id=ur32409321)
@@ -46,7 +48,9 @@ public class ImdbService {
                     skip(1).
                     forEach(row -> addToList(idList, row));
 
-            movieEntityList = movieRepository.findByIdMultiple(idList);
+            for(String id: idList) {
+                movieEntityList.addAll(movieRepository.findByIdRegex(id));
+            }
         } catch (IOException e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         }
@@ -60,8 +64,7 @@ public class ImdbService {
         }
     }
 
-
     public List<Movie> getMoviesByCountry(String country) {
-        return movieRepository.findMovieByCountry(country, MAX_RESULT);
+        return movieRepository.findTop5ByCountry(country, new PageRequest(0, MAX_RESULT));
     }
 }

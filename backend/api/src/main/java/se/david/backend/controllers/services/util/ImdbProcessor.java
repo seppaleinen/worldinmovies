@@ -4,12 +4,12 @@ import lombok.extern.java.Log;
 import org.springframework.stereotype.Component;
 import se.david.backend.controllers.repository.entities.Movie;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component
 @Log
@@ -17,13 +17,11 @@ public class ImdbProcessor {
     private static final String ULTIMATE_REGEX = "^([^\"]*?)\\\"?\\s+\\(([\\d\\?A-Z\\/]{4,8})\\)?.*\\t([\\w\\ \\.\\-\\(\\)]+)\\s?$";
     private static final Pattern ULTIMATE_PATTERN = Pattern.compile(ULTIMATE_REGEX);
 
-    public Set<Movie> process(List<String> string) {
-        Set<Movie> movieList = new HashSet<>();
-        string.forEach(row -> movieList.add(process(row)));
-        return movieList;
+    public Set<Movie> process(List<String> rowList) {
+        return rowList.stream().map(this::process).filter(movie -> movie != null).collect(Collectors.toSet());
     }
 
-    public Movie process(String string) {
+    Movie process(String string) {
         Movie movie = null;
 
         Matcher matcher = ULTIMATE_PATTERN.matcher(string);
@@ -40,7 +38,7 @@ public class ImdbProcessor {
                movie.getCountry() == null ||
                movie.getId() == null) {
                 log.log(Level.INFO, "Movie missing values: " + string);
-                return null;
+                movie = null;
             }
         }
 
