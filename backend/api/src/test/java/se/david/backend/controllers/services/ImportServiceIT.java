@@ -19,7 +19,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {WorldInMoviesApplication.class}, properties = "classpath:application-test.properties")
+@SpringBootTest(
+        classes = {WorldInMoviesApplication.class},
+        properties = "classpath:application-test.properties")
 public class ImportServiceIT {
     @Autowired
     private ImportService importService;

@@ -22,7 +22,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = WorldInMoviesApplication.class, properties = "classpath:application-test.properties", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+        classes = WorldInMoviesApplication.class,
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        properties = "classpath:application-test.properties")
 public class MovieRepositoryIT {
     @Autowired
     private MovieRepository movieRepository;
@@ -32,7 +35,6 @@ public class MovieRepositoryIT {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         movieRepository.deleteAll();
         RestAssured.port = port;
     }
