@@ -60,11 +60,11 @@ public class ImdbService {
 
     private void addToList(List<String> idList, String[] row) {
         if(row.length > 11) {
-            idList.add("^" + row[5] + ":" + row[11] + ":");
+            idList.add(row[5] + ":" + row[11]);
         }
     }
 
     public List<Movie> getMoviesByCountry(String country) {
-        return movieRepository.findTop5ByCountry(country, new PageRequest(0, MAX_RESULT));
+        return movieRepository.findTop5ByCountrySet(country, new PageRequest(0, MAX_RESULT));
     }
 }

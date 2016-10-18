@@ -1,11 +1,12 @@
 package se.david.backend.controllers.services.util;
 
 import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import se.david.backend.controllers.repository.MovieRepository;
 import se.david.backend.controllers.repository.entities.Movie;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,6 +17,9 @@ import java.util.stream.Collectors;
 public class ImdbCountryProcessor {
     private static final String COUNTRY_REGEX = "^([^\"]*?)\\\"?\\s+\\(([\\d\\?A-Z\\/]{4,8})\\)?.*\\t([\\w\\ \\.\\-\\(\\)]+)\\s?$";
     private static final Pattern COUNTRY_PATTERN = Pattern.compile(COUNTRY_REGEX);
+
+    @Autowired
+    private MovieRepository movieRepository;
 
     public Set<Movie> process(List<String> rowList) {
         return rowList.stream().map(this::process).filter(movie -> movie != null).collect(Collectors.toSet());
@@ -30,12 +34,18 @@ public class ImdbCountryProcessor {
             movie = Movie.builder().
                     name(matcher.group(1)).
                     year(matcher.group(2)).
-                    country(MapConverter.countryCode(matcher.group(3))).
                     build();
-            movie.setId(movie.getName() + ":" + movie.getYear() + ":" + movie.getCountry());
+            movie.setId(movie.getName() + ":" + movie.getYear());
+            Movie existingMovie = movieRepository.findOne(movie.getId());
+            if(existingMovie != null) {
+                movie.setCountrySet(existingMovie.getCountrySet());
+                movie.getCountrySet().add(MapConverter.countryCode(matcher.group(3)));
+            } else {
+                movie.setCountrySet(new HashSet<>(Collections.singletonList(MapConverter.countryCode(matcher.group(3)))));
+            }
             if(movie.getName() == null ||
                movie.getYear() == null ||
-               movie.getCountry() == null ||
+               movie.getCountrySet().isEmpty() ||
                movie.getId() == null) {
                 log.log(Level.INFO, "Movie missing values: " + string);
                 movie = null;

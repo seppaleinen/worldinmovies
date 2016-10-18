@@ -3,7 +3,10 @@ package se.david.backend.controllers.services.util;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import se.david.backend.controllers.repository.MovieRepository;
 import se.david.backend.controllers.repository.entities.Movie;
 
 import java.net.URL;
@@ -11,17 +14,19 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
 
 public class ImdbCountryProcessorTest {
     @InjectMocks
     private ImdbCountryProcessor imdbCountryProcessor;
+    @Mock
+    private MovieRepository movieRepository;
 
     @Before
     public void setup() {
@@ -40,7 +45,7 @@ public class ImdbCountryProcessorTest {
                 assertNotNull("movie should not be null for line: " + row, result);
                 assertNotNull("ID should not be null for: " + row + ": " + result.toString(), result.getId());
                 assertNotNull("Name should not be null for: " + row + ": " + result.toString(), result.getName());
-                if(result.getCountry() == null) {
+                if(result.getCountrySet().isEmpty()) {
                     System.out.println("Couldn't parse country for row: " + row);
                 }
                 assertNotNull("Year should not be null for: " + row + ": " + result.toString(), result.getYear());
@@ -64,7 +69,7 @@ public class ImdbCountryProcessorTest {
                     assertNotNull("movie should not be null for line: " + row, result);
                     assertNotNull("ID should not be null for: " + row + ": " + result.toString(), result.getId());
                     assertNotNull("Name should not be null for: " + row + ": " + result.toString(), result.getName());
-                    if (result.getCountry() == null) {
+                    if (result.getCountrySet().isEmpty()) {
                         System.out.println("Couldn't parse country for row: " + row);
                     }
                     assertNotNull("Year should not be null for: " + row + ": " + result.toString(), result.getYear());
@@ -90,7 +95,7 @@ public class ImdbCountryProcessorTest {
                         assertNotNull("movie should not be null for line: " + row, result);
                         assertNotNull("ID should not be null for: " + row + ": " + result.toString(), result.getId());
                         assertNotNull("Name should not be null for: " + row + ": " + result.toString(), result.getName());
-                        if (result.getCountry() == null) {
+                        if (result.getCountrySet().isEmpty()) {
                             System.out.println("Couldn't parse country for row: " + row);
                         }
                         assertNotNull("Year should not be null for: " + row + ": " + result.toString(), result.getYear());
@@ -111,7 +116,7 @@ public class ImdbCountryProcessorTest {
         assertNotNull("movie should not be null for line: " + row, result);
         assertNotNull("ID should not be null for: " + row + ": " + result.toString(), result.getId());
         assertNotNull("Name should not be null for: " + row + ": " + result.toString(), result.getName());
-        if (result.getCountry() == null) {
+        if (result.getCountrySet().isEmpty()) {
             System.out.println("Couldn't parse country for row: " + row);
         }
         assertNotNull("Year should not be null for: " + row + ": " + result.toString(), result.getYear());
@@ -132,7 +137,7 @@ public class ImdbCountryProcessorTest {
                     assertNotNull("movie should not be null for line: " + row, result);
                     assertNotNull("ID should not be null for: " + row + ": " + result.toString(), result.getId());
                     assertNotNull("Name should not be null for: " + row + ": " + result.toString(), result.getName());
-                    if (result.getCountry() == null) {
+                    if (result.getCountrySet().isEmpty()) {
                         System.out.println("Couldn't parse country for row: " + row);
                     }
                     assertNotNull("Year should not be null for: " + row + ": " + result.toString(), result.getYear());
@@ -145,7 +150,4 @@ public class ImdbCountryProcessorTest {
 
         assertEquals(13, movieSet.size());
     }
-
-
-
 }

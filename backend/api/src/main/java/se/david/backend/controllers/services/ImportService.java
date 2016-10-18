@@ -10,6 +10,7 @@ import se.david.backend.controllers.repository.MovieRepository;
 import se.david.backend.controllers.services.util.CountriesImporter;
 import se.david.backend.controllers.services.util.ImdbCountryProcessor;
 import se.david.backend.controllers.services.util.ImdbInterface;
+import se.david.backend.controllers.services.util.ImdbRatingsProcessor;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -24,6 +25,8 @@ public class ImportService {
     private ImdbInterface imdbInterface;
     @Autowired
     private ImdbCountryProcessor imdbCountryProcessor;
+    @Autowired
+    private ImdbRatingsProcessor imdbRatingsProcessor;
     @Autowired
     private MovieRepository movieRepository;
 
@@ -45,8 +48,7 @@ public class ImportService {
     public void importImdbRatings() {
         Resource result = imdbInterface.getRatingsResource();
         try (Stream<String> stream = Files.lines(Paths.get(result.getFile().getPath()), StandardCharsets.ISO_8859_1)) {
-            //Iterators.partition(stream.skip(14).iterator(), 500).forEachRemaining(batch -> movieRepository.save(imdbCountryProcessor.process(batch)));
-
+            Iterators.partition(stream.skip(296).iterator(), 500).forEachRemaining(batch -> movieRepository.save(imdbRatingsProcessor.process(batch)));
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         }

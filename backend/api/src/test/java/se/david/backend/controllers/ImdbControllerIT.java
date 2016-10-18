@@ -5,6 +5,7 @@ import com.jayway.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.internal.util.collections.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,8 +49,8 @@ public class ImdbControllerIT {
         Movie movie = Movie.builder().
                 id("ID").
                 name("NAME").
-                country("SE").
                 build();
+        movie.setCountrySet(Sets.newSet("SE"));
 
         movieRepository.save(movie);
 
@@ -75,7 +76,7 @@ public class ImdbControllerIT {
         assertEquals(1, resultList.size());
         assertEquals("ID", resultList.get(0).getId());
         assertEquals("NAME", resultList.get(0).getName());
-        assertEquals("SE", resultList.get(0).getCountry());
+        assertEquals("SE", resultList.get(0).getCountrySet().iterator().next());
     }
 
     @Test
@@ -83,9 +84,9 @@ public class ImdbControllerIT {
         Movie movie1 = Movie.builder().
                 name("Time of the Wolf").
                 year("2003").
-                country("country").
                 id("Time of the Wolf" + ":" + "2003" + ":country").
                 build();
+        movie1.setCountrySet(Sets.newSet("country"));
         movieRepository.save(movie1);
 
         File file = new ClassPathResource("small_ratings.csv").getFile();
@@ -100,7 +101,7 @@ public class ImdbControllerIT {
 
         assertEquals("Time of the Wolf", result.get(0).getName());
         assertEquals("2003", result.get(0).getYear());
-        assertEquals("country", result.get(0).getCountry());
+        assertEquals("country", result.get(0).getCountrySet().iterator().next());
 
     }
 }

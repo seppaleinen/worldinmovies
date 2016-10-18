@@ -4,7 +4,10 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import se.david.backend.controllers.repository.MovieRepository;
 import se.david.backend.controllers.repository.entities.Movie;
 
 import java.net.URL;
@@ -16,10 +19,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
 
 public class ImdbRatingsProcessorTest {
     @InjectMocks
     private ImdbRatingsProcessor imdbRatingsProcessor;
+    @Mock
+    private MovieRepository movieRepository;
+
     private static final String NUMBER_REGEX = "^[\\d\\?\\./IVX]+$";
     private static final Pattern NUMBER_PATTERN = Pattern.compile(NUMBER_REGEX);
 
@@ -28,12 +35,17 @@ public class ImdbRatingsProcessorTest {
         MockitoAnnotations.initMocks(this);
     }
 
-
-
     @Test
     public void test_random_list() {
         URL resource = ImdbCountryProcessorTest.class.getClassLoader().getResource("ratings.random.list");
 
+        Movie movie = Movie.builder().
+                        name("NAME").
+                        year("1234").
+                        id("NAME:1234").
+                        build();
+
+        Mockito.when(movieRepository.findOne(anyString())).thenReturn(movie);
         assertNotNull(resource);
 
         try (Stream<String> stream = Files.lines(Paths.get(resource.getPath()), StandardCharsets.ISO_8859_1)) {
@@ -49,7 +61,7 @@ public class ImdbRatingsProcessorTest {
                 }
             }
         } catch (Exception e) {
-            fail("Should not fail" + e.getMessage());
+            fail("Should not fail " + e.getMessage());
         }
     }
 

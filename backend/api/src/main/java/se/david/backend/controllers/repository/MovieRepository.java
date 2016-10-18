@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface MovieRepository extends MongoRepository<Movie, String> {
     List<Movie> findByIdRegex(String id);
-    List<Movie> findTop5ByCountry(String country, Pageable pageable);
+    List<Movie> findTop5ByCountrySet(String country, Pageable pageable);
 }

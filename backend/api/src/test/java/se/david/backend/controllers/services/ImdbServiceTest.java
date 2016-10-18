@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.internal.util.collections.Sets;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,9 +45,9 @@ public class ImdbServiceTest {
         Movie movieEntity = Movie.builder().
                                 name("Time of the Wolf").
                                 year("2003").
-                                country("country").
                                 id("Time of the Wolf:2003:country").
                                 build();
+        movieEntity.setCountrySet(Sets.newSet("country"));
         when(movieRepository.findByIdRegex(anyString())).thenReturn(Collections.singletonList(movieEntity));
 
         InputStream file = new ClassPathResource("small_ratings.csv").getInputStream();
@@ -63,7 +64,7 @@ public class ImdbServiceTest {
         assertEquals(1, result.size());
         assertEquals("Time of the Wolf", result.get(0).getName());
         assertEquals("2003", result.get(0).getYear());
-        verify(movieRepository, times(1)).findByIdRegex(eq("^Time of the Wolf:2003:"));
+        verify(movieRepository, times(1)).findByIdRegex(eq("Time of the Wolf:2003"));
     }
 
     @Test
@@ -71,10 +72,10 @@ public class ImdbServiceTest {
         Movie movieEntity = Movie.builder().
                 name("Time of the Wolf").
                 year("2003").
-                country("SE").
                 id("Time of the Wolf:2003:SE").
                 build();
-        when(movieRepository.findTop5ByCountry(anyString(), any(Pageable.class))).thenReturn(Collections.singletonList(movieEntity));
+        movieEntity.setCountrySet(Sets.newSet("SE"));
+        when(movieRepository.findTop5ByCountrySet(anyString(), any(Pageable.class))).thenReturn(Collections.singletonList(movieEntity));
 
         String countryCode = "SE";
 
@@ -83,6 +84,6 @@ public class ImdbServiceTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(movieEntity.getId(), result.get(0).getId());
-        verify(movieRepository, times(1)).findTop5ByCountry("SE", new PageRequest(0, 5));
+        verify(movieRepository, times(1)).findTop5ByCountrySet("SE", new PageRequest(0, 5));
     }
 }

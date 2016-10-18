@@ -4,6 +4,7 @@ import com.jayway.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.internal.util.collections.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -85,16 +86,22 @@ public class MovieRepositoryIT {
 
     @Test
     public void test_findTop5ByCountry_Expect5_OutOf6() {
-        Movie movie1 = Movie.builder().id("name:1:SE").country("SE").build();
-        Movie movie2 = Movie.builder().id("name:2:SE").country("SE").build();
-        Movie movie3 = Movie.builder().id("name:3:SE").country("SE").build();
-        Movie movie4 = Movie.builder().id("name:4:SE").country("SE").build();
-        Movie movie5 = Movie.builder().id("name:5:SE").country("SE").build();
-        Movie movie6 = Movie.builder().id("name:6:SE").country("SE").build();
+        Movie movie1 = Movie.builder().id("name:1").build();
+        movie1.setCountrySet(Sets.newSet("SE"));
+        Movie movie2 = Movie.builder().id("name:2").build();
+        movie2.setCountrySet(Sets.newSet("SE"));
+        Movie movie3 = Movie.builder().id("name:3").build();
+        movie3.setCountrySet(Sets.newSet("SE"));
+        Movie movie4 = Movie.builder().id("name:4").build();
+        movie4.setCountrySet(Sets.newSet("SE"));
+        Movie movie5 = Movie.builder().id("name:5").build();
+        movie5.setCountrySet(Sets.newSet("SE"));
+        Movie movie6 = Movie.builder().id("name:6").build();
+        movie6.setCountrySet(Sets.newSet("SE"));
 
         movieRepository.save(Arrays.asList(movie1, movie2, movie3, movie4, movie5, movie6));
 
-        List<Movie> pageOne = movieRepository.findTop5ByCountry("SE", new PageRequest(0, 5));
+        List<Movie> pageOne = movieRepository.findTop5ByCountrySet("SE", new PageRequest(0, 5));
 
         assertNotNull(pageOne);
         assertEquals(5, pageOne.size());
@@ -105,7 +112,7 @@ public class MovieRepositoryIT {
         assertTrue(pageOne.contains(movie5));
 
 
-        List<Movie> pageTwo = movieRepository.findTop5ByCountry("SE", new PageRequest(1, 5));
+        List<Movie> pageTwo = movieRepository.findTop5ByCountrySet("SE", new PageRequest(1, 5));
 
         assertNotNull(pageTwo);
         assertEquals(1, pageTwo.size());
@@ -114,16 +121,22 @@ public class MovieRepositoryIT {
 
     @Test
     public void test_findTop5ByCountry_Expect1() {
-        Movie movie1 = Movie.builder().id("name:1:SE").country("SE").build();
-        Movie movie2 = Movie.builder().id("name:2:ES").country("ES").build();
-        Movie movie3 = Movie.builder().id("name:3:MX").country("MX").build();
-        Movie movie4 = Movie.builder().id("name:4:US").country("US").build();
-        Movie movie5 = Movie.builder().id("name:5:BE").country("BE").build();
-        Movie movie6 = Movie.builder().id("name:6:BG").country("BG").build();
+        Movie movie1 = Movie.builder().id("name:1").build();
+        movie1.setCountrySet(Sets.newSet("SE"));
+        Movie movie2 = Movie.builder().id("name:2").build();
+        movie2.setCountrySet(Sets.newSet("ES"));
+        Movie movie3 = Movie.builder().id("name:3").build();
+        movie3.setCountrySet(Sets.newSet("MX"));
+        Movie movie4 = Movie.builder().id("name:4").build();
+        movie4.setCountrySet(Sets.newSet("US"));
+        Movie movie5 = Movie.builder().id("name:5").build();
+        movie5.setCountrySet(Sets.newSet("BE"));
+        Movie movie6 = Movie.builder().id("name:6").build();
+        movie6.setCountrySet(Sets.newSet("BG"));
 
         movieRepository.save(Arrays.asList(movie1, movie2, movie3, movie4, movie5, movie6));
 
-        List<Movie> result = movieRepository.findTop5ByCountry("SE", new PageRequest(0, 5));
+        List<Movie> result = movieRepository.findTop5ByCountrySet("SE", new PageRequest(0, 5));
 
         assertNotNull(result);
         assertEquals(1, result.size());
