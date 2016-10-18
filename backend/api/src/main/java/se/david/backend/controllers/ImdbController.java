@@ -2,6 +2,9 @@ package se.david.backend.controllers;
 
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,12 +27,12 @@ public class ImdbController {
     private ImdbService imdbService;
 
     @RequestMapping(value = USER_RATINGS_URL, method = RequestMethod.POST)
-    public List<Movie> userRatings(@RequestParam("file") MultipartFile file) {
-        return imdbService.parseFromUserRatingsFile(file);
+    public ResponseEntity<List<Movie>> userRatings(@RequestParam("file") MultipartFile file) {
+        return new ResponseEntity<>(imdbService.parseFromUserRatingsFile(file), HttpStatus.OK);
     }
 
     @RequestMapping(value = MOVIES_BY_COUNTRY, method = RequestMethod.GET)
-    public List<Movie> moviesByCountry(@RequestParam("country") String country) {
-        return imdbService.getMoviesByCountry(country);
+    public ResponseEntity<List<Movie>> moviesByCountry(@RequestParam("country") String country) {
+        return new ResponseEntity<>(imdbService.getMoviesByCountry(country), HttpStatus.OK);
     }
 }

@@ -22,9 +22,9 @@
     </modules>
 
     <properties>
-        <spring.boot.version>1.4.0.RELEASE</spring.boot.version>
+        <spring.boot.version>1.4.1.RELEASE</spring.boot.version>
         <lombok.version>1.16.10</lombok.version>
-        <spring-framework.version>4.3.2.RELEASE</spring-framework.version>
+        <spring-framework.version>4.3.3.RELEASE</spring-framework.version>
         <hamcrest.version>1.3</hamcrest.version>
         <commons-io.version>2.5</commons-io.version>
         <raven-logback.version>7.7.0</raven-logback.version>
@@ -35,7 +35,5 @@
         <mockito.version>1.10.19</mockito.version>
         <rest-assured.version>2.9.0</rest-assured.version>
         <joda-time.version>2.9.1</joda-time.version>
-        <nosqlunit-mongodb.version>0.10.0</nosqlunit-mongodb.version>
-        <fongo.version>2.0.9</fongo.version>
     </properties>
 </project>

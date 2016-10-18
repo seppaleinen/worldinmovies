@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
 import se.david.backend.WorldInMoviesApplication;
@@ -25,6 +26,7 @@ import static org.junit.Assert.assertNotNull;
 @SpringBootTest(
         classes = WorldInMoviesApplication.class,
         properties = "classpath:application-test.properties")
+@ContextConfiguration(classes = WorldInMoviesApplication.class)
 public class ImdbServiceIT {
     @Autowired
     private ImdbService imdbService;
