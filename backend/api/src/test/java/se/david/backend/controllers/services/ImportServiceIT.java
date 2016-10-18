@@ -43,7 +43,7 @@ public class ImportServiceIT {
     public void test_save_small_list() {
         String path = ImportService.class.getClassLoader().getResource("countries.small.list").getPath();
         PathResource resource = new PathResource(path);
-        when(imdbInterface.getResource()).thenReturn(resource);
+        when(imdbInterface.getCountriesResource()).thenReturn(resource);
 
         assertEquals(0, movieRepository.count());
 

@@ -16,16 +16,26 @@ import java.util.zip.GZIPInputStream;
 @Component
 @Log
 public class ImdbInterface {
-    private String ftpUrl = "ftp://ftp.funet.fi/pub/mirrors/ftp.imdb.com/pub/countries.list.gz";
+    private static final String ftpUrl = "ftp://ftp.funet.fi/pub/mirrors/ftp.imdb.com/pub/countries.list.gz";
+    private static final String countriesFile = "countries.list.gz";
+    private static final String ratingsFile = "ratings.list.gz";
 
-    public Resource getResource() {
-        getInputStream();
-        unzipFile();
+    public Resource getCountriesResource() {
+        getInputStream(countriesFile);
+        unzipFile(countriesFile);
 
         return new PathResource(System.getProperty("user.home") + "/" + "countries.list");
     }
 
-    private void getInputStream() {
+    public Resource getRatingsResource() {
+        getInputStream(ratingsFile);
+        unzipFile(ratingsFile);
+
+        return new PathResource(System.getProperty("user.home") + "/" + "ratings.list");
+    }
+
+
+    private void getInputStream(String filename) {
         String userPath = System.getProperty("user.home");
 
         InputStream inputStream = null;
@@ -34,18 +44,18 @@ public class ImdbInterface {
 
         try{
             long before = System.currentTimeMillis();
-            log.info("Starting download of countries.list.gz");
+            log.info("Starting download of " + filename);
             URL url = new URL(ftpUrl);
             URLConnection conn = url.openConnection();
             inputStream = conn.getInputStream();
-            fileOutputStream = new FileOutputStream(userPath + "/" + "countries.list.gz");
+            fileOutputStream = new FileOutputStream(userPath + "/" + filename);
             int bytes_read;
             while ((bytes_read = inputStream.read(buffer)) > 0) {
                 fileOutputStream.write(buffer, 0, bytes_read);
             }
 
             long after = System.currentTimeMillis();
-            log.info("Completed download of countries.list.gz in " + String.valueOf(after - before));
+            log.info("Completed download of " + filename + " in " + String.valueOf(after - before));
 
         }
         catch (IOException ex){
@@ -64,7 +74,7 @@ public class ImdbInterface {
         }
     }
 
-    private void unzipFile() {
+    private void unzipFile(String filename) {
         String userPath = System.getProperty("user.home");
 
         FileInputStream fileInputStream = null;
@@ -75,9 +85,9 @@ public class ImdbInterface {
         try {
             long before = System.currentTimeMillis();
             log.info("Unzipping file");
-            fileInputStream = new FileInputStream(userPath + "/" + "countries.list.gz");
+            fileInputStream = new FileInputStream(userPath + "/" + filename);
             gZIPInputStream = new GZIPInputStream(fileInputStream);
-            fileOutputStream = new FileOutputStream(userPath + "/" + "countries.list");
+            fileOutputStream = new FileOutputStream(userPath + "/" + filename.split(".gz")[0]);
             int bytes_read;
             while ((bytes_read = gZIPInputStream.read(buffer)) > 0) {
                 fileOutputStream.write(buffer, 0, bytes_read);
@@ -105,13 +115,5 @@ public class ImdbInterface {
                 e.printStackTrace();
             }
         }
-    }
-
-    public String getFtpUrl() {
-        return ftpUrl;
-    }
-
-    public void setFtpUrl(String ftpUrl) {
-        this.ftpUrl = ftpUrl;
     }
 }

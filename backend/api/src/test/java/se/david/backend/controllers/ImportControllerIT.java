@@ -49,7 +49,7 @@ public class ImportControllerIT {
     @Test
     public void testImportImdb() {
         Resource resource = new ClassPathResource("countries.small.list");
-        Mockito.when(imdbInterface.getResource()).thenReturn(resource);
+        Mockito.when(imdbInterface.getCountriesResource()).thenReturn(resource);
 
         assertEquals(0, movieRepository.count());
 
