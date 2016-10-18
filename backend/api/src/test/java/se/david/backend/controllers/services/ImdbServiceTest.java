@@ -3,39 +3,40 @@ package se.david.backend.controllers.services;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
-import se.david.backend.WorldInMoviesApplication;
 import se.david.backend.controllers.repository.MovieRepository;
 import se.david.backend.controllers.repository.entities.Movie;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(
-        classes = WorldInMoviesApplication.class,
-        properties = "classpath:application-test.properties")
-@ContextConfiguration(classes = WorldInMoviesApplication.class)
-public class ImdbServiceIT {
-    @Autowired
+public class ImdbServiceTest {
+    @InjectMocks
     private ImdbService imdbService;
-    @Autowired
+    @Mock
     private MovieRepository movieRepository;
 
     @Before
     public void setup() {
-        movieRepository.deleteAll();
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
@@ -46,7 +47,7 @@ public class ImdbServiceIT {
                                 country("country").
                                 id("Time of the Wolf:2003:country").
                                 build();
-        movieRepository.save(movieEntity);
+        when(movieRepository.findByIdRegex(anyString())).thenReturn(Collections.singletonList(movieEntity));
 
         InputStream file = new ClassPathResource("small_ratings.csv").getInputStream();
 
@@ -62,5 +63,26 @@ public class ImdbServiceIT {
         assertEquals(1, result.size());
         assertEquals("Time of the Wolf", result.get(0).getName());
         assertEquals("2003", result.get(0).getYear());
+        verify(movieRepository, times(1)).findByIdRegex(eq("^Time of the Wolf:2003:"));
+    }
+
+    @Test
+    public void canGetMoviesByCountry() {
+        Movie movieEntity = Movie.builder().
+                name("Time of the Wolf").
+                year("2003").
+                country("SE").
+                id("Time of the Wolf:2003:SE").
+                build();
+        when(movieRepository.findTop5ByCountry(anyString(), any(Pageable.class))).thenReturn(Collections.singletonList(movieEntity));
+
+        String countryCode = "SE";
+
+        List<Movie> result = imdbService.getMoviesByCountry(countryCode);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(movieEntity.getId(), result.get(0).getId());
+        verify(movieRepository, times(1)).findTop5ByCountry("SE", new PageRequest(0, 5));
     }
 }
