@@ -12,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,7 @@ public class ImportControllerIT {
     private int port;
     @Autowired
     private ImportService importService;
-    @Mock
+    @MockBean
     private ImdbInterface imdbInterface;
 
     @Before
@@ -52,7 +53,6 @@ public class ImportControllerIT {
         RestAssured.port = port;
         movieRepository.deleteAll();
         countryRepository.deleteAll();
-        ReflectionTestUtils.setField(importService, "imdbInterface", imdbInterface);
     }
 
     @Test
