@@ -13,6 +13,7 @@ import se.david.backend.controllers.services.ImportService;
 public class ImportController {
     private static final String ROOT_URL = "/import";
     public static final String IMDB_COUNTRIES_URL = ROOT_URL + "/startImdbImport";
+    public static final String IMDB_RATINGS_URL = ROOT_URL + "/startImdbRatingsImport";
     public static final String COUNTRIES_URL = ROOT_URL + "/startCountriesImport";
     @Autowired
     private ImportService importService;
@@ -20,6 +21,12 @@ public class ImportController {
     @RequestMapping(value = IMDB_COUNTRIES_URL, method = RequestMethod.POST)
     public ResponseEntity importImdbCountryList() {
         importService.importImdbCountries();
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = IMDB_RATINGS_URL, method = RequestMethod.POST)
+    public ResponseEntity importImdbRatings() {
+        importService.importImdbRatings();
         return new ResponseEntity(HttpStatus.CREATED);
     }
 

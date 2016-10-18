@@ -10,9 +10,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,9 +19,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-public class ImdbProcessorTest {
+public class ImdbCountryProcessorTest {
     @InjectMocks
-    private ImdbProcessor imdbProcessor;
+    private ImdbCountryProcessor imdbCountryProcessor;
 
     @Before
     public void setup() {
@@ -32,13 +30,13 @@ public class ImdbProcessorTest {
 
     @Test
     public void test_process_small_list() {
-        URL resource = ImdbProcessorTest.class.getClassLoader().getResource("countries.small.list");
+        URL resource = ImdbCountryProcessorTest.class.getClassLoader().getResource("countries.small.list");
 
         assertNotNull(resource);
 
         try (Stream<String> stream = Files.lines(Paths.get(resource.getPath()), StandardCharsets.ISO_8859_1)) {
             for(String row: stream.skip(14).collect(Collectors.toList())) {
-                Movie result = imdbProcessor.process(row);
+                Movie result = imdbCountryProcessor.process(row);
                 assertNotNull("movie should not be null for line: " + row, result);
                 assertNotNull("ID should not be null for: " + row + ": " + result.toString(), result.getId());
                 assertNotNull("Name should not be null for: " + row + ": " + result.toString(), result.getName());
@@ -55,13 +53,13 @@ public class ImdbProcessorTest {
 
     @Test
     public void test_process_random_list() {
-        URL resource = ImdbProcessorTest.class.getClassLoader().getResource("countries.random.list");
+        URL resource = ImdbCountryProcessorTest.class.getClassLoader().getResource("countries.random.list");
 
         assertNotNull(resource);
 
         try (Stream<String> stream = Files.lines(Paths.get(resource.getPath()), StandardCharsets.ISO_8859_1)) {
             for(String row: stream.collect(Collectors.toList())) {
-                Movie result = imdbProcessor.process(row);
+                Movie result = imdbCountryProcessor.process(row);
                 if(result != null) {
                     assertNotNull("movie should not be null for line: " + row, result);
                     assertNotNull("ID should not be null for: " + row + ": " + result.toString(), result.getId());
@@ -80,14 +78,14 @@ public class ImdbProcessorTest {
 
     @Test
     public void test_process_faulty_list() {
-        URL resource = ImdbProcessorTest.class.getClassLoader().getResource("countries.failing.list");
+        URL resource = ImdbCountryProcessorTest.class.getClassLoader().getResource("countries.failing.list");
 
         assertNotNull(resource);
 
         try (Stream<String> stream = Files.lines(Paths.get(resource.getPath()), StandardCharsets.ISO_8859_1)) {
             for(String row: stream.skip(14).collect(Collectors.toList())) {
                 if(!row.contains("------")) {
-                    Movie result = imdbProcessor.process(row);
+                    Movie result = imdbCountryProcessor.process(row);
                     if(result != null) {
                         assertNotNull("movie should not be null for line: " + row, result);
                         assertNotNull("ID should not be null for: " + row + ": " + result.toString(), result.getId());
@@ -108,7 +106,7 @@ public class ImdbProcessorTest {
     public void test_one_failing()  {
         String row = "Å vokte fjellet (2012)\t\t\t\t\tRepublic of Macedonia";
 
-        Movie result = imdbProcessor.process(row);
+        Movie result = imdbCountryProcessor.process(row);
 
         assertNotNull("movie should not be null for line: " + row, result);
         assertNotNull("ID should not be null for: " + row + ": " + result.toString(), result.getId());
@@ -121,7 +119,7 @@ public class ImdbProcessorTest {
 
     @Test
     public void test_process_duplicates_list() {
-        URL resource = ImdbProcessorTest.class.getClassLoader().getResource("countries.duplicates.list");
+        URL resource = ImdbCountryProcessorTest.class.getClassLoader().getResource("countries.duplicates.list");
 
         assertNotNull(resource);
 
@@ -129,7 +127,7 @@ public class ImdbProcessorTest {
 
         try (Stream<String> stream = Files.lines(Paths.get(resource.getPath()), StandardCharsets.ISO_8859_1)) {
             for(String row: stream.collect(Collectors.toList())) {
-                Movie result = imdbProcessor.process(row);
+                Movie result = imdbCountryProcessor.process(row);
                 if(result != null) {
                     assertNotNull("movie should not be null for line: " + row, result);
                     assertNotNull("ID should not be null for: " + row + ": " + result.toString(), result.getId());

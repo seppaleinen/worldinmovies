@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 
 @Component
 @Log
-public class ImdbProcessor {
-    private static final String ULTIMATE_REGEX = "^([^\"]*?)\\\"?\\s+\\(([\\d\\?A-Z\\/]{4,8})\\)?.*\\t([\\w\\ \\.\\-\\(\\)]+)\\s?$";
-    private static final Pattern ULTIMATE_PATTERN = Pattern.compile(ULTIMATE_REGEX);
+public class ImdbCountryProcessor {
+    private static final String COUNTRY_REGEX = "^([^\"]*?)\\\"?\\s+\\(([\\d\\?A-Z\\/]{4,8})\\)?.*\\t([\\w\\ \\.\\-\\(\\)]+)\\s?$";
+    private static final Pattern COUNTRY_PATTERN = Pattern.compile(COUNTRY_REGEX);
 
     public Set<Movie> process(List<String> rowList) {
         return rowList.stream().map(this::process).filter(movie -> movie != null).collect(Collectors.toSet());
@@ -24,7 +24,7 @@ public class ImdbProcessor {
     Movie process(String string) {
         Movie movie = null;
 
-        Matcher matcher = ULTIMATE_PATTERN.matcher(string);
+        Matcher matcher = COUNTRY_PATTERN.matcher(string);
         if(matcher.matches()) {
             log.log(Level.FINE, "Matched: " + string);
             movie = Movie.builder().

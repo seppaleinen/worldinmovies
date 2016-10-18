@@ -18,4 +18,5 @@ public class Movie {
     private String name;
     private String year;
     private String country;
+    private String rating;
 }

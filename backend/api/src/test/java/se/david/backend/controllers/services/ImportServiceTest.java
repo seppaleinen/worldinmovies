@@ -10,7 +10,7 @@ import org.springframework.core.io.PathResource;
 import se.david.backend.controllers.repository.MovieRepository;
 import se.david.backend.controllers.repository.entities.Movie;
 import se.david.backend.controllers.services.util.ImdbInterface;
-import se.david.backend.controllers.services.util.ImdbProcessor;
+import se.david.backend.controllers.services.util.ImdbCountryProcessor;
 
 import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Mockito.*;
@@ -23,7 +23,7 @@ public class ImportServiceTest {
     @Mock
     private MovieRepository movieRepository;
     @Spy
-    private ImdbProcessor imdbProcessor = new ImdbProcessor();
+    private ImdbCountryProcessor imdbCountryProcessor = new ImdbCountryProcessor();
 
     @Before
     public void setup() {
@@ -39,7 +39,7 @@ public class ImportServiceTest {
         importService.importImdbCountries();
 
         verify(imdbInterface, times(1)).getCountriesResource();
-        verify(imdbProcessor, atLeastOnce()).process(anyListOf(String.class));
+        verify(imdbCountryProcessor, atLeastOnce()).process(anyListOf(String.class));
         verify(movieRepository, atLeastOnce()).save(anySetOf(Movie.class));
     }
 }
