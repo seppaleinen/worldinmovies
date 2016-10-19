@@ -11,7 +11,9 @@ import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import se.david.backend.WorldInMoviesApplication;
 import se.david.backend.controllers.repository.MovieRepository;
@@ -31,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
         classes = WorldInMoviesApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = "classpath:application-test.properties")
-@ContextConfiguration(classes = WorldInMoviesApplication.class)
+@TestPropertySource(locations="classpath:application-test.properties")
 public class ImdbControllerIT {
     @Autowired
     private MovieRepository movieRepository;

@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import se.david.backend.WorldInMoviesApplication;
 import se.david.backend.controllers.repository.entities.Country;
@@ -26,7 +28,7 @@ import static org.junit.Assert.*;
         classes = WorldInMoviesApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = "classpath:application-test.properties")
-@ContextConfiguration(classes = WorldInMoviesApplication.class)
+@TestPropertySource(locations="classpath:application-test.properties")
 public class CountryRepositoryIT {
     @Autowired
     private CountryRepository countryRepository;

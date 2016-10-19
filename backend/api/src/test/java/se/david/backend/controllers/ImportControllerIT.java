@@ -16,7 +16,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.david.backend.WorldInMoviesApplication;
@@ -38,7 +40,7 @@ import static org.junit.Assert.assertTrue;
         classes = WorldInMoviesApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = "classpath:application-test.properties")
-@ContextConfiguration(classes = WorldInMoviesApplication.class)
+@TestPropertySource(locations="classpath:application-test.properties")
 public class ImportControllerIT {
     @Autowired
     private MovieRepository movieRepository;

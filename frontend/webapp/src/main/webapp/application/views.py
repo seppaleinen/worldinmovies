@@ -1,8 +1,8 @@
 from application import app
-import json, requests, threading
+import json, requests, threading, os
 from flask import request, render_template, Response, session, Flask, make_response
 
-BACKEND = 'http://api:10080'
+BACKEND = os.getenv('BACKEND_URL', 'http://localhost:10080')
 
 @app.route("/")
 def home():

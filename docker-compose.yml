@@ -23,6 +23,7 @@ services:
     expose:
       - "8000"
     environment:
+      - BACKEND_URL=http://backend:10080
       - SENTRY_DSN=https://34ce8ef3cc3740339cac1d70afae7d54:33f2eb87d7d8446cab3564f87d2be8fb@sentry.io/100439
       - SENTRY_RELEASE=0.0.1
     links:
