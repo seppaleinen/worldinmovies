@@ -16,7 +16,7 @@ import java.util.zip.GZIPInputStream;
 @Component
 @Log
 public class ImdbInterface {
-    private static final String ftpUrl = "ftp://ftp.funet.fi/pub/mirrors/ftp.imdb.com/pub/countries.list.gz";
+    private static final String ftpUrl = "ftp://ftp.funet.fi/pub/mirrors/ftp.imdb.com/pub/";
     private static final String countriesFile = "countries.list.gz";
     private static final String ratingsFile = "ratings.list.gz";
 
@@ -45,7 +45,7 @@ public class ImdbInterface {
         try{
             long before = System.currentTimeMillis();
             log.info("Starting download of " + filename);
-            URL url = new URL(ftpUrl);
+            URL url = new URL(ftpUrl + filename);
             URLConnection conn = url.openConnection();
             inputStream = conn.getInputStream();
             fileOutputStream = new FileOutputStream(userPath + "/" + filename);
