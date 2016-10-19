@@ -3,6 +3,7 @@ package se.david.backend.controllers.services;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
+import com.google.common.collect.Lists;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -48,9 +49,10 @@ public class ImdbService {
                     skip(1).
                     forEach(row -> addToList(idList, row));
 
-            for(String id: idList) {
-                movieEntityList.addAll(movieRepository.findByIdRegex(id));
-            }
+            movieEntityList.addAll(
+                    Lists.newArrayList(
+                            movieRepository.findAll(idList)).stream().filter(movie -> movie != null).
+                            collect(Collectors.toList()));
         } catch (IOException e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         }

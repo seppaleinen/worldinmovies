@@ -94,10 +94,11 @@ $(document).ready(function() {
                 } else {
                     data = jQuery.parseJSON(data);
                     $.each(jQuery.parseJSON(data), function(key, value) {
-                        if(value.country) {
-                            var countryCode = value.country.toLowerCase()
-                            if (map.countries[countryCode]) {
-                                map.countries[countryCode].setFill(found_color);
+                        if(value.countrySet) {
+                            for (var i = 0, len = value.countrySet.length; i < len; i++) {
+                                if (map.countries[value.countrySet[i].toLowerCase()]) {
+                                    map.countries[value.countrySet[i].toLowerCase()].setFill(found_color);
+                                }
                             }
                         }
                     });

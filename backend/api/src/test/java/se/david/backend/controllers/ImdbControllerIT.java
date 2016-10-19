@@ -84,7 +84,7 @@ public class ImdbControllerIT {
         Movie movie1 = Movie.builder().
                 name("Time of the Wolf").
                 year("2003").
-                id("Time of the Wolf" + ":" + "2003" + ":country").
+                id("Time of the Wolf" + ":" + "2003").
                 build();
         movie1.setCountrySet(Sets.newSet("country"));
         movieRepository.save(movie1);

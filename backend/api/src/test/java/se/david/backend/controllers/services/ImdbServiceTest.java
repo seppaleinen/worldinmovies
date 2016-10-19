@@ -22,9 +22,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,10 +43,10 @@ public class ImdbServiceTest {
         Movie movieEntity = Movie.builder().
                                 name("Time of the Wolf").
                                 year("2003").
-                                id("Time of the Wolf:2003:country").
+                                id("Time of the Wolf:2003").
                                 build();
         movieEntity.setCountrySet(Sets.newSet("country"));
-        when(movieRepository.findByIdRegex(anyString())).thenReturn(Collections.singletonList(movieEntity));
+        when(movieRepository.findAll(anyListOf(String.class))).thenReturn(Collections.singletonList(movieEntity));
 
         InputStream file = new ClassPathResource("small_ratings.csv").getInputStream();
 
@@ -64,7 +62,7 @@ public class ImdbServiceTest {
         assertEquals(1, result.size());
         assertEquals("Time of the Wolf", result.get(0).getName());
         assertEquals("2003", result.get(0).getYear());
-        verify(movieRepository, times(1)).findByIdRegex(eq("Time of the Wolf:2003"));
+        verify(movieRepository, times(1)).findAll(anyListOf(String.class));
     }
 
     @Test

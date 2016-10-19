@@ -29,16 +29,18 @@ $(document).ready(function() {
             var map = {};
             data = jQuery.parseJSON(data);
             $.each(jQuery.parseJSON(data), function(key, value) {
-                if (value.country) {
-                    var countryCode = value.country.toLowerCase();
-                    var i = map[countryCode];
-                    if (i != undefined && i.length > 0) {
-                        i.push(value.name);
-                        map[countryCode] = i;
-                    } else {
-                        var array = [];
-                        array.push(value.name);
-                        map[countryCode] = array;
+                if(value.countrySet) {
+                    for (var i = 0, len = value.countrySet.length; i < len; i++) {
+                        var countryCode = value.countrySet[i].toLowerCase();
+                        var i = map[countryCode];
+                        if (i != undefined && i.length > 0) {
+                            i.push(value.name);
+                            map[countryCode] = i;
+                        } else {
+                            var array = [];
+                            array.push(value.name);
+                            map[countryCode] = array;
+                        }
                     }
                 }
             });

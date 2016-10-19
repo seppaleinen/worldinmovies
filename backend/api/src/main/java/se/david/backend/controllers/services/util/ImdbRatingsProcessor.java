@@ -37,7 +37,8 @@ public class ImdbRatingsProcessor {
                 movie.setRating(matcher.group(1));
                 if (movie.getName() == null ||
                         movie.getYear() == null ||
-                        movie.getId() == null) {
+                        movie.getId() == null ||
+                        movie.getRating() == null) {
                     log.log(Level.INFO, "Movie missing values: " + string);
                     movie = null;
                 }

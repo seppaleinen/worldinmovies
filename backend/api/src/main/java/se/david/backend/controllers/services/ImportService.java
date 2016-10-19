@@ -48,7 +48,8 @@ public class ImportService {
     public void importImdbRatings() {
         Resource result = imdbInterface.getRatingsResource();
         try (Stream<String> stream = Files.lines(Paths.get(result.getFile().getPath()), StandardCharsets.ISO_8859_1)) {
-            Iterators.partition(stream.skip(296).iterator(), 500).forEachRemaining(batch -> movieRepository.save(imdbRatingsProcessor.process(batch)));
+            Iterators.partition(stream.skip(296).iterator(), 500).
+                    forEachRemaining(batch -> movieRepository.save(imdbRatingsProcessor.process(batch)));
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         }
