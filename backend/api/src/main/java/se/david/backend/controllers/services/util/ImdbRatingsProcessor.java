@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Component
 @Log
 public class ImdbRatingsProcessor {
-    private static final String RATINGS_REGEX = "^.*[\\d\\.\\*]+\\s+[\\d\\.]+\\s+([\\d\\.]+)\\s+(.*)\\s\\(([\\d\\?/IVX]{4,})\\).*$";
+    private static final String RATINGS_REGEX = "^.*[\\d\\.\\*]+\\s+[\\d\\.]+\\s+([\\d\\.]+)\\s+([^\"]+)\\s\\(([\\d\\?/IVX]{4,})\\).*$";
     private static final Pattern RATINGS_PATTERN = Pattern.compile(RATINGS_REGEX);
 
     @Autowired
@@ -31,7 +31,6 @@ public class ImdbRatingsProcessor {
 
         Matcher matcher = RATINGS_PATTERN.matcher(string);
         if(matcher.matches()) {
-            log.log(Level.FINE, "Matched: " + string);
             movie = movieRepository.findOne(matcher.group(2) + ":" + matcher.group(3));
             if(movie != null) {
                 movie.setRating(matcher.group(1));
