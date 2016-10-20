@@ -29,7 +29,7 @@ public class ImdbCountryProcessor {
         Movie movie = null;
 
         Matcher matcher = COUNTRY_PATTERN.matcher(string);
-        if(matcher.matches()) {
+        if(matcher.matches() && !string.contains("(VG)")) {
             log.log(Level.FINE, "Matched: " + string);
             movie = Movie.builder().
                     name(matcher.group(1)).

@@ -16,8 +16,7 @@ import java.util.stream.Collectors;
 @Component
 @Log
 public class ImdbRatingsProcessor {
-    private static final String RATINGS_REGEX = "^.*[\\d\\.\\*]+\\s+[\\d\\.]+\\s+([\\d\\.]+)\\s+([^\"].*[^\"])\\s\\(([\\d\\?/IVX]{4,})\\).*$";
-    //private static final String RATINGS_REGEX = "^.*[\\d\\.\\*]+\\s+([\\d\\.]+)\\s+([\\d\\.]+)\\s+([^\"].*[^\"])\\s\\(([\\d\\?/IVX]{4,})\\).*$";
+    private static final String RATINGS_REGEX = "^.*[\\d\\.\\*]+\\s+([\\d\\.]+)[\\s]+([\\d]+\\.\\d)[\\s]+([^\"].*[^\"])\\s\\(([\\d\\?/IVX]{4,})\\).*$";
     private static final Pattern RATINGS_PATTERN = Pattern.compile(RATINGS_REGEX);
 
     @Autowired
@@ -32,9 +31,15 @@ public class ImdbRatingsProcessor {
 
         Matcher matcher = RATINGS_PATTERN.matcher(string);
         if(matcher.matches()) {
-            movie = movieRepository.findOne(matcher.group(2) + ":" + matcher.group(3));
+            movie = movieRepository.findOne(matcher.group(3) + ":" + matcher.group(4));
             if(movie != null) {
-                movie.setRating(matcher.group(1));
+                movie.setVotes(matcher.group(1));
+                movie.setRating(matcher.group(2));
+                try {
+                    movie.setWeightedRating(evaluate(Double.valueOf(movie.getVotes()), Double.valueOf(movie.getRating())));
+                } catch (NumberFormatException e) {
+                    log.info(string);
+                }
                 if (movie.getName() == null ||
                         movie.getYear() == null ||
                         movie.getId() == null ||
@@ -46,6 +51,11 @@ public class ImdbRatingsProcessor {
         }
 
         return movie;
+    }
+
+    private String evaluate(double votes, Double avgRating) {
+        double weightedRating = (votes / (votes + 350)) * avgRating;
+        return String.valueOf(weightedRating);
     }
 
 }

@@ -22,4 +22,6 @@ public class Movie {
     private String year;
     private Set<String> countrySet = new HashSet<>();
     private String rating;
+    private String votes;
+    private String weightedRating;
 }

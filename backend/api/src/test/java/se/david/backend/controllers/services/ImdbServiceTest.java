@@ -73,7 +73,7 @@ public class ImdbServiceTest {
                 id("Time of the Wolf:2003:SE").
                 build();
         movieEntity.setCountrySet(Sets.newSet("SE"));
-        when(movieRepository.findTop5ByCountrySetOrderByRatingDesc(anyString(), any(Pageable.class))).thenReturn(Collections.singletonList(movieEntity));
+        when(movieRepository.findTop5ByCountrySetOrderByWeightedRatingDesc(anyString(), any(Pageable.class))).thenReturn(Collections.singletonList(movieEntity));
 
         String countryCode = "SE";
 
@@ -82,6 +82,6 @@ public class ImdbServiceTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(movieEntity.getId(), result.get(0).getId());
-        verify(movieRepository, times(1)).findTop5ByCountrySetOrderByRatingDesc("SE", new PageRequest(0, 5));
+        verify(movieRepository, times(1)).findTop5ByCountrySetOrderByWeightedRatingDesc("SE", new PageRequest(0, 5));
     }
 }

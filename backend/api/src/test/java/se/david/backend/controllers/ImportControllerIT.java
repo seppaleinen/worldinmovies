@@ -80,8 +80,9 @@ public class ImportControllerIT {
                 multipleCountries = true;
             }
         }
-        assertTrue(multipleCountries);
-        assertEquals(1691, movieRepository.count());
+        //multipleCountries = allMovies.stream().anyMatch(movie -> movie.getCountrySet().size() > 1);
+        assertEquals(1680, movieRepository.count());
+        assertTrue("No movie with multiple countries", multipleCountries);
     }
 
     @Test
@@ -106,21 +107,27 @@ public class ImportControllerIT {
 
         assertEquals(HttpStatus.CREATED.value(), countriesResult.getStatusCode());
 
-        assertEquals("One movie should be created", 1, movieRepository.count());
+        assertEquals("Two movies should be created", 2, movieRepository.count());
 
 
         Resource ratingsResource = new ClassPathResource("ratings.withcountry.list");
         Mockito.when(imdbInterface.getRatingsResource()).thenReturn(ratingsResource);
 
-        assertEquals("Movie should be updated, so still only one count", 1, movieRepository.count());
+        assertEquals("Movie should be updated, so still only two counts", 2, movieRepository.count());
 
         Response ratingsResult = when().post(ImportController.IMDB_RATINGS_URL);
 
         assertEquals(HttpStatus.CREATED.value(), ratingsResult.getStatusCode());
 
-        assertEquals("Movie should be updated, so still only one count", 1, movieRepository.count());
+        assertEquals("Movie should be updated, so still only two counts", 2, movieRepository.count());
         Movie movie = movieRepository.findOne("The Shawshank Redemption:1994");
         assertNotNull(movie);
         assertEquals("Rating should be set", "9.3", movie.getRating());
+        assertNotNull("WeightedRating should be set", movie.getWeightedRating());
+
+        Movie movie2 = movieRepository.findOne("9 Days:2013");
+        assertNotNull(movie2);
+        assertEquals("Rating should be set", "3.7", movie2.getRating());
+        assertNotNull("WeightedRating should be set", movie2.getWeightedRating());
     }
 }

@@ -38,7 +38,7 @@ public class ImportService {
     public void importImdbCountries() {
         Resource result = imdbInterface.getCountriesResource();
         try (Stream<String> stream = Files.lines(Paths.get(result.getFile().getPath()), StandardCharsets.ISO_8859_1)) {
-            Iterators.partition(stream.skip(14).iterator(), 500).
+            Iterators.partition(stream.skip(14).iterator(), 1).
                     forEachRemaining(batch -> movieRepository.save(imdbCountryProcessor.process(batch)));
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage(), e);

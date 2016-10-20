@@ -36,6 +36,40 @@ public class ImdbRatingsProcessorTest {
     }
 
     @Test
+    public void test_trickyRegexCase() {
+        String row = "      200..0.005      36   7.0  W (2014/I)";
+
+        Movie movie = Movie.builder().
+                name("NAME").
+                year("1234").
+                id("NAME:1234").
+                build();
+
+        Mockito.when(movieRepository.findOne(anyString())).thenReturn(movie);
+
+        Movie result = imdbRatingsProcessor.process(row);
+
+        assertNotNull("Movie should not be null", result);
+        assertEquals("NAME", result.getName());
+        assertEquals("1234", result.getYear());
+        assertEquals("7.0", result.getRating());
+        assertEquals("36", result.getVotes());
+        assertEquals("0.6528497409326425", result.getWeightedRating());
+
+        String row2 = "      2111100001     155   3.7  9 Days (2013)";
+
+        Movie result2 = imdbRatingsProcessor.process(row2);
+
+        assertNotNull("Movie should not be null", result2);
+        assertEquals("NAME", result2.getName());
+        assertEquals("1234", result2.getYear());
+        assertEquals("3.7", result2.getRating());
+        assertEquals("155", result2.getVotes());
+        assertEquals("1.1356435643564358", result2.getWeightedRating());
+
+    }
+
+    @Test
     public void test_random_list() {
         URL resource = ImdbCountryProcessorTest.class.getClassLoader().getResource("ratings.random.list");
 
@@ -61,6 +95,7 @@ public class ImdbRatingsProcessorTest {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             fail("Should not fail " + e.getMessage());
         }
     }
