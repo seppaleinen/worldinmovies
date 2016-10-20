@@ -67,6 +67,6 @@ public class ImdbService {
     }
 
     public List<Movie> getMoviesByCountry(String country) {
-        return movieRepository.findTop5ByCountrySet(country, new PageRequest(0, MAX_RESULT));
+        return movieRepository.findTop5ByCountrySetOrderByRatingDesc(country, new PageRequest(0, MAX_RESULT));
     }
 }

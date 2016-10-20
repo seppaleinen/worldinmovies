@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import se.david.backend.WorldInMoviesApplication;
@@ -87,34 +85,27 @@ public class MovieRepositoryIT {
     }
 
     @Test
-    public void test_findTop5ByCountry_Expect5_OutOf6() {
-        Movie movie1 = Movie.builder().id("name:1").build();
-        movie1.setCountrySet(Sets.newSet("SE"));
-        Movie movie2 = Movie.builder().id("name:2").build();
-        movie2.setCountrySet(Sets.newSet("SE"));
-        Movie movie3 = Movie.builder().id("name:3").build();
-        movie3.setCountrySet(Sets.newSet("SE"));
-        Movie movie4 = Movie.builder().id("name:4").build();
-        movie4.setCountrySet(Sets.newSet("SE"));
-        Movie movie5 = Movie.builder().id("name:5").build();
-        movie5.setCountrySet(Sets.newSet("SE"));
-        Movie movie6 = Movie.builder().id("name:6").build();
-        movie6.setCountrySet(Sets.newSet("SE"));
+    public void test_findTop5ByCountry_Expect5_OutOf6_AndOrderOfRatings() {
+        Movie movie1 = Movie.builder().id("name:1").countrySet(Sets.newSet("SE")).rating("1.1").build();
+        Movie movie2 = Movie.builder().id("name:2").countrySet(Sets.newSet("SE")).rating("2.3").build();
+        Movie movie3 = Movie.builder().id("name:3").countrySet(Sets.newSet("SE")).rating("3.4").build();
+        Movie movie4 = Movie.builder().id("name:4").countrySet(Sets.newSet("SE")).rating("4.5").build();
+        Movie movie5 = Movie.builder().id("name:5").countrySet(Sets.newSet("SE")).rating("5.5").build();
+        Movie movie6 = Movie.builder().id("name:6").countrySet(Sets.newSet("SE")).build();
 
         movieRepository.save(Arrays.asList(movie1, movie2, movie3, movie4, movie5, movie6));
 
-        List<Movie> pageOne = movieRepository.findTop5ByCountrySet("SE", new PageRequest(0, 5));
+        List<Movie> pageOne = movieRepository.findTop5ByCountrySetOrderByRatingDesc("SE", new PageRequest(0, 5));
 
         assertNotNull(pageOne);
         assertEquals(5, pageOne.size());
-        assertTrue(pageOne.contains(movie1));
-        assertTrue(pageOne.contains(movie2));
-        assertTrue(pageOne.contains(movie3));
-        assertTrue(pageOne.contains(movie4));
-        assertTrue(pageOne.contains(movie5));
+        assertEquals(movie5, pageOne.get(0));
+        assertEquals(movie4, pageOne.get(1));
+        assertEquals(movie3, pageOne.get(2));
+        assertEquals(movie2, pageOne.get(3));
+        assertEquals(movie1, pageOne.get(4));
 
-
-        List<Movie> pageTwo = movieRepository.findTop5ByCountrySet("SE", new PageRequest(1, 5));
+        List<Movie> pageTwo = movieRepository.findTop5ByCountrySetOrderByRatingDesc("SE", new PageRequest(1, 5));
 
         assertNotNull(pageTwo);
         assertEquals(1, pageTwo.size());
@@ -123,26 +114,20 @@ public class MovieRepositoryIT {
 
     @Test
     public void test_findTop5ByCountry_Expect1() {
-        Movie movie1 = Movie.builder().id("name:1").build();
-        movie1.setCountrySet(Sets.newSet("SE"));
-        Movie movie2 = Movie.builder().id("name:2").build();
-        movie2.setCountrySet(Sets.newSet("ES"));
-        Movie movie3 = Movie.builder().id("name:3").build();
-        movie3.setCountrySet(Sets.newSet("MX"));
-        Movie movie4 = Movie.builder().id("name:4").build();
-        movie4.setCountrySet(Sets.newSet("US"));
-        Movie movie5 = Movie.builder().id("name:5").build();
-        movie5.setCountrySet(Sets.newSet("BE"));
-        Movie movie6 = Movie.builder().id("name:6").build();
-        movie6.setCountrySet(Sets.newSet("BG"));
+        Movie movie1 = Movie.builder().id("name:1").countrySet(Sets.newSet("SE")).rating("1.1").build();
+        Movie movie2 = Movie.builder().id("name:2").countrySet(Sets.newSet("ES")).rating("1.2").build();
+        Movie movie3 = Movie.builder().id("name:3").countrySet(Sets.newSet("MX")).rating("2.3").build();
+        Movie movie4 = Movie.builder().id("name:4").countrySet(Sets.newSet("US")).rating("9.7").build();
+        Movie movie5 = Movie.builder().id("name:5").countrySet(Sets.newSet("BE")).rating("9.8").build();
+        Movie movie6 = Movie.builder().id("name:6").countrySet(Sets.newSet("BG")).build();
 
         movieRepository.save(Arrays.asList(movie1, movie2, movie3, movie4, movie5, movie6));
 
-        List<Movie> result = movieRepository.findTop5ByCountrySet("SE", new PageRequest(0, 5));
+        List<Movie> result = movieRepository.findTop5ByCountrySetOrderByRatingDesc("SE", new PageRequest(0, 5));
 
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(movie1.getId(), result.get(0).getId());
-        assertTrue(result.contains(movie1));
+        assertEquals(movie1, result.get(0));
     }
 }

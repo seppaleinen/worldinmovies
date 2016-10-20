@@ -16,7 +16,8 @@ import java.util.stream.Collectors;
 @Component
 @Log
 public class ImdbRatingsProcessor {
-    private static final String RATINGS_REGEX = "^.*[\\d\\.\\*]+\\s+[\\d\\.]+\\s+([\\d\\.]+)\\s+([^\"]+)\\s\\(([\\d\\?/IVX]{4,})\\).*$";
+    private static final String RATINGS_REGEX = "^.*[\\d\\.\\*]+\\s+[\\d\\.]+\\s+([\\d\\.]+)\\s+([^\"].*[^\"])\\s\\(([\\d\\?/IVX]{4,})\\).*$";
+    //private static final String RATINGS_REGEX = "^.*[\\d\\.\\*]+\\s+([\\d\\.]+)\\s+([\\d\\.]+)\\s+([^\"].*[^\"])\\s\\(([\\d\\?/IVX]{4,})\\).*$";
     private static final Pattern RATINGS_PATTERN = Pattern.compile(RATINGS_REGEX);
 
     @Autowired
