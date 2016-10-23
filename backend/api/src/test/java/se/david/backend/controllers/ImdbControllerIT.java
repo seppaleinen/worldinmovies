@@ -17,7 +17,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import se.david.backend.WorldInMoviesApplication;
 import se.david.backend.controllers.repository.MovieRepository;
+import se.david.backend.controllers.repository.UserRepository;
 import se.david.backend.controllers.repository.entities.Movie;
+import se.david.backend.controllers.repository.entities.User;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,12 +39,15 @@ import static org.junit.Assert.assertNotNull;
 public class ImdbControllerIT {
     @Autowired
     private MovieRepository movieRepository;
+    @Autowired
+    private UserRepository userRepository;
     @LocalServerPort
     private int port;
 
     @Before
     public void setup() {
         movieRepository.deleteAll();
+        userRepository.deleteAll();
         RestAssured.port = port;
     }
 
@@ -91,9 +96,12 @@ public class ImdbControllerIT {
         movie1.setCountrySet(Sets.newSet("country"));
         movieRepository.save(movie1);
 
+        User user = User.builder().username("username").password("password").build();
+        userRepository.save(user);
+
         File file = new ClassPathResource("small_ratings.csv").getFile();
 
-        Response response = given().multiPart(file).when().post(ImdbController.USER_RATINGS_URL);
+        Response response = given().multiPart(file).param("username", user.getUsername()).when().post(ImdbController.USER_RATINGS_URL);
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
         List<Movie> result = Arrays.asList(response.getBody().as(Movie[].class));
@@ -104,6 +112,8 @@ public class ImdbControllerIT {
         assertEquals("Time of the Wolf", result.get(0).getName());
         assertEquals("2003", result.get(0).getYear());
         assertEquals("country", result.get(0).getCountrySet().iterator().next());
+
+        assertEquals(result, userRepository.findOne(user.getUsername()).getMovies());
 
     }
 }

@@ -10,8 +10,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import se.david.backend.controllers.repository.MovieRepository;
+import se.david.backend.controllers.repository.UserRepository;
 import se.david.backend.controllers.repository.entities.Movie;
+import se.david.backend.controllers.repository.entities.User;
 
+import javax.validation.ValidationException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +36,10 @@ public class ImdbService {
 
     @Autowired
     private MovieRepository movieRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    public List<Movie> parseFromUserRatingsFile(MultipartFile file){
+    public List<Movie> parseFromUserRatingsFile(MultipartFile file, String username){
         List<Movie> movieEntityList = new ArrayList<>();
 
         try {
@@ -49,10 +54,14 @@ public class ImdbService {
                     skip(1).
                     forEach(row -> addToList(idList, row));
 
-            movieEntityList.addAll(
-                    Lists.newArrayList(
-                            movieRepository.findAll(idList)).stream().filter(movie -> movie != null).
-                            collect(Collectors.toList()));
+            movieEntityList = Lists.newArrayList(movieRepository.findAll(idList)).stream().filter(movie -> movie != null).collect(Collectors.toList());
+
+            User user = userRepository.findOne(username);
+
+            if(user != null) {
+                user.setMovies(movieEntityList);
+                userRepository.save(user);
+            }
         } catch (IOException e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         }

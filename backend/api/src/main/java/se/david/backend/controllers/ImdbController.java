@@ -27,8 +27,8 @@ public class ImdbController {
     private ImdbService imdbService;
 
     @RequestMapping(value = USER_RATINGS_URL, method = RequestMethod.POST)
-    public ResponseEntity<List<Movie>> userRatings(@RequestParam("file") MultipartFile file) {
-        return new ResponseEntity<>(imdbService.parseFromUserRatingsFile(file), HttpStatus.OK);
+    public ResponseEntity<List<Movie>> userRatings(@RequestParam("file") MultipartFile file, String username) {
+        return new ResponseEntity<>(imdbService.parseFromUserRatingsFile(file, username), HttpStatus.OK);
     }
 
     @RequestMapping(value = MOVIES_BY_COUNTRY, method = RequestMethod.GET)

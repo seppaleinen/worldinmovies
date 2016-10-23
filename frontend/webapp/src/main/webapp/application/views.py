@@ -31,8 +31,10 @@ def uploadFile():
     file = request.files['file']
     if file and '.csv' in file.filename:
         print(file.readable())
-        file_ = {'file': ('file', file)}
-        response = requests.post(BACKEND + '/imdb/userRatings', files=file_)
+        response = requests.post(BACKEND + '/imdb/userRatings',
+                                 files={'file': ('file', file)},
+                                 json={'username': 'seppa'})
+        print(response.content.decode("utf-8"))
         data = response.content.decode("utf-8")
         #session[request.environ['REMOTE_ADDR']] = data
         return render_template(path + '.html', data=json.dumps(data), **Helper().forms())

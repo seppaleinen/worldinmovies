@@ -13,7 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import se.david.backend.controllers.repository.MovieRepository;
+import se.david.backend.controllers.repository.UserRepository;
 import se.david.backend.controllers.repository.entities.Movie;
+import se.david.backend.controllers.repository.entities.User;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +34,8 @@ public class ImdbServiceTest {
     private ImdbService imdbService;
     @Mock
     private MovieRepository movieRepository;
+    @Mock
+    private UserRepository userRepository;
 
     @Before
     public void setup() {
@@ -48,6 +52,11 @@ public class ImdbServiceTest {
         movieEntity.setCountrySet(Sets.newSet("country"));
         when(movieRepository.findAll(anyListOf(String.class))).thenReturn(Collections.singletonList(movieEntity));
 
+        User user = User.builder().
+                        username("username").
+                        build();
+        when(userRepository.findOne(anyString())).thenReturn(user);
+
         InputStream file = new ClassPathResource("small_ratings.csv").getInputStream();
 
         MultipartFile multipartFile = new MockMultipartFile(
@@ -56,13 +65,17 @@ public class ImdbServiceTest {
                 "text/plain",
                 IOUtils.toByteArray(file));
 
-        List<Movie> result = imdbService.parseFromUserRatingsFile(multipartFile);
+
+        List<Movie> result = imdbService.parseFromUserRatingsFile(multipartFile, user.getUsername());
 
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("Time of the Wolf", result.get(0).getName());
         assertEquals("2003", result.get(0).getYear());
         verify(movieRepository, times(1)).findAll(anyListOf(String.class));
+        verify(userRepository, times(1)).findOne(user.getUsername());
+        user.setMovies(Collections.singletonList(movieEntity));
+        verify(userRepository, times(1)).save(user);
     }
 
     @Test
