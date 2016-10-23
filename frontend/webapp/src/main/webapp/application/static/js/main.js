@@ -36,6 +36,11 @@ $(document).ready(function() {
     };
 
     function renderMap() {
+        var data = jQuery('#data').text();
+        if (data.length === 0 || !data.trim()) {
+            $('#imdbRatings').click();
+        }
+
         jQuery('#vmap').vectorMap({
             map: 'world_en',
             hoverOpacity: 0.7,

@@ -68,7 +68,7 @@ $(document).ready(function() {
                     tooltipEl.removeClass('above');
                     tooltipEl.addClass(tooltip.yAlign);
                     // Set Text
-                    tooltipEl.html(tooltip.text + " countries");
+                    tooltipEl.html(tooltip.text + " movies");
                     // Find Y Location on page
                     var top = tooltip.y - tooltip.caretHeight - tooltip.caretPadding;;
                     // Display, position, and set styles for font
