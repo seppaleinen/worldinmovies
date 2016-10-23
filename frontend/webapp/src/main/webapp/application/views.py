@@ -56,8 +56,11 @@ def findMoviesByCountry(country):
 def signup():
     form = SignupForm(request.form)
     if form.validate():
-        print(form.data)
-        #requests.post(BACKEND + '/user/signup', params={'user': user})
+        response = requests.post(BACKEND + '/user/signup', json=form.data)
+        if response.status_code == '201':
+            print("User created!")
+        else:
+            print("Failed to create user")
     return render_template('index.html', **Helper().forms({'signupForm': form}))
 
 
@@ -66,9 +69,11 @@ def login():
     form = LoginForm(request.form)
     print(form.data)
     if form.validate():
-        print(form.data)
-        #requests.post(BACKEND + '/user/login', params={'user': user})
-
+        response = requests.post(BACKEND + '/user/login', json=form.data)
+        if response.status_code == '202':
+            print("Login successful")
+        else:
+            print("Login unsuccessful")
     return render_template('index.html', **Helper().forms({'loginForm': form}))
 
 
