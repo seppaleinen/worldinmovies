@@ -33,7 +33,7 @@ def uploadFile():
         print(file.readable())
         response = requests.post(BACKEND + '/imdb/userRatings',
                                  files={'file': ('file', file)},
-                                 json={'username': 'seppa'})
+                                 data={'username': 'seppa'})
         print(response.content.decode("utf-8"))
         data = response.content.decode("utf-8")
         #session[request.environ['REMOTE_ADDR']] = data
