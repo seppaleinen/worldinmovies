@@ -30,10 +30,10 @@ def uploadFile():
 
     file = request.files['file']
     if file and '.csv' in file.filename:
-        print(file.readable())
+        session_id = request.cookies.get('session_id')
         response = requests.post(BACKEND + '/imdb/userRatings',
                                  files={'file': ('file', file)},
-                                 data={'username': 'seppa'})
+                                 data={'username': session_id if session_id else 'UNKNOWN'})
         print(response.content.decode("utf-8"))
         data = response.content.decode("utf-8")
         #session[request.environ['REMOTE_ADDR']] = data
@@ -58,12 +58,17 @@ def findMoviesByCountry(country):
 def signup():
     form = SignupForm(request.form)
     if form.validate():
+        render_response = make_response(render_template('index.html', **Helper().forms({'signupForm': form})))
         response = requests.post(BACKEND + '/user/signup', json=form.data)
-        if response.status_code == '201':
+        if response.status_code == 201:
+            render_response.set_cookie('session_id', form.username.data)
             print("User created!")
         else:
             print("Failed to create user")
-    return render_template('index.html', **Helper().forms({'signupForm': form}))
+    else:
+        render_response = make_response(render_template('index.html', **Helper().forms({'signupForm': form})))
+
+    return render_response
 
 
 @app.route('/login', methods=['POST'])
@@ -71,12 +76,25 @@ def login():
     form = LoginForm(request.form)
     print(form.data)
     if form.validate():
+        render_response = make_response(render_template('index.html', **Helper().forms({'loginForm': form})))
+
         response = requests.post(BACKEND + '/user/login', json=form.data)
-        if response.status_code == '202':
+        if response.status_code == 202:
+            render_response.set_cookie('session_id', form.username.data)
             print("Login successful")
         else:
             print("Login unsuccessful")
-    return render_template('index.html', **Helper().forms({'loginForm': form}))
+    else:
+        render_response = make_response(render_template('index.html', **Helper().forms({'loginForm': form})))
+
+    return render_response
+
+
+@app.route('/signout', methods=['GET'])
+def signout():
+    render_response = make_response(render_template('index.html', **Helper().forms()))
+    render_response.set_cookie('session_id', '', expires=0)
+    return render_response
 
 
 @app.route('/admin/startImdbImport', methods=['GET'])

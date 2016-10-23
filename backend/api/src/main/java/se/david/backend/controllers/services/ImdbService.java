@@ -61,6 +61,7 @@ public class ImdbService {
             User user = userRepository.findOne(username);
 
             if(user != null) {
+                log.info("Found user: " + username);
                 Set<Movie> hashSet = new HashSet<>(movieList);
                 hashSet.addAll(user.getMovies() == null ? new ArrayList<>() : user.getMovies());
                 movieList = new ArrayList<>(hashSet).stream().filter(movie -> movie != null).collect(Collectors.toList());
