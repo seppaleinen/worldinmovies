@@ -1,26 +1,27 @@
 from application import app
 import json, requests, threading, os
 from flask import request, render_template, Response, session, Flask, make_response
+from application.models import SignupForm, LoginForm
 
 BACKEND = os.getenv('BACKEND_URL', 'http://localhost:10080')
 
 @app.route("/")
 def home():
-    return render_template('index.html')
+    return render_template('index.html', **Helper().forms())
 
 
 @app.route('/chart', methods=['GET'])
 def chart():
-    return render_template('chart.html')
+    return render_template('chart.html', **Helper().forms())
 
 
 @app.route('/map', methods=['GET'])
 def map():
-    return render_template('map.html')
+    return render_template('map.html', **Helper().forms())
 
 @app.route('/map2', methods=['GET'])
 def map2():
-    return render_template('map2.html')
+    return render_template('map2.html', **Helper().forms())
 
 @app.route('/uploadFile', methods=['POST'])
 def uploadFile():
@@ -34,9 +35,9 @@ def uploadFile():
         response = requests.post(BACKEND + '/imdb/userRatings', files=file_)
         data = response.content.decode("utf-8")
         #session[request.environ['REMOTE_ADDR']] = data
-        return render_template(path + '.html', data=json.dumps(data))
+        return render_template(path + '.html', data=json.dumps(data), **Helper().forms())
     else:
-        return render_template(path + '.html')
+        return render_template(path + '.html', **Helper().forms())
 
 
 @app.route("/findCountries", methods=['GET'])
@@ -49,6 +50,26 @@ def findCountries():
 def findMoviesByCountry(country):
     response = requests.get(BACKEND + '/imdb/movies/country', params={'country': country.upper()})
     return Response(json.dumps(response.json()), mimetype='application/json')
+
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    form = SignupForm(request.form)
+    if form.validate():
+        print(form.data)
+        #requests.post(BACKEND + '/user/signup', params={'user': user})
+    return render_template('index.html', **Helper().forms({'signupForm': form}))
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    form = LoginForm(request.form)
+    print(form.data)
+    if form.validate():
+        print(form.data)
+        #requests.post(BACKEND + '/user/login', params={'user': user})
+
+    return render_template('index.html', **Helper().forms({'loginForm': form}))
 
 
 @app.route('/admin/startImdbImport', methods=['GET'])
@@ -73,3 +94,11 @@ class AsyncImdbTask(threading.Thread):
 class AsyncCountriesTask(threading.Thread):
     def run(self):
         requests.post(BACKEND + '/import/startCountriesImport')
+
+
+class Helper(object):
+    @staticmethod
+    def forms(kwargs={}):
+        forms = {'signupForm': SignupForm(), 'loginForm': LoginForm()}
+        forms.update(kwargs)
+        return forms
