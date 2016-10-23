@@ -17,7 +17,9 @@ import se.david.backend.controllers.repository.entities.User;
 import javax.validation.ValidationException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -40,7 +42,7 @@ public class ImdbService {
     private UserRepository userRepository;
 
     public List<Movie> parseFromUserRatingsFile(MultipartFile file, String username){
-        List<Movie> movieEntityList = new ArrayList<>();
+        List<Movie> movieList = new ArrayList<>();
 
         try {
             List<String> idList = new ArrayList<>();
@@ -54,19 +56,22 @@ public class ImdbService {
                     skip(1).
                     forEach(row -> addToList(idList, row));
 
-            movieEntityList = Lists.newArrayList(movieRepository.findAll(idList)).stream().filter(movie -> movie != null).collect(Collectors.toList());
+            movieList = Lists.newArrayList(movieRepository.findAll(idList)).stream().filter(movie -> movie != null).collect(Collectors.toList());
 
             User user = userRepository.findOne(username);
 
             if(user != null) {
-                user.setMovies(movieEntityList);
+                Set<Movie> hashSet = new HashSet<>(movieList);
+                hashSet.addAll(user.getMovies() == null ? new ArrayList<>() : user.getMovies());
+                movieList = new ArrayList<>(hashSet).stream().filter(movie -> movie != null).collect(Collectors.toList());
+                user.setMovies(movieList);
                 userRepository.save(user);
             }
         } catch (IOException e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         }
 
-        return movieEntityList;
+        return movieList;
     }
 
     private void addToList(List<String> idList, String[] row) {

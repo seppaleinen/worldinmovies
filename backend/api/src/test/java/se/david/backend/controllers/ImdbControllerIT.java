@@ -24,11 +24,13 @@ import se.david.backend.controllers.repository.entities.User;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
@@ -87,7 +89,32 @@ public class ImdbControllerIT {
     }
 
     @Test
-    public void testParseInput() throws IOException {
+    public void testParseInput_NoExistingUser() throws IOException {
+        Movie movie1 = Movie.builder().
+                name("Time of the Wolf").
+                year("2003").
+                id("Time of the Wolf" + ":" + "2003").
+                build();
+        movie1.setCountrySet(Sets.newSet("country"));
+        movieRepository.save(movie1);
+
+        File file = new ClassPathResource("small_ratings.csv").getFile();
+
+        Response response = given().multiPart(file).param("username", "NON_EXISTING_USERNAME").when().post(ImdbController.USER_RATINGS_URL);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+        List<Movie> result = Arrays.asList(response.getBody().as(Movie[].class));
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+
+        assertEquals("Time of the Wolf", result.get(0).getName());
+        assertEquals("2003", result.get(0).getYear());
+        assertEquals("country", result.get(0).getCountrySet().iterator().next());
+    }
+
+    @Test
+    public void testParseInput_NoExistingMovieInUser() throws IOException {
         Movie movie1 = Movie.builder().
                 name("Time of the Wolf").
                 year("2003").
@@ -114,6 +141,52 @@ public class ImdbControllerIT {
         assertEquals("country", result.get(0).getCountrySet().iterator().next());
 
         assertEquals(result, userRepository.findOne(user.getUsername()).getMovies());
+    }
 
+    @Test
+    public void testParseInput_WithExistingMoviesInUser() throws IOException {
+        Movie movie1 = Movie.builder().
+                name("Time of the Wolf").
+                year("2003").
+                id("Time of the Wolf" + ":" + "2003").
+                build();
+        movie1.setCountrySet(Sets.newSet("country"));
+        movieRepository.save(movie1);
+
+        Movie movie2 = Movie.builder().
+                name("Dead End Drive-In").
+                year("1986").
+                id("Dead End Drive-In:1986").
+                build();
+        movieRepository.save(movie2);
+
+        User user = User.builder().username("username").password("password").movies(Collections.singletonList(movie2)).build();
+        userRepository.save(user);
+
+
+
+        File file = new ClassPathResource("small_ratings.csv").getFile();
+
+        Response response = given().multiPart(file).param("username", user.getUsername()).when().post(ImdbController.USER_RATINGS_URL);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+        List<Movie> result = Arrays.asList(response.getBody().as(Movie[].class));
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        boolean movie1Found = false;
+        boolean movie2Found = false;
+        for(Movie movie: result) {
+            if(movie1.getId().equals(movie.getId())) {
+                movie1Found = true;
+            } else if(movie2.getId().equals(movie.getId())) {
+                movie2Found = true;
+            }
+        }
+        assertTrue(movie1Found);
+        assertTrue(movie2Found);
+
+        assertEquals(result, userRepository.findOne(user.getUsername()).getMovies());
     }
 }
