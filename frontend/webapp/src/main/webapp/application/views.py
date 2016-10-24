@@ -36,7 +36,12 @@ def user_info():
 @app.route('/uploadFile', methods=['POST'])
 def uploadFile():
     path = request.args.get('path')
-    path = 'chart' if 'chart' in path else 'map'
+    if 'chart' in path:
+        path = 'chart'
+    elif 'map' in path:
+        path = 'map'
+    else:
+        path = 'index'
 
     file = request.files['file']
     session_id = request.cookies.get('session_id')
@@ -45,8 +50,7 @@ def uploadFile():
         response = requests.post(BACKEND + '/imdb/userRatings',
                                  files={'file': ('file', file)},
                                  data={'username': session_id if session_id else 'UNKNOWN'})
-        data = response.content.decode("utf-8")
-        return render_template(path + '.html', data=json.dumps(data), **Helper().forms())
+        return render_template(path + '.html', **Helper().forms())
     else:
         return render_template(path + '.html', **Helper().forms())
 
