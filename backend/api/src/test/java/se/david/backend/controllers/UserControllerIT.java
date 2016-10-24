@@ -13,12 +13,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import se.david.backend.WorldInMoviesApplication;
+import se.david.backend.controllers.repository.MovieRepository;
 import se.david.backend.controllers.repository.UserRepository;
+import se.david.backend.controllers.repository.entities.Movie;
 import se.david.backend.controllers.repository.entities.User;
+
+import java.util.*;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
@@ -29,6 +34,8 @@ import static org.junit.Assert.assertNotNull;
 public class UserControllerIT {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private MovieRepository movieRepository;
 
     @LocalServerPort
     private int port;
@@ -37,6 +44,7 @@ public class UserControllerIT {
     public void setup() {
         RestAssured.port = port;
         userRepository.deleteAll();
+        movieRepository.deleteAll();
     }
 
     @Test
@@ -55,6 +63,31 @@ public class UserControllerIT {
         User foundUser = userRepository.findOne(user.getUsername());
         assertNotNull(foundUser);
         assertEquals(user, foundUser);
+    }
+
+    @Test
+    public void can_not_SignupAlreadyExistingUsername() {
+        User existingUser = User.builder().
+                        username("username").
+                        password("password").
+                        build();
+        userRepository.save(existingUser);
+
+        User newUser = User.builder().
+                username(existingUser.getUsername()).
+                password("newpassword").
+                movies(new ArrayList<>(Collections.singletonList(Movie.builder().id("movie:year").build()))).
+                build();
+
+        Response response = given().contentType(ContentType.JSON).body(newUser).when().post(UserController.SIGNUP_URL);
+
+        assertEquals(response.getBody().prettyPrint(), HttpStatus.NOT_ACCEPTABLE.value(), response.getStatusCode());
+
+        assertEquals(1, userRepository.count());
+
+        User foundUser = userRepository.findOne(existingUser.getUsername());
+        assertNotNull(foundUser);
+        assertEquals(existingUser, foundUser);
     }
 
     @Test
@@ -107,5 +140,40 @@ public class UserControllerIT {
 
         assertEquals(response.getBody().prettyPrint(), HttpStatus.UNAUTHORIZED.value(), response.getStatusCode());
         assertEquals(1, userRepository.count());
+    }
+
+    @Test
+    public void can_find_user_info() {
+        Movie movie = Movie.builder().
+                        id("name:year").
+                        name("name").
+                        year("year").
+                        countrySet(new HashSet<>()).
+                        build();
+        movieRepository.save(movie);
+
+        User user = User.builder().
+                username("username").
+                password("password").
+                movies(new ArrayList<>(Collections.singletonList(movie))).
+                build();
+        userRepository.save(user);
+
+
+        Response response = given().param("username", "username").when().post(UserController.GET_USER_DATA);
+
+        Movie[] movieList = response.getBody().as(Movie[].class);
+
+        assertEquals(response.getBody().prettyPrint(), HttpStatus.OK.value(), response.getStatusCode());
+        assertEquals(1, movieList.length);
+        assertEquals(movie, movieList[0]);
+    }
+
+    @Test
+    public void given_no_user_expect_empty_result() {
+        Response response = given().param("username", "username").when().post(UserController.GET_USER_DATA);
+
+        assertEquals(response.getBody().prettyPrint(), HttpStatus.NO_CONTENT.value(), response.getStatusCode());
+        assertEquals("", response.getBody().prettyPrint());
     }
 }

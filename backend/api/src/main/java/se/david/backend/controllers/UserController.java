@@ -33,14 +33,18 @@ public class UserController {
         if(user != null) {
             return new ResponseEntity<>(user.getMovies(), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NO_CONTENT);
         }
     }
 
     @RequestMapping(value = SIGNUP_URL, method = RequestMethod.POST)
     public ResponseEntity signup(@RequestBody @Valid @NotNull User user) {
-        userRepository.save(user);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        if(userRepository.findOne(user.getUsername()) == null) {
+            userRepository.save(user);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
     }
 
     @RequestMapping(value = LOGIN_URL, method = RequestMethod.POST)
