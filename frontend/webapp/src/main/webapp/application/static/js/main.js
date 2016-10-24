@@ -9,10 +9,10 @@ $(window).load(function() {
 function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
-    for(var i=0; i<ca.length; i++) {
+    for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1);
-        if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+        while (c.charAt(0) == ' ') c = c.substring(1);
+        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
     }
     return "";
 }
@@ -35,11 +35,13 @@ $(document).ready(function() {
         }, 'fast', easing, callback);
     };
 
+    function getCookie(name) {
+        var value = "; " + document.cookie;
+        var parts = value.split("; " + name + "=");
+        if (parts.length == 2) return parts.pop().split(";").shift();
+    }
+
     function renderMap() {
-        var data = jQuery('#data').text();
-        if (data.length === 0 || !data.trim()) {
-            $('#imdbRatings').click();
-        }
 
         jQuery('#vmap').vectorMap({
             map: 'world_en',
@@ -74,40 +76,31 @@ $(document).ready(function() {
                 //add movie button
             },
             onLoad: function(event, map) {
-                var data = jQuery('#data').text();
+                var session_id = getCookie('session_id')
 
-                if ((data.length === 0 || !data.trim())) {
-                    $.ajax({
-                        url: '/findCountries',
-                        type: 'GET',
-                        crossDomain: false,
-                        success: function(data) {
-                            $.each(data, function(key, value) {
-                                if (map.countries[value.code.toLowerCase()] != undefined) {
-                                    map.countries[value.code.toLowerCase()].setFill(default_color);
-                                }
-                            });
-                        },
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            var message = 'Call to backend failed';
-
-                            jQuery('#popup').text(message);
-                            $(this).addClass('selected');
-                            $('.pop').slideFadeToggle();
-                        }
-                    });
-                } else {
-                    data = jQuery.parseJSON(data);
-                    $.each(jQuery.parseJSON(data), function(key, value) {
-                        if(value.countrySet) {
-                            for (var i = 0, len = value.countrySet.length; i < len; i++) {
-                                if (map.countries[value.countrySet[i].toLowerCase()]) {
-                                    map.countries[value.countrySet[i].toLowerCase()].setFill(found_color);
+                $.ajax({
+                    url: '/user_info',
+                    type: 'POST',
+                    crossDomain: false,
+                    success: function(data) {
+                        $.each(jQuery.parseJSON(data), function(key, value) {
+                            if (value.countrySet) {
+                                for (var i = 0, len = value.countrySet.length; i < len; i++) {
+                                    if (map.countries[value.countrySet[i].toLowerCase()]) {
+                                        map.countries[value.countrySet[i].toLowerCase()].setFill(found_color);
+                                    }
                                 }
                             }
-                        }
-                    });
-                }
+                        });
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var message = 'Call to backend failed';
+
+                        jQuery('#popup').text(message);
+                        $(this).addClass('selected');
+                        $('.pop').slideFadeToggle();
+                    }
+                });
             },
             onRegionOver: function(event, code, region) {
                 //show info
@@ -122,4 +115,3 @@ $(document).ready(function() {
 
     renderMap();
 });
-

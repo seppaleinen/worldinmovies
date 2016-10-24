@@ -21,68 +21,78 @@ $(document).ready(function() {
     };
 
     function renderChart() {
-        var data = jQuery('#data').text();
+        var map = {};
+        var chartData = [];
 
-        if (data.length === 0 || !data.trim()) {
-            $('#imdbRatings').click();
-        } else {
-            var map = {};
-            data = jQuery.parseJSON(data);
-            $.each(jQuery.parseJSON(data), function(key, value) {
-                if(value.countrySet) {
-                    for (var i = 0, len = value.countrySet.length; i < len; i++) {
-                        var countryCode = value.countrySet[i].toLowerCase();
-                        var i = map[countryCode];
-                        if (i != undefined && i.length > 0) {
-                            i.push(value.name);
-                            map[countryCode] = i;
-                        } else {
-                            var array = [];
-                            array.push(value.name);
-                            map[countryCode] = array;
+        $.ajax({
+            url: '/user_info',
+            type: 'POST',
+            crossDomain: false,
+            success: function(data) {
+                $.each(jQuery.parseJSON(data), function(key, value) {
+                    if (value.countrySet) {
+                        for (var i = 0, len = value.countrySet.length; i < len; i++) {
+                            var countryCode = value.countrySet[i].toLowerCase();
+                            var i = map[countryCode];
+                            if (i != undefined && i.length > 0) {
+                                i.push(value.name);
+                                map[countryCode] = i;
+                            } else {
+                                var array = [];
+                                array.push(value.name);
+                                map[countryCode] = array;
+                            }
                         }
                     }
-                }
-            });
-            var data = [];
-            for (var key in map) {
-                if (map.hasOwnProperty(key)) {
-                    data.push(new ChartItem(map[key].length, "#F7464A", "#FF5A5E", key));
-                }
-            }
-            var ctx2 = document.getElementById("chart-area").getContext("2d");
-            window.myPie = new Chart(ctx2).Pie(data, {
-                animationEasing: "easeOutBounce",
-                animateRotate: true,
-                animateScale: false,
-                customTooltips: function(tooltip) {
-                    var tooltipEl = $('#chartjs-tooltip');
-                    // Hide if no tooltip
-                    if (!tooltip) {
-                        tooltipEl.css({
-                            opacity: 0
-                        });
-                        return;
+                });
+                for (var key in map) {
+                    if (map.hasOwnProperty(key)) {
+                        chartData.push(new ChartItem(map[key].length, "#F7464A", "#FF5A5E", key));
                     }
-                    // Set caret Position
-                    tooltipEl.removeClass('above');
-                    tooltipEl.addClass(tooltip.yAlign);
-                    // Set Text
-                    tooltipEl.html(tooltip.text + " movies");
-                    // Find Y Location on page
-                    var top = tooltip.y - tooltip.caretHeight - tooltip.caretPadding;;
-                    // Display, position, and set styles for font
-                    tooltipEl.css({
-                        opacity: 1,
-                        left: tooltip.chart.canvas.offsetLeft + tooltip.x + 'px',
-                        top: tooltip.chart.canvas.offsetTop + top + 'px',
-                        fontFamily: tooltip.fontFamily,
-                        fontSize: tooltip.fontSize,
-                        fontStyle: tooltip.fontStyle,
-                    });
                 }
-            });
-        }
+                var ctx2 = document.getElementById("chart-area").getContext("2d");
+                window.myPie = new Chart(ctx2).Pie(chartData, {
+                    animationEasing: "easeOutBounce",
+                    animateRotate: true,
+                    animateScale: false,
+                    customTooltips: function(tooltip) {
+                        var tooltipEl = $('#chartjs-tooltip');
+                        // Hide if no tooltip
+                        if (!tooltip) {
+                            tooltipEl.css({
+                                opacity: 0
+                            });
+                            return;
+                        }
+                        // Set caret Position
+                        tooltipEl.removeClass('above');
+                        tooltipEl.addClass(tooltip.yAlign);
+                        // Set Text
+                        tooltipEl.html(tooltip.text + " movies");
+                        // Find Y Location on page
+                        var top = tooltip.y - tooltip.caretHeight - tooltip.caretPadding;;
+                        // Display, position, and set styles for font
+                        tooltipEl.css({
+                            opacity: 1,
+                            left: tooltip.chart.canvas.offsetLeft + tooltip.x + 'px',
+                            top: tooltip.chart.canvas.offsetTop + top + 'px',
+                            fontFamily: tooltip.fontFamily,
+                            fontSize: tooltip.fontSize,
+                            fontStyle: tooltip.fontStyle,
+                        });
+                    }
+                });
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                var message = 'Call to backend failed';
+
+                jQuery('#popup').text(message);
+                $(this).addClass('selected');
+                $('.pop').slideFadeToggle();
+            }
+        });
+
+
     }
 
     renderChart();

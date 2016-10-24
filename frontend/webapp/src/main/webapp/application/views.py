@@ -23,20 +23,29 @@ def map():
 def map2():
     return render_template('map2.html', **Helper().forms())
 
+
+@app.route('/user_info', methods=['POST'])
+def user_info():
+    session_id = request.cookies.get('session_id')
+
+    response = requests.post(BACKEND + '/user/info', params={'username': session_id if session_id else 'UNKNOWN'})
+    data = response.content.decode("utf-8")
+    return Response(json.dumps(data), mimetype='application/json')
+
+
 @app.route('/uploadFile', methods=['POST'])
 def uploadFile():
     path = request.args.get('path')
     path = 'chart' if 'chart' in path else 'map'
 
     file = request.files['file']
+    session_id = request.cookies.get('session_id')
+
     if file and '.csv' in file.filename:
-        session_id = request.cookies.get('session_id')
         response = requests.post(BACKEND + '/imdb/userRatings',
                                  files={'file': ('file', file)},
                                  data={'username': session_id if session_id else 'UNKNOWN'})
-        print(response.content.decode("utf-8"))
         data = response.content.decode("utf-8")
-        #session[request.environ['REMOTE_ADDR']] = data
         return render_template(path + '.html', data=json.dumps(data), **Helper().forms())
     else:
         return render_template(path + '.html', **Helper().forms())
