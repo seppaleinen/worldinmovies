@@ -83,15 +83,17 @@ $(document).ready(function() {
                     type: 'POST',
                     crossDomain: false,
                     success: function(data) {
-                        $.each(jQuery.parseJSON(data), function(key, value) {
-                            if (value.countrySet) {
-                                for (var i = 0, len = value.countrySet.length; i < len; i++) {
-                                    if (map.countries[value.countrySet[i].toLowerCase()]) {
-                                        map.countries[value.countrySet[i].toLowerCase()].setFill(found_color);
+                        if (data.length > 0) {
+                            $.each(jQuery.parseJSON(data), function(key, value) {
+                                if (value.countrySet) {
+                                    for (var i = 0, len = value.countrySet.length; i < len; i++) {
+                                        if (map.countries[value.countrySet[i].toLowerCase()]) {
+                                            map.countries[value.countrySet[i].toLowerCase()].setFill(found_color);
+                                        }
                                     }
                                 }
-                            }
-                        });
+                            });
+                        }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         var message = 'Call to backend failed';

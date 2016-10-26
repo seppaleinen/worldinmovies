@@ -29,22 +29,24 @@ $(document).ready(function() {
             type: 'POST',
             crossDomain: false,
             success: function(data) {
-                $.each(jQuery.parseJSON(data), function(key, value) {
-                    if (value.countrySet) {
-                        for (var i = 0, len = value.countrySet.length; i < len; i++) {
-                            var countryCode = value.countrySet[i].toLowerCase();
-                            var i = map[countryCode];
-                            if (i != undefined && i.length > 0) {
-                                i.push(value.name);
-                                map[countryCode] = i;
-                            } else {
-                                var array = [];
-                                array.push(value.name);
-                                map[countryCode] = array;
+                if (data.length > 0) {
+                    $.each(jQuery.parseJSON(data), function(key, value) {
+                        if (value.countrySet) {
+                            for (var i = 0, len = value.countrySet.length; i < len; i++) {
+                                var countryCode = value.countrySet[i].toLowerCase();
+                                var i = map[countryCode];
+                                if (i != undefined && i.length > 0) {
+                                    i.push(value.name);
+                                    map[countryCode] = i;
+                                } else {
+                                    var array = [];
+                                    array.push(value.name);
+                                    map[countryCode] = array;
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
                 for (var key in map) {
                     if (map.hasOwnProperty(key)) {
                         chartData.push(new ChartItem(map[key].length, "#F7464A", "#FF5A5E", key));
