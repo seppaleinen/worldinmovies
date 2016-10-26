@@ -83,7 +83,7 @@ public class ImdbControllerIT {
         List<Movie> resultList = Arrays.asList(response.getBody().as(Movie[].class));
         assertNotNull(resultList);
         assertEquals(1, resultList.size());
-        assertEquals("ID", resultList.get(0).getId());
+        assertEquals(null, resultList.get(0).getId());
         assertEquals("NAME", resultList.get(0).getName());
         assertEquals("SE", resultList.get(0).getCountrySet().iterator().next());
     }
@@ -140,7 +140,11 @@ public class ImdbControllerIT {
         assertEquals("2003", result.get(0).getYear());
         assertEquals("country", result.get(0).getCountrySet().iterator().next());
 
-        assertEquals(result, userRepository.findOne(user.getUsername()).getMovies());
+        List<Movie> moviesFromDatabase = userRepository.findOne(user.getUsername()).getMovies();
+        for(Movie movie: moviesFromDatabase) {
+            movie.setId(null);
+        }
+        assertEquals(result, moviesFromDatabase);
     }
 
     @Test
@@ -148,7 +152,7 @@ public class ImdbControllerIT {
         Movie movie1 = Movie.builder().
                 name("Time of the Wolf").
                 year("2003").
-                id("Time of the Wolf" + ":" + "2003").
+                id("Time of the Wolf:2003").
                 build();
         movie1.setCountrySet(Sets.newSet("country"));
         movieRepository.save(movie1);
@@ -178,15 +182,19 @@ public class ImdbControllerIT {
         boolean movie1Found = false;
         boolean movie2Found = false;
         for(Movie movie: result) {
-            if(movie1.getId().equals(movie.getId())) {
+            if(movie1.getId().equals(movie.getName() + ":" + movie.getYear())) {
                 movie1Found = true;
-            } else if(movie2.getId().equals(movie.getId())) {
+            } else if(movie2.getId().equals(movie.getName() + ":" + movie.getYear())) {
                 movie2Found = true;
             }
         }
         assertTrue(movie1Found);
         assertTrue(movie2Found);
 
-        assertEquals(result, userRepository.findOne(user.getUsername()).getMovies());
+        List<Movie> moviesFromDatabase = userRepository.findOne(user.getUsername()).getMovies();
+        for(Movie movie: moviesFromDatabase) {
+            movie.setId(null);
+        }
+        assertEquals(result, moviesFromDatabase);
     }
 }

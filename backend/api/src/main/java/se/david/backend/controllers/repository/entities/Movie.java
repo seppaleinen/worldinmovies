@@ -1,5 +1,7 @@
 package se.david.backend.controllers.repository.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,13 +20,16 @@ import java.util.Set;
 @AllArgsConstructor
 public class Movie {
     @Id
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String id;
     private String name;
     private String year;
     @Indexed
     private Set<String> countrySet = new HashSet<>();
     private String rating;
+    @JsonIgnore
     private String votes;
     @Indexed
+    @JsonIgnore
     private String weightedRating;
 }

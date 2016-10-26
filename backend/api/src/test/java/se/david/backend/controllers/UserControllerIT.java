@@ -166,6 +166,7 @@ public class UserControllerIT {
 
         assertEquals(response.getBody().prettyPrint(), HttpStatus.OK.value(), response.getStatusCode());
         assertEquals(1, movieList.length);
+        movie.setId(null);
         assertEquals(movie, movieList[0]);
     }
 

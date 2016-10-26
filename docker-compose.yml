@@ -48,13 +48,13 @@ services:
      - mongo
 
   mongo:
-    image: mongo
+    image: mvertes/alpine-mongo
     restart: always
     volumes_from:
      - data
 
   data:
-    image: mongo
+    image: mvertes/alpine-mongo
     restart: never
     volumes:
       - /data/db
