@@ -5,28 +5,9 @@ services:
     restart: never
     build: .
     links:
-     - selenium-driver:selenium-driver
-     - nginx:nginx
-    depends_on:
-     - selenium-driver
-     - nginx
-
-
-  selenium-driver:
-    image: selenium/standalone-firefox
-    environment:
-     # Required to avoid container startup hanging sometimes in
-     # some environments
-     JAVA_OPTS: -Djava.security.egd=file:/dev/./urandom
-    links:
      - nginx:nginx
     depends_on:
      - nginx
-     - web
-     - api
-     - mongo
-    ports:
-     - "4444:4444"
 
   nginx:
     restart: always

@@ -101,7 +101,6 @@
                         </resources>
                     </configuration>
                 </plugin>
-
             </plugins>
         </pluginManagement>
     </build>

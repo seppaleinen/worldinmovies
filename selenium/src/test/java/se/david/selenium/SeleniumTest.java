@@ -3,50 +3,39 @@ package se.david.selenium;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.firefox.internal.ProfilesIni;
-import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.File;
 import java.net.UnknownHostException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class SeleniumTest {
     private WebDriver driver;
 
     @Before
     public void setup() {
-        try {
-            InetAddress ip = InetAddress.getByName("selenium-driver");
-            DesiredCapabilities ds = DesiredCapabilities.firefox();
+        String binary = System.getProperty("phantomjs.binary");
+        assertNotNull(binary);
+        assertTrue(new File(binary).exists());
 
-            FirefoxProfile profile = new FirefoxProfile();
-            profile.setAssumeUntrustedCertificateIssuer(false);
-            profile.setAcceptUntrustedCertificates(true);
+        DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
 
-            ds.setCapability(FirefoxDriver.PROFILE, profile);
-            ds.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-            ds.setCapability("trustAllSSLCertificates", true);
+        capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, binary);
+        capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, new String[] {
+                "--web-security=no",
+                "--ignore-ssl-errors=yes",
+                "--debug=yes"
+        });
 
-            driver = new RemoteWebDriver(new URL("http://" + ip.getHostAddress() + ":4444/wd/hub"), ds);
-        } catch (MalformedURLException e) {
-            fail("Couldn't lookup url: " + e.getMessage());
-        } catch (UnknownHostException e) {
-            fail("FAIL: " + e.getMessage());
-        }
+        driver = new PhantomJSDriver(capabilities);
     }
 
     @Test
     public void test() throws UnknownHostException {
-        InetAddress ip = InetAddress.getByName("nginx");
-        driver.get("https://" + ip.getHostAddress() + "/");
+        driver.get("https://nginx");
 
         assertEquals("Worldinmovies", driver.getTitle());
     }
