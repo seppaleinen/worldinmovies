@@ -46,8 +46,7 @@ public class SeleniumTest {
     @Test
     public void test() throws UnknownHostException {
         InetAddress ip = InetAddress.getByName("nginx");
-        //driver.get("https://" + ip.getHostAddress() + "/");
-        driver.get("https://worldinmovies.duckdns.org/");
+        driver.get("https://" + ip.getHostAddress() + "/");
 
         assertEquals("Worldinmovies", driver.getTitle());
     }
