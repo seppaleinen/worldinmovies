@@ -3,6 +3,7 @@ package se.david.selenium;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
+import se.david.selenium.pages.IndexPage;
 import se.david.selenium.util.DriverHelper;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 public class SeleniumTest {
     private WebDriver driver;
     private String url = "http://worldinmovies.duckdns.org/";
+    private IndexPage indexPage;
 
     @Before
     public void setup() {
@@ -26,12 +28,33 @@ public class SeleniumTest {
         url = envUrl != null ? envUrl : url;
 
         driver = DriverHelper.getPhantomJS(binary);
+        indexPage = new IndexPage(driver);
     }
 
     @Test
-    public void test() {
+    public void testMapPage() {
         driver.get(url);
 
-        assertEquals("Worldinmovies", driver.getTitle());
+        indexPage.verifyPageLoaded().
+                moveToMap().
+                verifyPageLoaded();
+    }
+
+    @Test
+    public void testChartPage() {
+        driver.get(url);
+
+        indexPage.verifyPageLoaded().
+                moveToChart().
+                verifyPageLoaded();
+    }
+
+    @Test
+    public void testHomePage() {
+        driver.get(url);
+
+        indexPage.verifyPageLoaded().
+                moveToHome().
+                verifyPageLoaded();
     }
 }
