@@ -4,6 +4,8 @@ services:
   selenium:
     restart: never
     build: .
+    environment:
+     - NGINX_URL=https://nginx
     links:
      - nginx:nginx
     depends_on:

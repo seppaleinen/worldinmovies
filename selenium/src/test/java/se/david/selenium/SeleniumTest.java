@@ -3,39 +3,34 @@ package se.david.selenium;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import se.david.selenium.util.DriverHelper;
 
 import java.io.File;
-import java.net.UnknownHostException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+
 
 public class SeleniumTest {
     private WebDriver driver;
+    private String url = "http://worldinmovies.duckdns.org/";
 
     @Before
     public void setup() {
         String binary = System.getProperty("phantomjs.binary");
-        assertNotNull(binary);
-        assertTrue(new File(binary).exists());
+        assertNotNull("phantomjs.binary property must not be null", binary);
+        assertTrue("Binary file must exist: " + binary, new File(binary).exists());
 
-        DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
+        String envUrl = System.getenv("NGINX_URL");
+        url = envUrl != null ? envUrl : url;
 
-        capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, binary);
-        capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, new String[] {
-                "--web-security=no",
-                "--ignore-ssl-errors=yes",
-                "--debug=yes"
-        });
-
-        driver = new PhantomJSDriver(capabilities);
+        driver = DriverHelper.getPhantomJS(binary);
     }
 
     @Test
-    public void test() throws UnknownHostException {
-        driver.get("https://nginx");
+    public void test() {
+        driver.get(url);
 
         assertEquals("Worldinmovies", driver.getTitle());
     }
