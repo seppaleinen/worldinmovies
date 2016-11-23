@@ -3,7 +3,6 @@ jdk:
   - oraclejdk8
 
 sudo: required
-group: edge
 dist: trusty
 
 services:
@@ -31,7 +30,6 @@ env:
   - COMMIT=${TRAVIS_COMMIT::8}
 
 before_install:
-  - sudo find / -name java 2>/dev/null
   - sudo -H pip install --upgrade pip setuptools
   - sudo -H pip install -r frontend/webapp/src/main/webapp/requirements.txt;
 
