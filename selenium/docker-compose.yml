@@ -10,6 +10,7 @@ services:
      - nginx:nginx
     depends_on:
      - nginx
+    command: mvn clean install -Pselenium
 
   nginx:
     restart: always

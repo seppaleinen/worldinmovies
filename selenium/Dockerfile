@@ -1,6 +1,5 @@
-FROM maven:3.3-onbuild-alpine
-ADD . /selenium
-
+FROM maven:3.3-alpine
+ADD src/ /selenium/src
+ADD pom.xml /selenium/pom.xml
 WORKDIR /selenium
-ENTRYPOINT mvn clean install -Pselenium
-#ENTRYPOINT tail -f Dockerfile
+CMD echo ''
