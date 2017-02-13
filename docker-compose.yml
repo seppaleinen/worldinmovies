@@ -55,7 +55,6 @@ services:
 
   data:
     image: mvertes/alpine-mongo
-    restart: never
     volumes:
       - /data/db
     command: echo ''
