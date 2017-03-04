@@ -14,9 +14,9 @@ server {
     ssl_ciphers 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
 
     location /static {
-        expires 1d;
+        expires 7d;
         proxy_cache STATIC;
-        proxy_cache_valid 200 1d;
+        proxy_cache_valid 200 7d;
         add_header Cache-Control "public";
 
         alias /webapp/application/static;

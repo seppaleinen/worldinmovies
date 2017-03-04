@@ -4,10 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import se.david.backend.WorldInMoviesApplication;
 import se.david.backend.domain.Movie;
 import se.david.backend.domain.User;
 
@@ -17,11 +17,9 @@ import java.util.Collections;
 
 import static org.junit.Assert.*;
 
+@ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-        classes = WorldInMoviesApplication.class,
-        properties = "classpath:application-test.properties")
-@TestPropertySource(locations="classpath:application-test.properties")
+@DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 public class UserRepositoryIT {
     @Autowired
     private UserRepository userRepository;

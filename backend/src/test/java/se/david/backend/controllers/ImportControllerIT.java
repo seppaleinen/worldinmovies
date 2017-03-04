@@ -14,7 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import se.david.backend.WorldInMoviesApplication;
 import se.david.backend.repository.CountryRepository;
@@ -30,12 +30,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = WorldInMoviesApplication.class,
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = "classpath:application-test.properties")
-@TestPropertySource(locations="classpath:application-test.properties")
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+)
 public class ImportControllerIT {
     @Autowired
     private MovieRepository movieRepository;
