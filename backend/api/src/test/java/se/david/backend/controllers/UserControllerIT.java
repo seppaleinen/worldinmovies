@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import se.david.backend.WorldInMoviesApplication;
@@ -25,12 +26,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = WorldInMoviesApplication.class,
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = "classpath:application-test.properties")
-@TestPropertySource(locations="classpath:application-test.properties")
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+)
 public class UserControllerIT {
     @Autowired
     private UserRepository userRepository;
