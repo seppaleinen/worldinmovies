@@ -33,10 +33,12 @@ server {
 server {
     listen 80;
     server_name worldinmovies.duckdns.org;
+    charset utf-8;
 
-    location .well-known/acme-challenge {
-            default_type "text/plain";
-            root /tmp/lets-encrypt-auto;
+    location ~ /.well-known {
+        allow all;
+        default_type "text/plain";
+        root /tmp/letsencrypt-auto;
     }
 
     location / {
