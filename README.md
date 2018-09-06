@@ -5,40 +5,56 @@ This webapp project is for showing which parts of the world that you've seen mov
 Countries that you've seen a movie from, appears as green.
 And countries that you haven't seen yet appears as red.
 
-For now the only way to add which movies that you've seen is to upload the 
-"rated movies" export file from imdb
-
-Prototype version is up at https://worldinmovies.duckdns.org/
-
-##Todo
-* Create admin page
-* Move batch jobs to functions from admin page
-* Create signup/login functionality
-* Connect movies to user
-* Load "seen movies" from database instead of html-tag
-* Ability to add "seen movie" from page
-  * Search field
-  * Add button from country popup-page
+In future might add functionality to add different graphs
 
 
-##To start docker instances by maven:
+As IMDB no longer exposes the data on their FTP servers, and have removed the country of origin  
+data from their new API. I'll try and make a new start of this project from scratch.
+
+I've decided against using java, as it's too resource consuming for the basic servers that I will use.
+
+
+## Todo
+* Backend
+  - Import movies
+    - Decide on language and framework
+    - TMDB
+      - Get account
+      - Get file http://files.tmdb.org/p/exports/movie_ids_05_01_2018.json.gz
+      - /3/movie/{movie_id}/lists?api_key=<<api_key>>
+  - Find suitable DB
+    - Low RAM consumption
+    - Preferably built for searches
+  - Service for searching movies
+* Frontend
+  - React
+    - Initial setup
+    - Basic layout
+    - Framework for map integration
+* Integration Tests
+  - Security
+  - Functional
+  - Performance
+
+## To start docker instances by maven:
 Dependencies:
 
-* Maven https://maven.apache.org/
 * Docker https://docs.docker.com/engine/installation/
 * Docker-compose https://docs.docker.com/compose/install/
-* MongoDB https://docs.mongodb.org/manual/administration/install-community/ # For maven tests only.. mvn clean install -Dmaven.test.skip=True to skip
-```
+
+```bash
 mvn clean install -Pdocker
+
 docker-compose up --build
 ```
 
-##To start docker by dockerhub
+## To start
 Dependencies:
 
 * Docker https://docs.docker.com/engine/installation/
 * Docker-compose https://docs.docker.com/compose/install/
-```
+
+```bash
 docker-compose pull
 docker-compose up --build
 docker-compose kill #To stop the running services

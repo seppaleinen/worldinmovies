@@ -9,3 +9,4 @@ backend.log
 **/phantomjsdriver.log
 
 .DS_Store
+.idea/
