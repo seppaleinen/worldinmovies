@@ -16,16 +16,11 @@ I've decided against using java, as it's too resource consuming for the basic se
 
 ## Todo
 * Backend
-  - Import movies
-    - Decide on language and framework
-    - TMDB
-      - Get account
-      - Get file http://files.tmdb.org/p/exports/movie_ids_05_01_2018.json.gz
-      - /3/movie/{movie_id}/lists?api_key=<<api_key>>
+  - Import
   - Find suitable DB
     - Low RAM consumption
     - Preferably built for searches
-  - Service for searching movies
+  - API
 * Frontend
   - React
     - Initial setup
