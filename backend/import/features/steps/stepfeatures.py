@@ -9,17 +9,9 @@ from hamcrest import assert_that, \
     not_none, \
     none, \
     equal_to
-from wiremock.constants import Config
-from wiremock.client import Mapping, \
-    MappingRequest, \
-    MappingResponse, \
-    HttpMethods, \
-    Mappings, \
-    CommonHeaders
-from wiremock.server import WireMockServer
+
 
 results = []
-
 
 
 @given('{text} is in daily file response')
@@ -27,29 +19,9 @@ def given_watchlist_data(context, text):
     my_path = os.path.abspath(os.path.dirname(__file__))
     path = os.path.join(my_path, "../resources/" + text)
 
-    data = open(path, 'rt').read()
-    responseHeaders = {
-        "Content-Length": 123,
-        "Accept-Ranges": "bytes"
-    }
+    data = open(path, 'rb').read()
 
-    mapping = Mapping(
-        priority=100,
-        request=MappingRequest(
-            method=HttpMethods.GET,
-            url_path_pattern='/p/exports/movie_ids_.*.json.gz'
-            #url='/p/exports/movie_ids_09_12_2018.json.gz'
-        ),
-        response=MappingResponse(
-            status=200,
-            base64Body=data,
-            headers=responseHeaders
-        ),
-        persistent=False,
-    )
-    mapping = Mappings.create_mapping(mapping=mapping)
-
-    all_mappings = Mappings.retrieve_all_mappings()
+    context.mock.when('GET /p/exports/movie_ids_09_12_2018.json.gz').reply(data)
 
 
 @when('starting import')

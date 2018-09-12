@@ -11,6 +11,7 @@ describing how many seconds to wait until next request is possible.
 
 # Todo
 
+* https://pretenders.readthedocs.io/en/latest/
 * Get file http://files.tmdb.org/p/exports/movie_ids_05_01_2018.json.gz
 * endpoint/3/movie/{movie_id}/lists?api_key=<<api_key>>
 

@@ -1,15 +1,20 @@
-from wiremock.server import WireMockServer
-from wiremock.constants import Config
+from pretenders.client.http import HTTPMock
 import os
+import threading
+import time
+from pretenders.server import server
+
+
+def start_server():
+    server.run(host='localhost', port=8000)
 
 
 def before_all(context):
-    wm = context.wiremock_server = WireMockServer()
-    wm.start()
-    Config.base_url = 'http://localhost:{}/__admin'.format(wm.port)
-    os.environ["tmdb_url"] = 'http://localhost:{}'.format(wm.port)
+    t = context.t = threading.Thread(target=start_server)
+    t.daemon = True
+    t.start()
+    time.sleep(1)
 
-
-def after_all(context):
-    context.wiremock_server.stop()
+    mock = context.mock = HTTPMock('localhost', 8000)
+    os.environ["tmdb_url"] = 'http://localhost:8000'
 
