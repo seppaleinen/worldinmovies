@@ -19,5 +19,12 @@ describing how many seconds to wait until next request is possible.
 
 
 ```bash
+# Install requirements
 pip install -r requirements
+
+# To start importer
+python3 importer.py
+
+# Run tests
+behave
 ```

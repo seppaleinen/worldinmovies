@@ -2,15 +2,18 @@ import requests
 import datetime
 import gzip
 import json
+import os
 from clint.textui import progress
 
 
 todays_date = datetime.datetime.now().strftime("%m_%d_%Y")
 filename = "movie_ids_%s.json.gz" % todays_date
+# Default back to actual tmdb url
+tmdb_url = os.getenv('tmdb_url', 'http://files.tmdb.org')
 
 
 def download_daily_file():
-    url = "http://files.tmdb.org/p/exports/%s" % filename
+    url = "%s/p/exports/%s" % (tmdb_url, filename)
     print("URL %s" % url)
     response = requests.get(url, stream=True)
     if response.status_code == 200:
@@ -31,7 +34,8 @@ def download_daily_file():
                 video = data['video']
                 popularity = data['popularity']
                 if adult is False and video is False:
-                    print("ID: %s, TITLE: %s, POPULARITY: %s" % (id, original_title, popularity))
+                    adult = False
+                    #print("ID: %s, TITLE: %s, POPULARITY: %s" % (id, original_title, popularity))
             except Exception:
                 print("This line fucked up: %s" % i)
 
@@ -43,4 +47,5 @@ def unzip_file():
     return file_content.splitlines()
 
 
-download_daily_file()
+if __name__ == '__main__':
+    download_daily_file()

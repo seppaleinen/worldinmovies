@@ -1,5 +1,5 @@
-requests==2.9.1
+requests==2.13.0
 behave==1.2.5
 pyhamcrest>=1.9.0
 clint
-gzip
+wiremock
