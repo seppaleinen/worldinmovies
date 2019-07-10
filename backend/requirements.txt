@@ -1,6 +1,6 @@
 django
 psycopg2
-requests==2.13.0
+requests>=2.20.0
 behave==1.2.5
 pyhamcrest>=1.9.0
 clint
