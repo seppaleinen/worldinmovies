@@ -5,8 +5,8 @@ and saving to database.
 
 Rate limit is 40 requests every 10 seconds  
 response header X-RateLimit will describe how many requests are possible  
-before being limitted. 
-When limitted 429 will be returned with a response header Retry-After  
+before being limited. 
+When limited 429 will be returned with a response header Retry-After  
 describing how many seconds to wait until next request is possible.
 
 # Todo

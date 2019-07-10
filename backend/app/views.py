@@ -2,6 +2,7 @@ import datetime, requests, gzip, json
 
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.db import transaction
 
 from app.models import Movie
 
@@ -12,12 +13,11 @@ def index(request):
 
 def get_movies(request):
     all_movies = Movie.objects.all()
-    for movie in all_movies:
-        print("Fetched: %s" % movie.original_title)
     print("Fetched size: %s" % all_movies.count())
     return HttpResponse("hejhej")
 
 
+@transaction.atomic
 def download_file():
     todays_date = datetime.datetime.now().strftime("%m_%d_%Y")
     daily_export_url = "http://files.tmdb.org/p/exports/movie_ids_%s.json.gz" % todays_date
@@ -27,6 +27,7 @@ def download_file():
         with open('movies.json.gz', 'wb') as f:
             f.write(response.content)
 
+        movies = []
         contents = unzip_file()
         for i in contents:
             try:
@@ -37,11 +38,14 @@ def download_file():
                 video = data['video']
                 popularity = data['popularity']
                 if video is False and adult is False:
-                    print("ID: %s, TITLE: %s, POPULARITY: %s" % (id, original_title, popularity))
-                    movie = Movie(id=id, original_title=original_title, popularity=popularity)
-                    movie.save()
+                    movies.append(Movie(id=id, original_title=original_title, popularity=popularity))
             except Exception as e:
-                print("This line fucked up: %s" % i)
+                print("This line fucked up: %s, because of %s" % (i, e))
+        # Creates all, but crashes as soon as you try to update the list
+        try:
+            Movie.objects.bulk_create(movies)
+        except Exception as e:
+            print("You done fucked up: %s" % e)
 
 
 def unzip_file():
