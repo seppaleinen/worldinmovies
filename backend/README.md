@@ -1,31 +1,65 @@
-# Import
+# Backend
 
-This part will be responsible for importing all movie data  
-and saving to database. 
+This part will be the backend handling imports and serving data to the front-end.
 
-Rate limit is 40 requests every 10 seconds  
-response header X-RateLimit will describe how many requests are possible  
-before being limited. 
-When limited 429 will be returned with a response header Retry-After  
-describing how many seconds to wait until next request is possible.
+In future, this might be separated into different backend systems but for now will be one big chunk.
 
-# Todo
 
-* https://pretenders.readthedocs.io/en/latest/
-* Get file http://files.tmdb.org/p/exports/movie_ids_<<date>>_<<month>_<<year>>.json.gz
-* endpoint/3/movie/{movie_id}/lists?api_key=<<api_key>>
+Basically will be handling
+* Import
+  - Daily file export from TMDB with all movie ids that are available
+  - Fetching movie data from TMDB, dependent on the movie ids received from the daily file
+* Serving Frontend
 
-* https://developers.themoviedb.org/3/getting-started/request-rate-limiting
-* https://www.themoviedb.org/settings/api
+### Todo
+
+* Need to write tests, preferably written in behave
+* Datamodel representing tmdbs data
+  - production_countries
+  - imdb_id
+  - original_language
+  - original_title
+  - overview
+  - popularity
+  - poster_path
+  - production_countries [iso_3166_1,name]
+  - release_date
+  - revenue
+  - runtime
+  - spoken_languages [iso_639_1,name]
+  - vote_average
+  - vote_count
+  - alternative_titles [iso_3166_1,title,type]
+* Raw datadump of what we received from TMDB as JSON
+* Postgresql integration
+* Gunicorn or similar server
+* Simple way of showing ETA of import
+* Verify memory consumption
+
+### Requirements
+
+* Python3
+* Postgresql
 
 
 ```bash
 # Install requirements
-pip install -r requirements
+pip3 install -r requirements
 
-# To start importer
-python3 importer.py
+# To create and update database
+./manage.py makemigrations && ./manage.py migrate
 
-# Run tests
-behave
+# To start server
+./manage.py runserver
+
+
+# Or with docker
+# Build and start servers
+docker-compose up --build -d
+
+# Shut down servers
+docker-compose kill
+
+# Shut down servers and delete all data
+docker-compose down
 ```
