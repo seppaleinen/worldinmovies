@@ -3,7 +3,7 @@ import datetime, requests, gzip, json, os, sys, concurrent.futures, time
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.db import transaction
-from app.models import Movie
+from app.models import Movie, Genre
 
 
 def index(request):
@@ -64,8 +64,6 @@ def fetch_movie(request):
 
 
 def fetch_movie_with_id(id, index):
-    if Movie.objects.filter(pk=id).exists():
-        return None
     API_KEY = os.getenv('TMDB_API')
     url = "https://api.themoviedb.org/3/movie/{movie_id}?" \
           "api_key={api_key}&" \
@@ -87,8 +85,7 @@ CONNECTIONS = 5
 
 
 def concurrent_stuff():
-    ids = []
-    movies = Movie.objects.all()
+    movies = [movie for movie in Movie.objects.all() if not movie.fetched]
     length = len(movies)
     with concurrent.futures.ThreadPoolExecutor(max_workers=CONNECTIONS) as executor:
         future_to_url = (executor.submit(fetch_movie_with_id, movie.id, index) for index, movie in enumerate(movies))
@@ -100,3 +97,16 @@ def concurrent_stuff():
                 print(exc)
                 quit()
 
+
+def fetch_genres(request):
+    API_KEY = os.getenv('TMDB_API')
+    url = "https://api.themoviedb.org/3/genre/movie/list?api_key={api_key}&language=en-US".format(api_key=API_KEY)
+    response = requests.get(url, stream=True)
+    if response.status_code == 200:
+        genres_from_json = json.loads(response.content)['genres']
+        for genre in genres_from_json:
+            print(genre)
+            Genre(id=genre['id'], name=genre['name']).save()
+    for genresa in Genre.objects.all():
+        print("Genre: %s" % genresa.name)
+    return HttpResponse("hejhej")
