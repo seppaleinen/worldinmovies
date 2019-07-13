@@ -7,9 +7,43 @@ class Movie(models.Model):
     popularity = models.DecimalField(decimal_places=3, max_digits=10)
     fetched = models.BooleanField(default=False)
     budget = models.IntegerField(null=True, blank=True)
+    imdb_id = models.CharField(max_length=30, null=True, blank=True)
+    original_language = models.CharField(max_length=30, null=True, blank=True)
+    overview = models.CharField(max_length=800, null=True, blank=True)
+    poster_path = models.CharField(max_length=40, null=True, blank=True)
+    release_date = models.CharField(max_length=10, null=True, blank=True)
+    revenue = models.IntegerField(null=True, blank=True)
+    runtime = models.IntegerField(null=True, blank=True)
+    vote_average = models.DecimalField(decimal_places=1, max_digits=10, null=True, blank=True)
+    vote_count = models.IntegerField(null=True, blank=True)
+    raw_response = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return "id: %s, original_title: %s, original_language: %s" % (self.id, self.original_title, self.original_language)
+
     # genres = models.ManyToManyField('Genre')
 
 
 class Genre(models.Model):
+    movie = models.ForeignKey('Movie', related_name='genres', on_delete=models.CASCADE)
     id = models.IntegerField(primary_key=True)
     name = models.TextField()
+
+
+class AlternativeTitle(models.Model):
+    movie = models.ForeignKey('Movie', related_name='alternative_titles', on_delete=models.CASCADE)
+    iso_3166_1 = models.CharField(max_length=2)
+    title = models.CharField(max_length=200)
+    type = models.CharField(max_length=50, blank=True, null=True)
+
+
+class SpokenLanguage(models.Model):
+    movie = models.ForeignKey('Movie', related_name='spoken_languages', on_delete=models.CASCADE)
+    iso_639_1 = models.CharField(max_length=2)
+    name = models.CharField(max_length=50)
+
+
+class ProductionCountries(models.Model):
+    movie = models.ForeignKey('Movie', related_name='production_countries', on_delete=models.CASCADE)
+    iso_3166_1 = models.CharField(max_length=2)
+    name = models.CharField(max_length=50)
