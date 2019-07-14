@@ -25,25 +25,25 @@ class Movie(models.Model):
 
 
 class Genre(models.Model):
-    movie = models.ForeignKey('Movie', related_name='genres', on_delete=models.CASCADE)
-    id = models.IntegerField(primary_key=True)
+    movie = models.ForeignKey(Movie, related_name='genres', on_delete=models.CASCADE)
+    # id = models.IntegerField(primary_key=True)
     name = models.TextField()
 
 
 class AlternativeTitle(models.Model):
-    movie = models.ForeignKey('Movie', related_name='alternative_titles', on_delete=models.CASCADE)
+    movie = models.ForeignKey(Movie, related_name='alternative_titles', on_delete=models.CASCADE)
     iso_3166_1 = models.CharField(max_length=2)
     title = models.CharField(max_length=200)
     type = models.CharField(max_length=50, blank=True, null=True)
 
 
 class SpokenLanguage(models.Model):
-    movie = models.ForeignKey('Movie', related_name='spoken_languages', on_delete=models.CASCADE)
+    movie = models.ForeignKey(Movie, related_name='spoken_languages', on_delete=models.CASCADE)
     iso_639_1 = models.CharField(max_length=2)
     name = models.CharField(max_length=50)
 
 
 class ProductionCountries(models.Model):
-    movie = models.ForeignKey('Movie', related_name='production_countries', on_delete=models.CASCADE)
+    movie = models.ForeignKey(Movie, related_name='production_countries', on_delete=models.CASCADE)
     iso_3166_1 = models.CharField(max_length=2)
     name = models.CharField(max_length=50)

@@ -8,12 +8,7 @@ Feature: Live server
         Then I should see "No movies fetched yet"
 
 
-    Scenario: Import of daily file
-        Given TMDB Daily File is mocked
-        When I visit "/movies"
-        Then I should see "Amount of movies imported: 740"
-
-    Scenario: First visit to page
-        When I visit "/"
-        Then I should see "No movies fetched yet"
-
+    #Scenario: Import of daily file
+    #    Given TMDB Daily File is mocked
+    #    When I visit "/movies"
+    #    Then I should see "Amount of movies imported: 740"

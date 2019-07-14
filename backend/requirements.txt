@@ -7,3 +7,4 @@ clint
 pretenders
 behave-django
 httpretty
+requests-mock
