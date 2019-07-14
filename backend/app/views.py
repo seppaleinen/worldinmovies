@@ -4,6 +4,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.db import transaction
 from app.models import Movie, Genre
+import os
+
+
 
 
 def index(request):
