@@ -118,8 +118,6 @@ def concurrent_stuff():
                 db_movie.vote_count = fetched_movie['vote_count']
                 print("Saving: %s" % db_movie)
                 db_movie.save()
-
-                #print("Response: \n%s" % data)
             except Exception as exc:
                 print(exc)
                 quit()

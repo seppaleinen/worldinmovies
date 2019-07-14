@@ -15,22 +15,9 @@ Basically will be handling
 
 * Need to write tests, preferably written in behave
 * Datamodel representing tmdbs data
-  - production_countries
-  - imdb_id
-  - original_language
-  - original_title
-  - overview
-  - popularity
-  - poster_path
   - production_countries [iso_3166_1,name]
-  - release_date
-  - revenue
-  - runtime
   - spoken_languages [iso_639_1,name]
-  - vote_average
-  - vote_count
   - alternative_titles [iso_3166_1,title,type]
-* Raw datadump of what we received from TMDB as JSON
 * Postgresql integration
 * Gunicorn or similar server
 * Simple way of showing ETA of import
