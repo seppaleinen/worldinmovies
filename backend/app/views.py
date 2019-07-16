@@ -3,7 +3,7 @@ import datetime, requests, gzip, json, os, sys, concurrent.futures, time
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.db import transaction
-from app.models import Movie, Genre
+from app.models import Movie, Genre, AlternativeTitle, SpokenLanguage, ProductionCountries
 import os
 
 
@@ -116,6 +116,26 @@ def concurrent_stuff():
                 db_movie.runtime = fetched_movie['runtime']
                 db_movie.vote_average = fetched_movie['vote_average']
                 db_movie.vote_count = fetched_movie['vote_count']
+                alt_titles = []
+                for fetch_alt_title in fetched_movie['alternative_titles']['titles']:
+                    alt_title = AlternativeTitle(movie_id=db_movie.id, iso_3166_1=fetch_alt_title['iso_3166_1'], title=fetch_alt_title['title'], type=fetch_alt_title['type'])
+                    alt_title.save()
+                    alt_titles.append(alt_title)
+                db_movie.alternative_titles.set(alt_titles)
+                spoken_langs = []
+                for fetch_spoken_lang in fetched_movie['spoken_languages']:
+                    spoken_lang = SpokenLanguage(movie_id=db_movie.id, iso_639_1=fetch_spoken_lang['iso_639_1'], name=fetch_spoken_lang['name'])
+                    spoken_lang.save()
+                    spoken_langs.append(spoken_lang)
+                db_movie.spoken_languages.set(spoken_langs)
+
+                prod_countries = []
+                for fetch_prod_country in fetched_movie['production_countries']:
+                    prod_country = ProductionCountries(movie_id=db_movie.id, iso_3166_1=fetch_prod_country['iso_3166_1'], name=fetch_prod_country['name'])
+                    prod_country.save()
+                    prod_countries.append(prod_country)
+                db_movie.production_countries.set(prod_countries)
+
                 print("Saving: %s" % db_movie)
                 db_movie.save()
             except Exception as exc:
