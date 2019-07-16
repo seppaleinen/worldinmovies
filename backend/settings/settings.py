@@ -75,22 +75,35 @@ WSGI_APPLICATION = 'settings.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'postgres',
-#        'USER': 'postgres',
-#        'HOST': 'db',
-#        'PORT': 5432,
-#    }
-#}
-PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'yourdatabasename.db'),
+environment = os.getenv('ENVIRONMENT', 'localhost')
+if environment == 'localhost':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'HOST': 'localhost',
+            'PORT': 5432,
+        }
     }
-}
+elif environment == 'DOCKER':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'HOST': 'db',
+            'PORT': 5432,
+        }
+    }
+else:
+    PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'yourdatabasename.db'),
+        }
+    }
 
 
 # Password validation

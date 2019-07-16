@@ -3,13 +3,13 @@ from django.db import models
 
 class Movie(models.Model):
     id = models.IntegerField(primary_key=True)
-    original_title = models.CharField(max_length=200)
+    original_title = models.CharField(max_length=500)
     popularity = models.DecimalField(decimal_places=3, max_digits=10)
     fetched = models.BooleanField(default=False)
     budget = models.IntegerField(null=True, blank=True)
     imdb_id = models.CharField(max_length=30, null=True, blank=True)
     original_language = models.CharField(max_length=30, null=True, blank=True)
-    overview = models.CharField(max_length=800, null=True, blank=True)
+    overview = models.CharField(max_length=2000, null=True, blank=True)
     poster_path = models.CharField(max_length=40, null=True, blank=True)
     release_date = models.CharField(max_length=10, null=True, blank=True)
     revenue = models.IntegerField(null=True, blank=True)
@@ -33,7 +33,7 @@ class Genre(models.Model):
 class AlternativeTitle(models.Model):
     movie = models.ForeignKey(Movie, related_name='alternative_titles', on_delete=models.CASCADE)
     iso_3166_1 = models.CharField(max_length=2)
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=500)
     type = models.CharField(max_length=50, blank=True, null=True)
 
 
