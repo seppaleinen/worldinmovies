@@ -54,8 +54,8 @@ def download_files():
                 Movie.objects.bulk_create(chunk)
             return "Amount of movies imported: %s" % len(contents)
         except Exception as e:
-        	print("Error: %s" % e)
-        	return "Exception: %s" % e
+            print("Error: %s" % e)
+            return "Exception: %s" % e
     else:
         return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
 
@@ -68,23 +68,18 @@ def unzip_file():
 
 
 def fetch_movie(request):
-    concurrent_stuff()
-    #all_movies = Movie.objects.all()
-    #for movie in all_movies:
-    #    with open("%s.json" % movie.id, 'wb') as f:
-    #        print("Fetching id: %s" % movie.id)
-    #        f.write(fetch_movie_with_id(movie.id))
+    return HttpResponse(concurrent_stuff())
 
 
 def fetch_movie_with_id(id, index):
-    API_KEY = os.getenv('TMDB_API')
+    API_KEY = os.getenv('TMDB_API', 'test')
     url = "https://api.themoviedb.org/3/movie/{movie_id}?" \
           "api_key={api_key}&" \
           "language=en-US&" \
           "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(movie_id=id, api_key=API_KEY)
     response = requests.get(url, stream=True)
     if response.status_code == 200:
-        print("Fetched index: %s" % (index))
+        # print("Fetched index: %s" % (index))
         return response.content
     elif response.status_code == 429:
         retryAfter = int(response.headers['Retry-After']) + 1
@@ -138,12 +133,11 @@ def concurrent_stuff():
                     prod_country.save()
                     prod_countries.append(prod_country)
                 db_movie.production_countries.set(prod_countries)
-
-                print("Saving: %s" % db_movie)
                 db_movie.save()
             except Exception as exc:
                 print(exc)
-                quit()
+                return "Failed with exception: %s" % exc
+    return "Fetched and saved: %s movies" % length
 
 
 def fetch_genres(request):

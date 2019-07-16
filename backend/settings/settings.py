@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import os
+import os, sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -76,7 +76,15 @@ WSGI_APPLICATION = 'settings.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 environment = os.getenv('ENVIRONMENT', 'localhost')
-if environment == 'localhost':
+if 'test' in sys.argv:
+    PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'worldinmovies.db'),
+        }
+    }
+elif environment == 'localhost':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -104,7 +112,6 @@ else:
             'NAME': os.path.join(BASE_DIR, 'worldinmovies.db'),
         }
     }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

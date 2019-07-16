@@ -8,3 +8,4 @@ pretenders
 behave-django
 httpretty
 requests-mock
+responses

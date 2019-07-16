@@ -1,0 +1,480 @@
+{
+  "adult": false,
+  "backdrop_path": "/tNpJuz8NEG0DsGG8SN0dL2kbCzs.jpg",
+  "belongs_to_collection": null,
+  "budget": 10500000,
+  "genres": [
+	{
+	  "id": 878,
+	  "name": "Science Fiction"
+	},
+	{
+	  "id": 12,
+	  "name": "Adventure"
+	},
+	{
+	  "id": 10751,
+	  "name": "Family"
+	},
+	{
+	  "id": 14,
+	  "name": "Fantasy"
+	}
+  ],
+  "homepage": "http://www.et20.com/",
+  "id": 601,
+  "imdb_id": "tt0083866",
+  "original_language": "en",
+  "original_title": "E.T. the Extra-Terrestrial",
+  "overview": "After a gentle alien becomes stranded on Earth, the being is discovered and befriended by a young boy named Elliott. Bringing the extraterrestrial into his suburban California house, Elliott introduces E.T., as the alien is dubbed, to his brother and his little sister, Gertie, and the children decide to keep its existence a secret. Soon, however, E.T. falls ill, resulting in government intervention and a dire situation for both Elliott and the alien.",
+  "popularity": 22.255,
+  "poster_path": "/8htLKK03TJjKZOXJgihZCu8v0P.jpg",
+  "production_companies": [
+	{
+	  "id": 33,
+	  "logo_path": "/8lvHyhjr8oUKOOy2dKXoALWKdp0.png",
+	  "name": "Universal Pictures",
+	  "origin_country": "US"
+	},
+	{
+	  "id": 56,
+	  "logo_path": "/cEaxANEisCqeEoRvODv2dO1I0iI.png",
+	  "name": "Amblin Entertainment",
+	  "origin_country": "US"
+	}
+  ],
+  "production_countries": [
+	{
+	  "iso_3166_1": "US",
+	  "name": "United States of America"
+	}
+  ],
+  "release_date": "1982-06-11",
+  "revenue": 792965326,
+  "runtime": 115,
+  "spoken_languages": [
+	{
+	  "iso_639_1": "en",
+	  "name": "English"
+	}
+  ],
+  "status": "Released",
+  "tagline": "He is afraid. He is alone. He is three million light years from home.",
+  "title": "E.T. the Extra-Terrestrial",
+  "video": false,
+  "vote_average": 7.5,
+  "vote_count": 6545,
+  "alternative_titles": {
+	"titles": [
+	  {
+		"iso_3166_1": "US",
+		"title": "E T The Extra Terrestrial",
+		"type": ""
+	  },
+	  {
+		"iso_3166_1": "US",
+		"title": "ET The Extra Terrestrial",
+		"type": ""
+	  },
+	  {
+		"iso_3166_1": "US",
+		"title": "ET",
+		"type": ""
+	  },
+	  {
+		"iso_3166_1": "US",
+		"title": "E.T.",
+		"type": ""
+	  },
+	  {
+		"iso_3166_1": "FR",
+		"title": "ET l'Extra Terrestre",
+		"type": ""
+	  },
+	  {
+		"iso_3166_1": "JP",
+		"title": "E.T.",
+		"type": ""
+	  },
+	  {
+		"iso_3166_1": "BG",
+		"title": "Извънземното",
+		"type": ""
+	  },
+	  {
+		"iso_3166_1": "DE",
+		"title": "E.T. - Der Außerirdische",
+		"type": ""
+	  },
+	  {
+		"iso_3166_1": "CH",
+		"title": "E.T. - Der Ausserirdische",
+		"type": ""
+	  },
+	  {
+		"iso_3166_1": "IL",
+		"title": "אי טי",
+		"type": ""
+	  },
+	  {
+		"iso_3166_1": "IL",
+		"title": "אי טי חבר מכוכב אחר",
+		"type": ""
+	  },
+	  {
+		"iso_3166_1": "KR",
+		"title": "이티",
+		"type": ""
+	  },
+	  {
+		"iso_3166_1": "NL",
+		"title": "E.T. en Zijn Avontuur op Aarde",
+		"type": ""
+	  }
+	]
+  },
+  "credits": {
+	"cast": [
+	  {
+		"cast_id": 20,
+		"character": "Elliott",
+		"credit_id": "52fe425bc3a36847f8017e4d",
+		"gender": 2,
+		"id": 9976,
+		"name": "Henry Thomas",
+		"order": 0,
+		"profile_path": "/6d3C0i9Dpc4T9BEjYUw3pbb4BlJ.jpg"
+	  },
+	  {
+		"cast_id": 22,
+		"character": "Gertie",
+		"credit_id": "52fe425bc3a36847f8017e55",
+		"gender": 1,
+		"id": 69597,
+		"name": "Drew Barrymore",
+		"order": 1,
+		"profile_path": "/y8GKPHsBXVGIGBdDzdNxjm0IbKF.jpg"
+	  },
+	  {
+		"cast_id": 21,
+		"character": "Michael",
+		"credit_id": "52fe425bc3a36847f8017e51",
+		"gender": 2,
+		"id": 9978,
+		"name": "Robert MacNaughton",
+		"order": 2,
+		"profile_path": "/a02sMKmi3ke4tRviEldnKBAxqfO.jpg"
+	  },
+	  {
+		"cast_id": 34,
+		"character": "Mary",
+		"credit_id": "52fe425bc3a36847f8017e83",
+		"gender": 1,
+		"id": 62001,
+		"name": "Dee Wallace",
+		"order": 3,
+		"profile_path": "/zDM6pOTQJfhuOl4HB66Axj01c1F.jpg"
+	  },
+	  {
+		"cast_id": 23,
+		"character": "Keys",
+		"credit_id": "52fe425bc3a36847f8017e59",
+		"gender": 2,
+		"id": 9979,
+		"name": "Peter Coyote",
+		"order": 4,
+		"profile_path": "/5zVvYZxE6T0OeL1iaFBBCzY3QOi.jpg"
+	  },
+	  {
+		"cast_id": 33,
+		"character": "Pretty Girl",
+		"credit_id": "52fe425bc3a36847f8017e7f",
+		"gender": 1,
+		"id": 23764,
+		"name": "Erika Eleniak",
+		"order": 5,
+		"profile_path": "/7ZdUGY78qpB2MkTzAQvYEYzncwN.jpg"
+	  },
+	  {
+		"cast_id": 25,
+		"character": "Steve",
+		"credit_id": "52fe425bc3a36847f8017e61",
+		"gender": 0,
+		"id": 9981,
+		"name": "Sean Frye",
+		"order": 6,
+		"profile_path": "/ce22ZO5D7a8ATdiblkk0yF03Uu9.jpg"
+	  },
+	  {
+		"cast_id": 26,
+		"character": "Tyler",
+		"credit_id": "52fe425bc3a36847f8017e65",
+		"gender": 2,
+		"id": 2878,
+		"name": "C. Thomas Howell",
+		"order": 7,
+		"profile_path": "/8PFMkxOnn1JEKwd0nlbBuZfS7Sf.jpg"
+	  },
+	  {
+		"cast_id": 24,
+		"character": "Greg",
+		"credit_id": "52fe425bc3a36847f8017e5d",
+		"gender": 2,
+		"id": 9980,
+		"name": "K. C. Martel",
+		"order": 8,
+		"profile_path": "/vhKqhe2n3rUzXyd3Cyq0lgmFjC9.jpg"
+	  },
+	  {
+		"cast_id": 27,
+		"character": "Schoolboy",
+		"credit_id": "52fe425bc3a36847f8017e69",
+		"gender": 0,
+		"id": 9982,
+		"name": "David M. O'Dell",
+		"order": 9,
+		"profile_path": null
+	  },
+	  {
+		"cast_id": 28,
+		"character": "Science Teacher",
+		"credit_id": "52fe425bc3a36847f8017e6d",
+		"gender": 0,
+		"id": 9983,
+		"name": "Richard Swingler",
+		"order": 10,
+		"profile_path": null
+	  },
+	  {
+		"cast_id": 29,
+		"character": "Policeman",
+		"credit_id": "52fe425bc3a36847f8017e71",
+		"gender": 2,
+		"id": 9984,
+		"name": "Frank Toth",
+		"order": 11,
+		"profile_path": null
+	  },
+	  {
+		"cast_id": 30,
+		"character": "E.T. (voice)",
+		"credit_id": "52fe425bc3a36847f8017e75",
+		"gender": 0,
+		"id": 9985,
+		"name": "Pat Welsh",
+		"order": 12,
+		"profile_path": null
+	  }
+	],
+	"crew": [
+	  {
+		"credit_id": "52fe425bc3a36847f8017ddd",
+		"department": "Directing",
+		"gender": 2,
+		"id": 488,
+		"job": "Director",
+		"name": "Steven Spielberg",
+		"profile_path": "/pOK15UNaw75Bzj7BQO1ulehbPPm.jpg"
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017de3",
+		"department": "Writing",
+		"gender": 1,
+		"id": 9964,
+		"job": "Screenplay",
+		"name": "Melissa Mathison",
+		"profile_path": null
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017de9",
+		"department": "Production",
+		"gender": 1,
+		"id": 489,
+		"job": "Producer",
+		"name": "Kathleen Kennedy",
+		"profile_path": "/uHEExgTTzJNDX1Gal9CW5n3QdEJ.jpg"
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017def",
+		"department": "Production",
+		"gender": 2,
+		"id": 488,
+		"job": "Producer",
+		"name": "Steven Spielberg",
+		"profile_path": "/pOK15UNaw75Bzj7BQO1ulehbPPm.jpg"
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017df5",
+		"department": "Sound",
+		"gender": 2,
+		"id": 491,
+		"job": "Original Music Composer",
+		"name": "John Williams",
+		"profile_path": "/2Ats98PB1SH2yfEPikiLdhRuXZm.jpg"
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017dfb",
+		"department": "Camera",
+		"gender": 2,
+		"id": 9965,
+		"job": "Director of Photography",
+		"name": "Allen Daviau",
+		"profile_path": null
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017e01",
+		"department": "Editing",
+		"gender": 0,
+		"id": 9966,
+		"job": "Editor",
+		"name": "Carol Littleton",
+		"profile_path": "/wsQP1noRhkMRujRJ3uVntLXSFLf.jpg"
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017e07",
+		"department": "Production",
+		"gender": 1,
+		"id": 597,
+		"job": "Casting",
+		"name": "Jane Feinberg",
+		"profile_path": null
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017e0d",
+		"department": "Production",
+		"gender": 2,
+		"id": 598,
+		"job": "Casting",
+		"name": "Mike Fenton",
+		"profile_path": null
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017e13",
+		"department": "Production",
+		"gender": 1,
+		"id": 599,
+		"job": "Casting",
+		"name": "Marci Liroff",
+		"profile_path": "/54uSsUYIdK9UxomSwrwpBYnYyPN.jpg"
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017e19",
+		"department": "Art",
+		"gender": 2,
+		"id": 9967,
+		"job": "Production Design",
+		"name": "James D. Bissell",
+		"profile_path": "/1rKagQ6kZnEWaa8CJaoWTLQUkBh.jpg"
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017e1f",
+		"department": "Art",
+		"gender": 0,
+		"id": 9968,
+		"job": "Set Decoration",
+		"name": "Jackie Carr",
+		"profile_path": null
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017e25",
+		"department": "Costume & Make-Up",
+		"gender": 0,
+		"id": 9969,
+		"job": "Makeup Artist",
+		"name": "Robert Sidell",
+		"profile_path": null
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017e2b",
+		"department": "Art",
+		"gender": 0,
+		"id": 9970,
+		"job": "Art Department Coordinator",
+		"name": "Leslie Butcher",
+		"profile_path": null
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017e31",
+		"department": "Sound",
+		"gender": 2,
+		"id": 9971,
+		"job": "Supervising Sound Editor",
+		"name": "Charles L. Campbell",
+		"profile_path": "/1MoCPekZ23I9uyq6VPFka6o9Zkz.jpg"
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017e37",
+		"department": "Crew",
+		"gender": 0,
+		"id": 9972,
+		"job": "Special Effects",
+		"name": "Dale L. Martin",
+		"profile_path": null
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017e3d",
+		"department": "Visual Effects",
+		"gender": 0,
+		"id": 9973,
+		"job": "Visual Effects",
+		"name": "Al Bailey",
+		"profile_path": null
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017e43",
+		"department": "Crew",
+		"gender": 0,
+		"id": 9974,
+		"job": "Stunt Coordinator",
+		"name": "Glenn Randall Jr.",
+		"profile_path": null
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017e49",
+		"department": "Crew",
+		"gender": 0,
+		"id": 9975,
+		"job": "Stunts",
+		"name": "Richard E. Butler",
+		"profile_path": null
+	  },
+	  {
+		"credit_id": "52fe425bc3a36847f8017e7b",
+		"department": "Crew",
+		"gender": 2,
+		"id": 20504,
+		"job": "Special Effects",
+		"name": "Carlo Rambaldi",
+		"profile_path": null
+	  },
+	  {
+		"credit_id": "5727f0599251416dfb00276e",
+		"department": "Production",
+		"gender": 2,
+		"id": 52042,
+		"job": "Location Manager",
+		"name": "Richard Vane",
+		"profile_path": null
+	  },
+	  {
+		"credit_id": "5afd321592514126d3001540",
+		"department": "Visual Effects",
+		"gender": 2,
+		"id": 3993,
+		"job": "Visual Effects Supervisor",
+		"name": "Dennis Muren",
+		"profile_path": "/p8mmcqqwxrkcajtAxAbRosRvNUR.jpg"
+	  }
+	]
+  },
+  "external_ids": {
+	"imdb_id": "tt0083866",
+	"facebook_id": null,
+	"instagram_id": null,
+	"twitter_id": null
+  },
+  "images": {
+	"backdrops": [],
+	"posters": []
+  }
+}
