@@ -9,7 +9,7 @@ class Movie(models.Model):
     budget = models.IntegerField(null=True, blank=True)
     imdb_id = models.CharField(max_length=30, null=True, blank=True)
     original_language = models.CharField(max_length=30, null=True, blank=True)
-    overview = models.CharField(max_length=2000, null=True, blank=True)
+    overview = models.TextField(null=True, blank=True)
     poster_path = models.CharField(max_length=40, null=True, blank=True)
     release_date = models.CharField(max_length=10, null=True, blank=True)
     revenue = models.IntegerField(null=True, blank=True)
