@@ -84,10 +84,10 @@ def fetch_movie_with_id(id, index):
         return response.content
     elif response.status_code == 429:
         retryAfter = int(response.headers['Retry-After']) + 1
-        print("RetryAfter: %s" % retryAfter)
+        # print("RetryAfter: %s" % retryAfter)
         time.sleep(retryAfter)
         return fetch_movie_with_id(id, index)
-    return None
+    raise Exception("Response: %s, Content: %s" % (response.status_code, response.content))
 
 
 CONNECTIONS = 5
@@ -98,6 +98,8 @@ def concurrent_stuff():
     length = len(movies)
     with concurrent.futures.ThreadPoolExecutor(max_workers=CONNECTIONS) as executor:
         future_to_url = (executor.submit(fetch_movie_with_id, movie.id, index) for index, movie in enumerate(movies))
+        bar = progressbar.ProgressBar(max_value=length, redirect_stdout=True, prefix='Fetching data from TMDB').start()
+        i = 0
         for future in concurrent.futures.as_completed(future_to_url):
             try:
                 data = future.result()
@@ -135,9 +137,12 @@ def concurrent_stuff():
                     prod_countries.append(prod_country)
                 db_movie.production_countries.set(prod_countries)
                 db_movie.save()
+                i+=1
+                bar.update(i)
             except Exception as exc:
                 print(exc)
                 return "Failed with exception: %s" % exc
+        bar.finish()
     return "Fetched and saved: %s movies" % length
 
 
