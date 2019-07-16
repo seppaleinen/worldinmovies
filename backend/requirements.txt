@@ -9,3 +9,4 @@ behave-django
 httpretty
 requests-mock
 responses
+progressbar2

@@ -1,4 +1,4 @@
-import datetime, requests, gzip, json, os, sys, concurrent.futures, time
+import datetime, requests, gzip, json, os, sys, concurrent.futures, time, progressbar
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -30,8 +30,9 @@ def download_files():
     response = requests.get(daily_export_url, stream=True)
 
     if response.status_code == 200:
+        print("Downloading file")
         with open('movies.json.gz', 'wb') as f:
-            f.write(response.content)
+           f.write(response.content)
 
         movies = []
         contents = unzip_file()
@@ -49,7 +50,7 @@ def download_files():
                 print("This line fucked up: %s, because of %s" % (i, e))
         # Creates all, but crashes as soon as you try to update the list
         try:
-            for i in range(0, len(movies), 100):
+            for i in progressbar.progressbar(range(0, len(movies), 100), prefix='Saving Movie IDs: '):
                 chunk = movies[i:i + 100]
                 Movie.objects.bulk_create(chunk)
             return "Amount of movies imported: %s" % len(contents)
