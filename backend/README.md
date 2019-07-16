@@ -14,11 +14,6 @@ Basically will be handling
 ### Todo
 
 * Need to write tests, preferably written in behave
-* Datamodel representing tmdbs data
-  - production_countries [iso_3166_1,name]
-  - spoken_languages [iso_639_1,name]
-  - alternative_titles [iso_3166_1,title,type]
-* Postgresql integration
 * Gunicorn or similar server
 * Simple way of showing ETA of import
 * Verify memory consumption
