@@ -2,7 +2,11 @@ version: '3'
 
 services:
   db:
-    image: postgres
+    image: postgres:10.5-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql
+    ports:
+      - "5433:5432"
   web:
     build: .
     command: sh -c 'python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000'
@@ -13,3 +17,5 @@ services:
     depends_on:
       - db
     restart: always
+volumes:
+  pgdata:

@@ -49,10 +49,13 @@ def download_files():
                 print("This line fucked up: %s, because of %s" % (i, e))
         # Creates all, but crashes as soon as you try to update the list
         try:
-            Movie.objects.bulk_create(movies)
+            for i in range(0, len(movies), 100):
+                chunk = movies[i:i + 100]
+                Movie.objects.bulk_create(chunk)
             return "Amount of movies imported: %s" % len(contents)
         except Exception as e:
-            print("You done fucked up: %s" % e)
+        	print("Error: %s" % e)
+        	return "Exception: %s" % e
     else:
         return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
 
