@@ -9,7 +9,7 @@ services:
       - "5433:5432"
   web:
     build: .
-    command: sh -c 'python manage.py makemigrations && python manage.py migrate && python -u manage.py runserver 0.0.0.0:8000'
+    command: sh -c 'python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000'
     volumes:
       - .:/code
     ports:
@@ -17,5 +17,7 @@ services:
     depends_on:
       - db
     restart: always
+    environment:
+      - TMDB_API=${TMDB_API}
 volumes:
   pgdata:
