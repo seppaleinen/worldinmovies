@@ -1,4 +1,4 @@
-import httpretty, datetime, os, requests_mock, requests, responses
+import httpretty, datetime, os, requests_mock, requests, responses, sys
 
 from django.test import TestCase
 from app.models import Movie
@@ -69,6 +69,7 @@ class ImportTests(TestCase):
         self.assertEqual(response.status_code, 200)
         # self.assertContains(response, 'Fetched and saved: 3 movies')
 
+    @responses.activate
     def test4(self):
         movie = Movie(id=19995, original_title='Avatar', popularity=36.213, fetched=False)
         movie.save()
@@ -87,4 +88,5 @@ class ImportTests(TestCase):
 
         response = self.client.get('/test')
         self.assertEqual(response.status_code, 200)
+        # sys.stderr.write("ASD %s" % response.content)
         self.assertContains(response, 'Fetched and saved: 1 movies')

@@ -103,12 +103,12 @@
          },
          {
             "iso_3166_1":"BR",
-            "title":"Avatar - Edi\xc3\xa7\xc3\xa3o Estendida de Colecionador",
+            "title":"Avatar - Edibo Estendida de Colecionador",
             "type":""
          },
          {
             "iso_3166_1":"GB",
-            "title":"Avatar - Collector\''s Extended Edition",
+            "title":"Avatar - Collector's Extended Edition",
             "type":""
          },
          {
@@ -128,7 +128,7 @@
          },
          {
             "iso_3166_1":"US",
-            "title":"James Cameron\''s Avatar",
+            "title":"James Camerons Avatar",
             "type":"promotional title"
          },
          {
@@ -143,7 +143,7 @@
          },
          {
             "iso_3166_1":"KR",
-            "title":"\xec\x95\x84\xeb\xb0\x94\xed\x83\x80",
+            "title":"asd",
             "type":""
          }
       ]
@@ -232,7 +232,7 @@
          },
          {
             "cast_id":10,
-            "character":"Tsu\''Tey",
+            "character":"Tsu'Tey",
             "credit_id":"52fe48009251416c750ac9e9",
             "gender":2,
             "id":10964,
@@ -472,7 +472,7 @@
          },
          {
             "cast_id":52,
-            "character":"Na\''vi Child",
+            "character":"Na'vi Child",
             "credit_id":"52fe48009251416c750acaa7",
             "gender":0,
             "id":1207249,
@@ -792,7 +792,7 @@
          },
          {
             "cast_id":84,
-            "character":"Nav\''i (uncredited)",
+            "character":"Nav'i (uncredited)",
             "credit_id":"52fe48019251416c750acb27",
             "gender":1,
             "id":147898,
@@ -932,7 +932,7 @@
          },
          {
             "cast_id":97,
-            "character":"Col. Quaritch\''s Mech Suit (uncredited)",
+            "character":"Col. Quaritch's Mech Suit (uncredited)",
             "credit_id":"52fe48019251416c750acb5b",
             "gender":0,
             "id":60656,
@@ -972,7 +972,7 @@
          },
          {
             "cast_id":101,
-            "character":"Na\''vi (uncredited)",
+            "character":"Na'vi (uncredited)",
             "credit_id":"52fe48019251416c750acb6b",
             "gender":0,
             "id":103259,
@@ -1726,7 +1726,7 @@
             "gender":0,
             "id":1401795,
             "job":"Visual Effects Supervisor",
-            "name":"Anthony \''Max\'' Ivins",
+            "name":"Anthony 'Max' Ivins",
             "profile_path":null
          },
          {
@@ -3868,7 +3868,7 @@
             "gender":0,
             "id":2144681,
             "job":"Electrician",
-            "name":"Ryan O\''Donnell",
+            "name":"Ryan O'Donnell",
             "profile_path":null
          },
          {
@@ -3921,7 +3921,7 @@
             "department":"Camera",
             "gender":0,
             "id":1654425,
-            "job":"First Assistant \\"            A\\" Camera",
+            "job":"First Assistant Camera",
             "name":"Larry Nielsen",
             "profile_path":null
          },
@@ -4093,7 +4093,7 @@
             "gender":0,
             "id":1674397,
             "job":"Video Assist Operator",
-            "name":"Daniel Hern\xc3\xa1ndez Alea",
+            "name":"Daniel Herna1ndez Alea",
             "profile_path":null
          },
          {
@@ -4479,7 +4479,7 @@
             "department":"Production",
             "gender":0,
             "id":2144808,
-            "job":"Producer\''s Assistant",
+            "job":"Producer's Assistant",
             "name":"Kristin Berbae",
             "profile_path":null
          },
@@ -4488,7 +4488,7 @@
             "department":"Production",
             "gender":0,
             "id":2144809,
-            "job":"Producer\''s Assistant",
+            "job":"Producer's Assistant",
             "name":"Ted Cahn",
             "profile_path":null
          },
@@ -4497,7 +4497,7 @@
             "department":"Crew",
             "gender":0,
             "id":2144832,
-            "job":"Actor\''s Assistant",
+            "job":"Actor's Assistant",
             "name":"Nicole Pitesa",
             "profile_path":null
          },
@@ -4506,7 +4506,7 @@
             "department":"Crew",
             "gender":0,
             "id":2144833,
-            "job":"Actor\''s Assistant",
+            "job":"Actor's Assistant",
             "name":"Alexis Alexander",
             "profile_path":null
          },
@@ -4515,7 +4515,7 @@
             "department":"Production",
             "gender":0,
             "id":2144834,
-            "job":"Producer\''s Assistant",
+            "job":"Producer's Assistant",
             "name":"Terri Depaolo",
             "profile_path":null
          },
@@ -4524,7 +4524,7 @@
             "department":"Production",
             "gender":0,
             "id":2082773,
-            "job":"Producer\''s Assistant",
+            "job":"Producer's Assistant",
             "name":"Grant Roa",
             "profile_path":null
          },
@@ -4633,7 +4633,7 @@
             "gender":0,
             "id":1702602,
             "job":"Post Production Accountant",
-            "name":"Maureen \''Mo\'' Crutchfield",
+            "name":"Maureen 'Mo' Crutchfield",
             "profile_path":null
          },
          {
@@ -5047,7 +5047,7 @@
             "gender":0,
             "id":2144938,
             "job":"3D Modeller",
-            "name":"Tira O\''Daly",
+            "name":"Tira O'Daly",
             "profile_path":null
          },
          {
@@ -5605,7 +5605,7 @@
             "gender":0,
             "id":2151175,
             "job":"Animation Technical Director",
-            "name":"Juan Antonio Ambl\xc3\xa9s",
+            "name":"Juan Antonio Amblas",
             "profile_path":null
          },
          {
@@ -6163,7 +6163,7 @@
             "gender":0,
             "id":113114,
             "job":"Compositing Supervisor",
-            "name":"Michel Barri\xc3\xa8re",
+            "name":"Michel Barria8re",
             "profile_path":null
          },
          {
@@ -6208,7 +6208,7 @@
             "gender":0,
             "id":2151226,
             "job":"Compositor",
-            "name":"Alberto Monta\xc3\xb1\xc3\xa9s",
+            "name":"Alberto Montaa9s",
             "profile_path":null
          },
          {
@@ -6739,7 +6739,7 @@
             "gender":0,
             "id":2151301,
             "job":"Creature Technical Director",
-            "name":"Eduardo Gra\xc3\xb1a",
+            "name":"Eduardo Grab1a",
             "profile_path":null
          },
          {
@@ -6919,7 +6919,7 @@
             "gender":0,
             "id":2151320,
             "job":"Creature Technical Director",
-            "name":"Ren\xc3\xa9 van De Poel",
+            "name":"Ren9 van De Poel",
             "profile_path":null
          },
          {
@@ -7711,7 +7711,7 @@
             "gender":0,
             "id":1287250,
             "job":"Modeling",
-            "name":"Pablo \xc3\x81ngeles Zuman",
+            "name":"Pablo ngeles Zuman",
             "profile_path":null
          },
          {
@@ -7720,7 +7720,7 @@
             "gender":0,
             "id":2152257,
             "job":"Modeling",
-            "name":"P\xc3\xa4r Tingstr\xc3\xb6m",
+            "name":"Psr Tingstr6m",
             "profile_path":null
          },
          {
@@ -7882,7 +7882,7 @@
             "gender":0,
             "id":2152269,
             "job":"Pipeline Technical Director",
-            "name":"Felipe Boh\xc3\xb3rquez",
+            "name":"Felipe Boharquez",
             "profile_path":null
          },
          {
@@ -8035,7 +8035,7 @@
             "gender":0,
             "id":2136432,
             "job":"VFX Production Coordinator",
-            "name":"N\''Cee Van Heerden",
+            "name":"N'Cee Van Heerden",
             "profile_path":null
          },
          {
@@ -9304,7 +9304,7 @@
             "gender":0,
             "id":1938348,
             "job":"Visual Effects Coordinator",
-            "name":"Anouk L\''Heureux",
+            "name":"Anouk L'Heureux",
             "profile_path":null
          },
          {
@@ -9412,7 +9412,7 @@
             "gender":0,
             "id":1938347,
             "job":"Visual Effects Coordinator",
-            "name":"Myl\xc3\xa9ne Gu\xc3\xa9rin",
+            "name":"Mylane Gua9rin",
             "profile_path":null
          },
          {
@@ -9601,7 +9601,7 @@
             "gender":0,
             "id":1457339,
             "job":"Visual Effects Technical Director",
-            "name":"David Caeiro Cebri\xc3\xa1n",
+            "name":"David Caeiro Cebria1n",
             "profile_path":null
          },
          {
