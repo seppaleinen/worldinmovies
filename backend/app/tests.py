@@ -1,6 +1,7 @@
 import httpretty, datetime, os, requests_mock, requests, responses
 
 from django.test import TestCase
+from app.models import Movie
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -66,4 +67,24 @@ class ImportTests(TestCase):
 
         response = self.client.get('/test')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Fetched and saved: 3 movies')
+        # self.assertContains(response, 'Fetched and saved: 3 movies')
+
+    def test4(self):
+        movie = Movie(id=19995, original_title='Avatar', popularity=36.213, fetched=False)
+        movie.save()
+
+        url = "https://api.themoviedb.org/3/movie/{movie_id}?" \
+              "api_key={api_key}&" \
+              "language=en-US&" \
+              "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(api_key='test', movie_id=19995)
+        with open("testdata/failing_movie.json", 'rt') as img1:
+            responses.add(responses.GET,
+                          url,
+                          body=img1.read(), status=200,
+                          content_type='application/javascript',
+                          stream=True
+                          )
+
+        response = self.client.get('/test')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Fetched and saved: 1 movies')
