@@ -5,7 +5,7 @@ RUN \
  apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev
 
 ENV ENVIRONMENT DOCKER
-ENV PYTHONUNBUFFERED 0
+ENV PYTHONUNBUFFERED 1
 
 ADD ./requirements.txt .
 
