@@ -1,4 +1,4 @@
-import datetime, requests, gzip, json, os, sys, concurrent.futures, time, progressbar
+import datetime, requests, gzip, json, os, sys, concurrent.futures, time, progressbar, logging
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -50,7 +50,8 @@ def download_files():
                 print("This line fucked up: %s, because of %s" % (i, e))
         # Creates all, but crashes as soon as you try to update the list
         try:
-            for i in progressbar.progressbar(range(0, len(movies), 100), prefix='Saving Movie IDs: '):
+            print('Persisting stuff - Having this until progressbar actually shows in docker-compose')
+            for i in progressbar.progressbar(range(0, len(movies), 100), redirect_stdout=True, prefix='Saving Movie IDs: '):
                 chunk = movies[i:i + 100]
                 Movie.objects.bulk_create(chunk)
             return "Amount of movies imported: %s" % len(contents)
