@@ -13,9 +13,13 @@ Basically will be handling
 
 ### Todo
 
-* Need to write tests, preferably written in behave
 * Gunicorn or similar server
-* Simple way of showing ETA of import
+* ETA of file download
+* Show prints in docker logs
+* Cron-like way of starting imports daily
+* Move import apis behind /admin
+* If import fails, save to separate failure-table with movie-id, exception message, and raw dump
+* API for checking how import is going
 * Verify memory consumption
 
 ### Requirements
