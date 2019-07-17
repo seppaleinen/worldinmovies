@@ -34,7 +34,7 @@ class AlternativeTitle(models.Model):
     movie = models.ForeignKey(Movie, related_name='alternative_titles', on_delete=models.CASCADE)
     iso_3166_1 = models.CharField(max_length=20)
     title = models.CharField(max_length=500)
-    type = models.CharField(max_length=50, blank=True, null=True)
+    type = models.CharField(max_length=100, blank=True, null=True)
 
 
 class SpokenLanguage(models.Model):
