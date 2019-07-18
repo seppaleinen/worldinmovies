@@ -82,6 +82,7 @@ if 'test' in sys.argv:
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': os.path.join(BASE_DIR, 'worldinmovies.db'),
+            'CONN_MAX_AGE': 500,
         }
     }
 elif environment == 'localhost':
@@ -92,6 +93,7 @@ elif environment == 'localhost':
             'USER': 'postgres',
             'HOST': 'localhost',
             'PORT': 5432,
+            'CONN_MAX_AGE': 500,
         }
     }
 elif environment == 'DOCKER':
@@ -102,6 +104,7 @@ elif environment == 'DOCKER':
             'USER': 'postgres',
             'HOST': 'db',
             'PORT': 5432,
+            'CONN_MAX_AGE': 500,
         }
     }
 else:
@@ -110,6 +113,7 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': os.path.join(BASE_DIR, 'worldinmovies.db'),
+            'CONN_MAX_AGE': 500,
         }
     }
 
