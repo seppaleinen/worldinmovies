@@ -90,7 +90,7 @@ def fetch_movie_with_id(id, index):
         time.sleep(retryAfter)
         return fetch_movie_with_id(id, index)
     else:
-        print("What is going on?: %s, %s" % (response.status_code, response.content))
+        print("What is going on?: id:%s, status:%s, response: %s" % (id, response.status_code, response.content))
     raise Exception("Response: %s, Content: %s" % (response.status_code, response.content))
 
 
