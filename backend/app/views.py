@@ -90,7 +90,7 @@ def fetch_movie_with_id(id, index):
         time.sleep(retryAfter)
         return fetch_movie_with_id(id, index)
     else:
-        print("What is going on?: id:%s, status:%s, response: %s" % (id, response.status_code, response.content))
+        print("What is going on?: id:%s, status:%s, response: w%s" % (id, response.status_code, response.content))
     raise Exception("Response: %s, Content: %s" % (response.status_code, response.content))
 
 
@@ -108,7 +108,6 @@ def concurrent_stuff():
             try:
                 data = future.result()
                 fetched_movie = json.loads(data)
-                print("Fetched: %s" % fetched_movie['id'])
                 db_movie = Movie.objects.get(pk=fetched_movie['id'])
                 db_movie.fetched = True
                 db_movie.raw_response = data
@@ -141,9 +140,7 @@ def concurrent_stuff():
                     prod_country.save()
                     prod_countries.append(prod_country)
                 db_movie.production_countries.set(prod_countries)
-                print("Before Save: %s" % db_movie.id)
                 db_movie.save()
-                print("After Save: %s" % db_movie.id)
                 i+=1
                 bar.update(i)
             except Exception as exc:
