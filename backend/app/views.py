@@ -111,7 +111,7 @@ CONNECTIONS = 5
 
 
 def concurrent_stuff():
-    movies = [movie for movie in Movie.objects.all() if not movie.fetched]
+    movies = Movie.objects.filter(fetched__exact=False)
     length = len(movies)
     with concurrent.futures.ThreadPoolExecutor(max_workers=CONNECTIONS) as executor:
         future_to_url = (executor.submit(fetch_movie_with_id, movie.id, index) for index, movie in enumerate(movies))

@@ -107,6 +107,32 @@ class ImportTests(SuperClass):
         self.assertContains(response, 'Fetched and saved: 1 movies')
         self.assertFalse(Movie.objects.filter(pk=123)[0].fetched)
 
+    @responses.activate
+    def test_fetch_only_movies_marked_as_fetched_false(self):
+        to_be_fetched = Movie(id=601, original_title='to_be_fetched', popularity=36.213, fetched=False)
+        to_be_fetched.save()
+        already_fetched = Movie(id=602, original_title='already_fetched', popularity=36.213, fetched=True)
+        already_fetched.save()
+
+        url = "https://api.themoviedb.org/3/movie/{movie_id}?" \
+              "api_key={api_key}&" \
+              "language=en-US&" \
+              "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(api_key='test', movie_id=to_be_fetched.id)
+        with open("testdata/601.json", 'rt') as img1:
+            responses.add(responses.GET,
+                          url,
+                          body=img1.read(), status=200,
+                          content_type='application/javascript',
+                          stream=True
+                          )
+
+        response = self.client.get('/test')
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Fetched and saved: 1 movies')
+        self.assertTrue(Movie.objects.get(pk=to_be_fetched.id).fetched)
+
 
 class StatusTests(SuperClass):
     def test_status_0_fetched_out_of_3(self):
