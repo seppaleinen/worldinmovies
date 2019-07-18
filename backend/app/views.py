@@ -16,11 +16,11 @@ def index(request):
 
 def import_status(request):
     with connection.cursor() as cursor:
-        cursor.execute("select "
-                                "sum(case when fetched is True then 1 else 0 end) as fetched, "
-                                "count(*) as total, "
-                                "sum(case when fetched is True then 1 else 0 end) * 100 / count(*) as percentage "
-                                "from app_movie")
+        cursor.execute("""select 
+                                sum(case when fetched is True then 1 else 0 end) as fetched, 
+                                count(*) as total, 
+                                sum(case when fetched is True then 1 else 0 end) * 100 / count(*) as percentage 
+                                from app_movie""")
         result = cursor.fetchone()
         fetched = result[0]
         total = result[1]
