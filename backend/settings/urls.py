@@ -24,5 +24,6 @@ urlpatterns = [
     url(r'^movies$', views.download_file, name='download_file'),
     url(r'^test$', views.fetch_movie, name='fetch_movie'),
     url(r'^genre$', views.fetch_genres, name='fetch_genres'),
+    url(r'^status$', views.import_status, name='import_status'),
     path('', views.index, name='index')
 ]

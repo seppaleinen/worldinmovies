@@ -7,14 +7,24 @@ from app.models import Movie, Genre, AlternativeTitle, SpokenLanguage, Productio
 import os
 
 
-
-
 def index(request):
     all_movies = Movie.objects.all()
     if all_movies.count() > 0:
         return HttpResponse("Amount of movies in DB: %s, first is: %s" % (all_movies.count(), all_movies[0].id))
     else:
         return HttpResponse("No movies fetched yet")
+
+
+def import_status(request):
+    movies = Movie.objects.all()
+    amount_of_fetched_movies = len([movie for movie in movies if movie.fetched])
+    amount_of_movies = len(movies)
+
+    if amount_of_movies == 0:
+        return HttpResponse("Daily file export have not been imported yet. No movies to be fetched")
+    else:
+        percent = 0 if amount_of_fetched_movies == 0 else int((amount_of_fetched_movies / amount_of_movies) * 100)
+        return HttpResponse("There are {fetched} fetched movies out of {amount}, which is about {percent}%".format(fetched=amount_of_fetched_movies, amount=amount_of_movies, percent=percent))
 
 
 def download_file(request):
