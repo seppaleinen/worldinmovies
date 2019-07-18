@@ -17,3 +17,5 @@ RUN pip install --upgrade pip && \
 ADD . /app
 
 WORKDIR /app
+
+ENTRYPOINT ["/bin/sh", "-c", "python manage.py makemigrations && python manage.py migrate && gunicorn --config=gunicorn.config.py settings.wsgi"]

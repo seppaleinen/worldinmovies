@@ -13,9 +13,8 @@ Basically will be handling
 
 ### Todo
 
-* Gunicorn or similar server
+* Change ETA handling to something that doesnt require interactive shell
 * ETA of file download
-* Show prints in docker logs
 * Cron-like way of starting imports daily
 * Move import apis behind /admin
 * If import fails, save to separate failure-table with movie-id, exception message, and raw dump
@@ -35,13 +34,19 @@ pip3 install -r requirements
 # To create and update database
 ./manage.py makemigrations && ./manage.py migrate
 
-# To start server
+# To start server with gunicorn
+gunicorn --config=gunicorn.config.py settings.wsgi
+
+# To start server without gunicorn
 ./manage.py runserver
 
 
 # Or with docker
 # Build and start servers
 docker-compose up --build -d
+
+# Read logs
+docker-compose logs -f
 
 # Shut down servers
 docker-compose kill
