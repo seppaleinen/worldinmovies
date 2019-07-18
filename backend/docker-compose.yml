@@ -19,5 +19,6 @@ services:
     restart: always
     environment:
       - TMDB_API=${TMDB_API}
+      - SENTRY_URL=${SENTRY_URL}
 volumes:
   pgdata:
