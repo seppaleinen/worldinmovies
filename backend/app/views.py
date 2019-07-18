@@ -108,8 +108,7 @@ def fetch_movie_with_id(id, index):
         return None
     else:
         print("What is going on?: id:%s, status:%s, response: w%s" % (id, response.status_code, response.content))
-        return None
-    raise Exception("Response: %s, Content: %s" % (response.status_code, response.content))
+        raise Exception("Response: %s, Content: %s" % (response.status_code, response.content))
 
 
 CONNECTIONS = 5
