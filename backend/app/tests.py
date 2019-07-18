@@ -21,14 +21,14 @@ class ImportTests(SuperClass):
     def test_main_page_without_movies(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'No movies fetched yet')
+        self.assertEqual(response.content, b'No movies fetched yet')
 
     def test_main_page_with_movies(self):
         Movie(id=2, original_title="title1", popularity=36.213, fetched=False).save()
 
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Amount of movies in DB: 1, first is: 2')
+        self.assertEqual(response.content, b'Amount of movies in DB: 1, first is: 2')
 
     @responses.activate
     def test_daily_file_import(self):
@@ -45,7 +45,7 @@ class ImportTests(SuperClass):
 
         response = self.client.get('/movies')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Amount of movies imported: 3')
+        self.assertEqual(response.content, b'Amount of movies imported: 3')
 
     @responses.activate
     def test_fetch_3_unfetched_out_of_4(self):
@@ -69,7 +69,7 @@ class ImportTests(SuperClass):
 
         response = self.client.get('/test')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Fetched and saved: 3 movies')
+        self.assertEqual(response.content, b'Fetched and saved: 3 movies')
 
     @responses.activate
     def test_fetch_of_failing_movie_avatar(self):
@@ -90,7 +90,7 @@ class ImportTests(SuperClass):
 
         response = self.client.get('/test')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Fetched and saved: 1 movies')
+        self.assertEqual(response.content, b'Fetched and saved: 1 movies')
 
     @responses.activate
     def test_fetch_id_thats_removed_from_tmdb(self):
@@ -111,7 +111,7 @@ class ImportTests(SuperClass):
 
         response = self.client.get('/test')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Fetched and saved: 1 movies')
+        self.assertEqual(response.content, b'Fetched and saved: 1 movies')
         self.assertFalse(Movie.objects.filter(pk=123)[0].fetched)
 
     @responses.activate
@@ -137,7 +137,7 @@ class ImportTests(SuperClass):
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Fetched and saved: 1 movies')
+        self.assertEqual(response.content, b'Fetched and saved: 1 movies')
         self.assertTrue(Movie.objects.get(pk=to_be_fetched.id).fetched)
 
 
@@ -149,7 +149,7 @@ class StatusTests(SuperClass):
 
         response = self.client.get('/status')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'There are 0 fetched movies out of 3, which is about 0%')
+        self.assertEqual(response.content, b'There are 0 fetched movies out of 3, which is about 0%')
 
     def test_status_1_fetched_out_of_3(self):
         Movie(id=1, original_title="title1", popularity=36.213, fetched=True).save()
@@ -158,7 +158,7 @@ class StatusTests(SuperClass):
 
         response = self.client.get('/status')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'There are 1 fetched movies out of 3, which is about 33%')
+        self.assertEqual(response.content, b'There are 1 fetched movies out of 3, which is about 33%')
 
     def test_status_3_fetched_out_of_3(self):
         Movie(id=1, original_title="title1", popularity=36.213, fetched=True).save()
@@ -167,9 +167,9 @@ class StatusTests(SuperClass):
 
         response = self.client.get('/status')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'There are 3 fetched movies out of 3, which is about 100%')
+        self.assertEqual(response.content, b'There are 3 fetched movies out of 3, which is about 100%')
 
     def test_status_0_fetched_out_of_0(self):
         response = self.client.get('/status')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Daily file export have not been imported yet. No movies to be fetched')
+        self.assertEqual(response.content, b'Daily file export have not been imported yet. No movies to be fetched')
