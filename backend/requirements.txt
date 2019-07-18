@@ -1,12 +1,7 @@
-django
-psycopg2
+django>=2.2.3
+psycopg2>=2.8.3
 requests>=2.20.0
-behave==1.2.5
-pyhamcrest>=1.9.0
-clint
-pretenders
-behave-django
-httpretty
-requests-mock
-responses
-progressbar2
+
+# For tests
+responses>=0.10.6
+progressbar2>=3.42.0
