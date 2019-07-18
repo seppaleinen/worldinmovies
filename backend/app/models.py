@@ -18,6 +18,9 @@ class Movie(models.Model):
     vote_count = models.IntegerField(null=True, blank=True)
     raw_response = models.TextField(null=True, blank=True)
 
+    class Meta:
+        indexes = [models.Index(fields=['id'], name='movie_pk_index')]
+
     def __str__(self):
         return "id: %s, original_title: %s, original_language: %s" % (self.id, self.original_title, self.original_language)
 
