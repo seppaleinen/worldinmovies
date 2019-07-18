@@ -80,6 +80,7 @@ def fetch_movie_with_id(id, index):
           "language=en-US&" \
           "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(movie_id=id, api_key=API_KEY)
     response = requests.get(url, stream=True)
+
     if response.status_code == 200:
         # print("Fetched index: %s" % (index))
         return response.content
@@ -88,6 +89,8 @@ def fetch_movie_with_id(id, index):
         # print("RetryAfter: %s" % retryAfter)
         time.sleep(retryAfter)
         return fetch_movie_with_id(id, index)
+    else:
+        print("What is going on?: %s, %s" % (response.status_code, response.content))
     raise Exception("Response: %s, Content: %s" % (response.status_code, response.content))
 
 
@@ -105,6 +108,7 @@ def concurrent_stuff():
             try:
                 data = future.result()
                 fetched_movie = json.loads(data)
+                print("Fetched: %s" % fetched_movie['id'])
                 db_movie = Movie.objects.get(pk=fetched_movie['id'])
                 db_movie.fetched = True
                 db_movie.raw_response = data
@@ -137,7 +141,9 @@ def concurrent_stuff():
                     prod_country.save()
                     prod_countries.append(prod_country)
                 db_movie.production_countries.set(prod_countries)
+                print("Before Save: %s" % db_movie.id)
                 db_movie.save()
+                print("After Save: %s" % db_movie.id)
                 i+=1
                 bar.update(i)
             except Exception as exc:
