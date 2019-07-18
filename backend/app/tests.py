@@ -85,6 +85,28 @@ class ImportTests(SuperClass):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Fetched and saved: 1 movies')
 
+    @responses.activate
+    def test_fetch_id_thats_removed_from_tmdb(self):
+        movie = Movie(id=123, original_title='removed_movie', popularity=36.213, fetched=False)
+        movie.save()
+
+        url = "https://api.themoviedb.org/3/movie/{movie_id}?" \
+              "api_key={api_key}&" \
+              "language=en-US&" \
+              "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(api_key='test', movie_id=movie.id)
+        responses.add(responses.GET,
+                        url,
+                        json={"status_code":34,"status_message":"The resource you requested could not be found."},
+                        status=404,
+                        content_type='application/javascript',
+                        stream=True
+                        )
+
+        response = self.client.get('/test')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Fetched and saved: 1 movies')
+        self.assertFalse(Movie.objects.filter(pk=123)[0].fetched)
+
 
 class StatusTests(SuperClass):
     def test_status_0_fetched_out_of_3(self):

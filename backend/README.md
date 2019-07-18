@@ -18,7 +18,6 @@ Basically will be handling
 * Cron-like way of starting imports daily
 * Move import apis behind /admin
 * If import fails, save to separate failure-table with movie-id, exception message, and raw dump
-* API for checking how import is going
 * Verify memory consumption
 
 ### Requirements

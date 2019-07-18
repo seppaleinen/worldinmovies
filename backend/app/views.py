@@ -99,6 +99,9 @@ def fetch_movie_with_id(id, index):
         # print("RetryAfter: %s" % retryAfter)
         time.sleep(retryAfter)
         return fetch_movie_with_id(id, index)
+    elif response.status_code == 404:
+        print("Ignoring movie with id: %s as it's not in tmdb anymore - but will be attempted to fetch next time" % id)
+        return None
     else:
         print("What is going on?: id:%s, status:%s, response: w%s" % (id, response.status_code, response.content))
     raise Exception("Response: %s, Content: %s" % (response.status_code, response.content))
@@ -117,40 +120,41 @@ def concurrent_stuff():
         for future in concurrent.futures.as_completed(future_to_url):
             try:
                 data = future.result()
-                fetched_movie = json.loads(data)
-                db_movie = Movie.objects.get(pk=fetched_movie['id'])
-                db_movie.fetched = True
-                db_movie.raw_response = data
-                db_movie.budget = fetched_movie['budget']
-                db_movie.imdb_id = fetched_movie['imdb_id']
-                db_movie.original_language = fetched_movie['original_language']
-                db_movie.overview = fetched_movie['overview']
-                db_movie.poster_path = fetched_movie['poster_path']
-                db_movie.release_date = fetched_movie['release_date']
-                db_movie.revenue = fetched_movie['revenue']
-                db_movie.runtime = fetched_movie['runtime']
-                db_movie.vote_average = fetched_movie['vote_average']
-                db_movie.vote_count = fetched_movie['vote_count']
-                alt_titles = []
-                for fetch_alt_title in fetched_movie['alternative_titles']['titles']:
-                    alt_title = AlternativeTitle(movie_id=db_movie.id, iso_3166_1=fetch_alt_title['iso_3166_1'], title=fetch_alt_title['title'], type=fetch_alt_title['type'])
-                    alt_title.save()
-                    alt_titles.append(alt_title)
-                db_movie.alternative_titles.set(alt_titles)
-                spoken_langs = []
-                for fetch_spoken_lang in fetched_movie['spoken_languages']:
-                    spoken_lang = SpokenLanguage(movie_id=db_movie.id, iso_639_1=fetch_spoken_lang['iso_639_1'], name=fetch_spoken_lang['name'])
-                    spoken_lang.save()
-                    spoken_langs.append(spoken_lang)
-                db_movie.spoken_languages.set(spoken_langs)
+                if data is not None:
+                    fetched_movie = json.loads(data)
+                    db_movie = Movie.objects.get(pk=fetched_movie['id'])
+                    db_movie.fetched = True
+                    db_movie.raw_response = data
+                    db_movie.budget = fetched_movie['budget']
+                    db_movie.imdb_id = fetched_movie['imdb_id']
+                    db_movie.original_language = fetched_movie['original_language']
+                    db_movie.overview = fetched_movie['overview']
+                    db_movie.poster_path = fetched_movie['poster_path']
+                    db_movie.release_date = fetched_movie['release_date']
+                    db_movie.revenue = fetched_movie['revenue']
+                    db_movie.runtime = fetched_movie['runtime']
+                    db_movie.vote_average = fetched_movie['vote_average']
+                    db_movie.vote_count = fetched_movie['vote_count']
+                    alt_titles = []
+                    for fetch_alt_title in fetched_movie['alternative_titles']['titles']:
+                        alt_title = AlternativeTitle(movie_id=db_movie.id, iso_3166_1=fetch_alt_title['iso_3166_1'], title=fetch_alt_title['title'], type=fetch_alt_title['type'])
+                        alt_title.save()
+                        alt_titles.append(alt_title)
+                    db_movie.alternative_titles.set(alt_titles)
+                    spoken_langs = []
+                    for fetch_spoken_lang in fetched_movie['spoken_languages']:
+                        spoken_lang = SpokenLanguage(movie_id=db_movie.id, iso_639_1=fetch_spoken_lang['iso_639_1'], name=fetch_spoken_lang['name'])
+                        spoken_lang.save()
+                        spoken_langs.append(spoken_lang)
+                    db_movie.spoken_languages.set(spoken_langs)
 
-                prod_countries = []
-                for fetch_prod_country in fetched_movie['production_countries']:
-                    prod_country = ProductionCountries(movie_id=db_movie.id, iso_3166_1=fetch_prod_country['iso_3166_1'], name=fetch_prod_country['name'])
-                    prod_country.save()
-                    prod_countries.append(prod_country)
-                db_movie.production_countries.set(prod_countries)
-                db_movie.save()
+                    prod_countries = []
+                    for fetch_prod_country in fetched_movie['production_countries']:
+                        prod_country = ProductionCountries(movie_id=db_movie.id, iso_3166_1=fetch_prod_country['iso_3166_1'], name=fetch_prod_country['name'])
+                        prod_country.save()
+                        prod_countries.append(prod_country)
+                    db_movie.production_countries.set(prod_countries)
+                    db_movie.save()
                 i+=1
                 bar.update(i)
             except Exception as exc:
