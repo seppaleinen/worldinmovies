@@ -98,7 +98,7 @@ def fetch_movie_with_id(id, index):
     if response.status_code == 200:
         # print("Fetched index: %s" % (index))
         return response.content
-    elif response.status_code == 429:
+    elif response.status_code == 429 or response.status_code == 25:
         retryAfter = int(response.headers['Retry-After']) + 1
         # print("RetryAfter: %s" % retryAfter)
         time.sleep(retryAfter)
