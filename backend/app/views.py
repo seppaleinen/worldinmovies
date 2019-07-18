@@ -14,8 +14,6 @@ def index(request):
     else:
         return HttpResponse("No movies fetched yet")
 
-vas = "asdasd" \
-      "asddsad"
 def import_status(request):
     with connection.cursor() as cursor:
         cursor.execute("select "
