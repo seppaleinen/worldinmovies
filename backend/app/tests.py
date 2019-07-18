@@ -8,6 +8,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Create your tests here.
 class ImportTests(TestCase):
+    def setUp(self):
+        self._environ = dict(os.environ)
+        os.environ['TMDB_API'] = 'test'
+
+    def tearDown(self):
+        os.environ.clear()
+        os.environ.update(self._environ)
+
     def test1(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
@@ -77,7 +85,7 @@ class ImportTests(TestCase):
         url = "https://api.themoviedb.org/3/movie/{movie_id}?" \
               "api_key={api_key}&" \
               "language=en-US&" \
-              "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(api_key='test', movie_id=19995)
+              "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(api_key='test', movie_id=movie.id)
         with open("testdata/failing_movie.json", 'rt') as img1:
             responses.add(responses.GET,
                           url,
