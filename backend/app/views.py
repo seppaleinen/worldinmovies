@@ -2,29 +2,33 @@ import datetime, requests, gzip, json, os, sys, concurrent.futures, time, progre
 
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.db import transaction
+from django.db import transaction, connection
 from app.models import Movie, Genre, AlternativeTitle, SpokenLanguage, ProductionCountries
 import os
 
 
 def index(request):
-    all_movies = Movie.objects.all()
-    if all_movies.count() > 0:
-        return HttpResponse("Amount of movies in DB: %s, first is: %s" % (all_movies.count(), all_movies[0].id))
+    movies_count = Movie.objects.count()
+    if movies_count > 0:
+        return HttpResponse("Amount of movies in DB: %s, first is: %s" % (movies_count, Movie.objects.first().id))
     else:
         return HttpResponse("No movies fetched yet")
 
 
 def import_status(request):
-    movies = Movie.objects.all()
-    amount_of_fetched_movies = len([movie for movie in movies if movie.fetched])
-    amount_of_movies = len(movies)
-
-    if amount_of_movies == 0:
-        return HttpResponse("Daily file export have not been imported yet. No movies to be fetched")
-    else:
-        percent = 0 if amount_of_fetched_movies == 0 else int((amount_of_fetched_movies / amount_of_movies) * 100)
-        return HttpResponse("There are {fetched} fetched movies out of {amount}, which is about {percent}%".format(fetched=amount_of_fetched_movies, amount=amount_of_movies, percent=percent))
+    with connection.cursor() as cursor:
+        result = cursor.execute('select '
+                                    'sum(case when fetched is True then 1 else 0 end) as fetched, '
+                                    'count(*) as total, '
+                                    'sum(case when fetched is True then 1 else 0 end) * 100 / count(*) as percentage '
+                                    'from app_movie').fetchone()
+        fetched = result[0]
+        total = result[1]
+        percent = result[2]
+        if total == 0:
+            return HttpResponse("Daily file export have not been imported yet. No movies to be fetched")
+        else:
+            return HttpResponse("There are {fetched} fetched movies out of {amount}, which is about {percent}%".format(fetched=fetched, amount=total, percent=percent))
 
 
 def download_file(request):

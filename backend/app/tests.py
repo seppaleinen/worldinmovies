@@ -18,10 +18,17 @@ class SuperClass(TestCase):
 
 # Create your tests here.
 class ImportTests(SuperClass):
-    def test_main_page(self):
+    def test_main_page_without_movies(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'No movies fetched yet')
+
+    def test_main_page_with_movies(self):
+        Movie(id=2, original_title="title1", popularity=36.213, fetched=False).save()
+
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Amount of movies in DB: 1, first is: 2')
 
     @responses.activate
     def test_daily_file_import(self):
