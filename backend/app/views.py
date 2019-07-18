@@ -8,6 +8,7 @@ import os
 
 
 def index(request):
+    print("Testing print")
     movies_count = Movie.objects.count()
     if movies_count > 0:
         return HttpResponse("Amount of movies in DB: %s, first is: %s" % (movies_count, Movie.objects.first().id))
@@ -35,7 +36,6 @@ def download_file(request):
     return HttpResponse(download_files())
 
 
-@transaction.atomic
 def download_files():
     todays_date = datetime.datetime.now()
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
@@ -94,7 +94,7 @@ def fetch_movie_with_id(id, index):
           "language=en-US&" \
           "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(movie_id=id, api_key=API_KEY)
     response = requests.get(url, stream=True)
-
+    print("Response: %s" % response.content)
     if response.status_code == 200:
         # print("Fetched index: %s" % (index))
         return response.content
@@ -117,6 +117,7 @@ CONNECTIONS = 5
 def concurrent_stuff():
     movies = Movie.objects.filter(fetched__exact=False)
     length = len(movies)
+    print("Movies: %s" % length)
     with concurrent.futures.ThreadPoolExecutor(max_workers=CONNECTIONS) as executor:
         future_to_url = (executor.submit(fetch_movie_with_id, movie.id, index) for index, movie in enumerate(movies))
         bar = progressbar.ProgressBar(max_value=length, redirect_stdout=True, prefix='Fetching data from TMDB').start()
