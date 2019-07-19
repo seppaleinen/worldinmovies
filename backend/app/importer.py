@@ -60,8 +60,9 @@ def __fetch_movie_with_id(id, index):
           "api_key={api_key}&" \
           "language=en-US&" \
           "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(movie_id=id, api_key=API_KEY)
+    print("Before call %s" % id)
     response = requests.get(url, stream=True)
-    # print("Fetched id: %s, %s, %s" % (id, response.status_code, response.headers))
+    print("Fetched id: %s, %s, %s" % (id, response.status_code, response.headers))
     if response.status_code == 200:
         return response.content
     elif response.status_code == 429 or response.status_code == 25:
@@ -88,18 +89,23 @@ def concurrent_stuff():
             try:
                 data = future.result()
                 if data is not None:
+                    print("Before jsonload")
                     fetched_movie = json.loads(data)
+                    print("Before Movie.objects.get")
                     db_movie = Movie.objects.get(pk=fetched_movie['id'])
+                    print("Before Movie.add_Fetched_info")
                     db_movie.add_fetched_info(fetched_movie)
+                    print("Before alternative titles")
                     for fetch_alt_title in fetched_movie['alternative_titles']['titles']:
                         alt_title = AlternativeTitle(movie_id=db_movie.id, iso_3166_1=fetch_alt_title['iso_3166_1'], title=fetch_alt_title['title'], type=fetch_alt_title['type'])
                         alt_title.save()
                         db_movie.alternative_titles.add(alt_title)
+                    print("Before spoken languages")
                     for fetch_spoken_lang in fetched_movie['spoken_languages']:
                         spoken_lang = SpokenLanguage(movie_id=db_movie.id, iso_639_1=fetch_spoken_lang['iso_639_1'], name=fetch_spoken_lang['name'])
                         spoken_lang.save()
                         db_movie.spoken_languages.add(spoken_lang)
-
+                    print("Before production countries")
                     for fetch_prod_country in fetched_movie['production_countries']:
                         prod_country = ProductionCountries(movie_id=db_movie.id, iso_3166_1=fetch_prod_country['iso_3166_1'], name=fetch_prod_country['name'])
                         prod_country.save()
