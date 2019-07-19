@@ -104,9 +104,9 @@ def concurrent_stuff():
                         prod_country = ProductionCountries(movie_id=db_movie.id, iso_3166_1=fetch_prod_country['iso_3166_1'], name=fetch_prod_country['name'])
                         prod_country.save()
                         db_movie.production_countries.add(prod_country)
-                    start = datetime.time()
+                    start = datetime.datetime.now()
                     db_movie.save()
-                    end = datetime.time()
+                    end = datetime.datetime.now()
                     print("Time to save id: %s was %s" % (db_movie.id, (end - start)))
                 i+=1
                 bar.update(i)
