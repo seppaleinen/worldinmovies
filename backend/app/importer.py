@@ -62,7 +62,7 @@ def __fetch_movie_with_id(id, index):
           "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(movie_id=id, api_key=API_KEY)
     response = requests.get(url, stream=True)
     # print("Response: %s" % response.content)
-    print("Fetched id: %s, %s" % (id, response.status_code))
+    print("Fetched id: %s, %s, %s" % (id, response.status_code, response.headers))
     if response.status_code == 200:
         return response.content
     elif response.status_code == 429 or response.status_code == 25:
