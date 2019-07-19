@@ -83,7 +83,7 @@ def concurrent_stuff():
         future_to_url = (executor.submit(__fetch_movie_with_id, movie.id, index) for index, movie in enumerate(movies))
         bar = progressbar.ProgressBar(max_value=length, redirect_stdout=True, prefix='Fetching data from TMDB').start()
         i = 0
-        for future in concurrent.futures.as_completed(future_to_url):
+        for future in concurrent.futures.as_completed(future_to_url, timeout=10):
             try:
                 data = future.result()
                 if data is not None:
