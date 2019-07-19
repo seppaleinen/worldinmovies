@@ -61,8 +61,7 @@ def __fetch_movie_with_id(id, index):
           "language=en-US&" \
           "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(movie_id=id, api_key=API_KEY)
     response = requests.get(url, stream=True)
-    # print("Response: %s" % response.content)
-    print("Fetched id: %s, %s, %s" % (id, response.status_code, response.headers))
+    # print("Fetched id: %s, %s, %s" % (id, response.status_code, response.headers))
     if response.status_code == 200:
         return response.content
     elif response.status_code == 429 or response.status_code == 25:
@@ -105,7 +104,10 @@ def concurrent_stuff():
                         prod_country = ProductionCountries(movie_id=db_movie.id, iso_3166_1=fetch_prod_country['iso_3166_1'], name=fetch_prod_country['name'])
                         prod_country.save()
                         db_movie.production_countries.add(prod_country)
+                    start = datetime.time()
                     db_movie.save()
+                    end = datetime.time()
+                    print("Time to save id: %s was %s" % (db_movie.id, (end - start)))
                 i+=1
                 bar.update(i)
             except Exception as exc:
