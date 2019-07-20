@@ -1,4 +1,4 @@
-import httpretty, datetime, os, requests_mock, requests, responses, sys
+import datetime, os, responses
 
 from django.test import TestCase
 from app.models import Movie

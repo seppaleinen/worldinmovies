@@ -8,6 +8,7 @@ import datetime, \
     time
 from app.models import Movie, SpokenLanguage, AlternativeTitle, ProductionCountries
 
+
 def download_files():
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     yesterday_formatted = yesterday.strftime("%m_%d_%Y")
@@ -55,11 +56,12 @@ def __unzip_file():
 
 
 def __fetch_movie_with_id(id, index):
-    API_KEY = os.getenv('TMDB_API', 'test')
+    api_key = os.getenv('TMDB_API', 'test')
     url = "https://api.themoviedb.org/3/movie/{movie_id}?" \
           "api_key={api_key}&" \
           "language=en-US&" \
-          "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(movie_id=id, api_key=API_KEY)
+          "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(movie_id=id,
+                                                                                                    api_key=api_key)
     response = requests.get(url, stream=True)
     if response.status_code == 200:
         return response.content
@@ -77,10 +79,10 @@ def __fetch_movie_with_id(id, index):
 
 
 def concurrent_stuff():
-    movies = Movie.objects.filter(fetched__exact=False)
-    length = len(movies)
+    movie_ids = Movie.objects.filter(fetched__exact=False).values_list('id', flat=True)
+    length = len(movie_ids)
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-        future_to_url = (executor.submit(__fetch_movie_with_id, movie.id, index) for index, movie in enumerate(movies))
+        future_to_url = (executor.submit(__fetch_movie_with_id, movie_id, index) for index, movie_id in enumerate(movie_ids))
         bar = progressbar.ProgressBar(max_value=length, redirect_stdout=True, prefix='Fetching data from TMDB').start()
         i = 0
         for future in concurrent.futures.as_completed(future_to_url, timeout=10):
@@ -91,15 +93,22 @@ def concurrent_stuff():
                     db_movie = Movie.objects.get(pk=fetched_movie['id'])
                     db_movie.add_fetched_info(fetched_movie)
                     for fetch_alt_title in fetched_movie['alternative_titles']['titles']:
-                        alt_title = AlternativeTitle(movie_id=db_movie.id, iso_3166_1=fetch_alt_title['iso_3166_1'], title=fetch_alt_title['title'], type=fetch_alt_title['type'])
+                        alt_title = AlternativeTitle(movie_id=db_movie.id,
+                                                     iso_3166_1=fetch_alt_title['iso_3166_1'],
+                                                     title=fetch_alt_title['title'],
+                                                     type=fetch_alt_title['type'])
                         alt_title.save()
                         db_movie.alternative_titles.add(alt_title)
                     for fetch_spoken_lang in fetched_movie['spoken_languages']:
-                        spoken_lang = SpokenLanguage(movie_id=db_movie.id, iso_639_1=fetch_spoken_lang['iso_639_1'], name=fetch_spoken_lang['name'])
+                        spoken_lang = SpokenLanguage(movie_id=db_movie.id,
+                                                     iso_639_1=fetch_spoken_lang['iso_639_1'],
+                                                     name=fetch_spoken_lang['name'])
                         spoken_lang.save()
                         db_movie.spoken_languages.add(spoken_lang)
                     for fetch_prod_country in fetched_movie['production_countries']:
-                        prod_country = ProductionCountries(movie_id=db_movie.id, iso_3166_1=fetch_prod_country['iso_3166_1'], name=fetch_prod_country['name'])
+                        prod_country = ProductionCountries(movie_id=db_movie.id,
+                                                           iso_3166_1=fetch_prod_country['iso_3166_1'],
+                                                           name=fetch_prod_country['name'])
                         prod_country.save()
                         db_movie.production_countries.add(prod_country)
                     db_movie.save()

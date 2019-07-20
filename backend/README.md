@@ -19,6 +19,7 @@ Basically will be handling
 * Move import apis behind /admin
 * If import fails, save to separate failure-table with movie-id, exception message, and raw dump
 * Verify memory consumption
+* ProductionCountries must be many to many
 
 ### Requirements
 
