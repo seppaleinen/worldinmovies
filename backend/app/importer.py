@@ -71,7 +71,12 @@ def __fetch_movie_with_id(id, index):
           "language=en-US&" \
           "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(movie_id=id,
                                                                                                     api_key=api_key)
-    response = requests.get(url, stream=True)
+    try:
+        response = requests.get(url, timeout=10)
+    except requests.exceptions.Timeout:
+        print("Timed out on id: %s... trying again in 10 seconds" % id)
+        time.sleep(10)
+        return __fetch_movie_with_id(id, index)
     if response.status_code == 200:
         return response.content
     elif response.status_code == 429 or response.status_code == 25:
@@ -94,7 +99,7 @@ def concurrent_stuff():
         future_to_url = (executor.submit(__fetch_movie_with_id, movie_id, index) for index, movie_id in enumerate(movie_ids))
         bar = progressbar.ProgressBar(max_value=length, redirect_stdout=True, prefix='Fetching data from TMDB').start()
         i = 0
-        for future in concurrent.futures.as_completed(future_to_url, timeout=10):
+        for future in concurrent.futures.as_completed(future_to_url):
             try:
                 data = future.result()
                 if data is not None:
@@ -109,11 +114,7 @@ def concurrent_stuff():
                         alt_title.save()
                         db_movie.alternative_titles.add(alt_title)
                     for fetch_spoken_lang in fetched_movie['spoken_languages']:
-                        try:
-                            db_movie.spoken_languages.add(SpokenLanguage.objects.get(iso_639_1=fetch_spoken_lang['iso_639_1']))
-                        except Exception as exc:
-                            print("Hej: %s" % exc)
-                            raise exc
+                        db_movie.spoken_languages.add(SpokenLanguage.objects.get(iso_639_1=fetch_spoken_lang['iso_639_1']))
                     for fetch_prod_country in fetched_movie['production_countries']:
                         db_movie.production_countries.add(ProductionCountries.objects.get(iso_3166_1=fetch_prod_country['iso_3166_1']))
                     db_movie.save()
