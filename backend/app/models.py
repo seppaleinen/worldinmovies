@@ -17,7 +17,6 @@ class Movie(models.Model):
     vote_average = models.DecimalField(decimal_places=1, max_digits=10, null=True, blank=True)
     vote_count = models.IntegerField(null=True, blank=True)
     raw_response = models.TextField(null=True, blank=True)
-    # genres = models.ManyToManyField('Genre')
 
     class Meta:
         indexes = [models.Index(fields=['id'], name='movie_pk_index')]
@@ -41,9 +40,12 @@ class Movie(models.Model):
 
 
 class Genre(models.Model):
-    # movie = models.ForeignKey(Movie, related_name='genres', on_delete=models.CASCADE, db_index=True)
+    movies = models.ManyToManyField(Movie, related_name='genres')
     id = models.IntegerField(primary_key=True)
     name = models.TextField()
+
+    def __str__(self):
+        return "id:{id}, name:{name}".format(id=self.id, name=self.name)
 
 
 class AlternativeTitle(models.Model):
@@ -57,8 +59,8 @@ class AlternativeTitle(models.Model):
 
 
 class SpokenLanguage(models.Model):
-    movie = models.ForeignKey(Movie, related_name='spoken_languages', on_delete=models.CASCADE, db_index=True)
-    iso_639_1 = models.CharField(max_length=4)
+    movies = models.ManyToManyField(Movie, related_name='spoken_languages')
+    iso_639_1 = models.CharField(primary_key=True, max_length=4)
     name = models.CharField(max_length=50)
 
     def __str__(self):
@@ -66,26 +68,9 @@ class SpokenLanguage(models.Model):
 
 
 class ProductionCountries(models.Model):
-    movie = models.ForeignKey(Movie, related_name='production_countries', on_delete=models.CASCADE, db_index=True)
-    iso_3166_1 = models.CharField(max_length=4)
+    movies = models.ManyToManyField(Movie, related_name='production_countries')
+    iso_3166_1 = models.CharField(primary_key=True, max_length=4)
     name = models.CharField(max_length=50)
 
     def __str__(self):
         return "iso:{iso}, name:{name}".format(iso=self.iso_3166_1, name=self.name)
-
-
-class Country(models.Model):
-    iso_3166_1 = models.CharField(max_length=4)
-    english_name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return "iso:{iso}, english_name:{english_name}".format(iso=self.iso_3166_1, english_name=self.english_name)
-
-
-class Language(models.Model):
-    iso_639_1 = models.CharField(max_length=4)
-    english_name = models.CharField(max_length=50)
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return "iso:{iso}, english_name:{english_name}".format(iso=self.iso_3166_1, english_name=self.english_name)

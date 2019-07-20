@@ -1,7 +1,7 @@
 import datetime, os, responses
 
 from django.test import TestCase
-from app.models import Movie, Language, Country, Genre
+from app.models import Movie, Genre, SpokenLanguage, ProductionCountries
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -10,6 +10,11 @@ class SuperClass(TestCase):
     def setUp(self):
         self._environ = dict(os.environ)
         os.environ['TMDB_API'] = 'test'
+        SpokenLanguage(iso_639_1='en', name='English').save()
+        SpokenLanguage(iso_639_1='es', name='Spanish').save()
+        ProductionCountries(iso_3166_1='US', name='United States of america').save()
+        ProductionCountries(iso_3166_1='AU', name='Australia').save()
+        ProductionCountries(iso_3166_1='GB', name='Great Britain').save()
 
     def tearDown(self):
         os.environ.clear()
@@ -116,6 +121,7 @@ class ImportTests(SuperClass):
 
     @responses.activate
     def test_fetch_only_movies_marked_as_fetched_false(self):
+        SpokenLanguage(iso_639_1='en', name='English').save()
         to_be_fetched = Movie(id=601, original_title='to_be_fetched', popularity=36.213, fetched=False)
         to_be_fetched.save()
         already_fetched = Movie(id=602, original_title='already_fetched', popularity=36.213, fetched=True)
@@ -192,7 +198,7 @@ class FetchBaseData(SuperClass):
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
         self.assertEqual(response.content, b'Imported: 247 countries')
-        self.assertEqual(Country.objects.count(), 247)
+        self.assertEqual(ProductionCountries.objects.count(), 247)
 
     @responses.activate
     def test_fetch_languages(self):
@@ -210,7 +216,7 @@ class FetchBaseData(SuperClass):
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
         self.assertEqual(response.content, b'Imported: 187 languages')
-        self.assertEqual(Language.objects.count(), 187)
+        self.assertEqual(SpokenLanguage.objects.count(), 187)
 
     @responses.activate
     def test_fetch_genres(self):
@@ -280,6 +286,6 @@ class FetchBaseData(SuperClass):
         self.assertContains(response, '"countries_response":"Imported: 247 countries"')
         self.assertContains(response, '"languages_response":"Imported: 187 languages"')
         self.assertEqual(Movie.objects.count(), 3)
-        self.assertEqual(Country.objects.count(), 247)
-        self.assertEqual(Language.objects.count(), 187)
+        self.assertEqual(ProductionCountries.objects.count(), 247)
+        self.assertEqual(SpokenLanguage.objects.count(), 187)
         self.assertEqual(Genre.objects.count(), 19)

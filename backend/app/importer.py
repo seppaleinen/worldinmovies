@@ -6,7 +6,7 @@ import datetime, \
     concurrent.futures, \
     os, \
     time
-from app.models import Movie, SpokenLanguage, AlternativeTitle, ProductionCountries, Genre, Country, Language
+from app.models import Movie, SpokenLanguage, AlternativeTitle, ProductionCountries, Genre
 
 
 def base_import():
@@ -109,17 +109,13 @@ def concurrent_stuff():
                         alt_title.save()
                         db_movie.alternative_titles.add(alt_title)
                     for fetch_spoken_lang in fetched_movie['spoken_languages']:
-                        spoken_lang = SpokenLanguage(movie_id=db_movie.id,
-                                                     iso_639_1=fetch_spoken_lang['iso_639_1'],
-                                                     name=fetch_spoken_lang['name'])
-                        spoken_lang.save()
-                        db_movie.spoken_languages.add(spoken_lang)
+                        try:
+                            db_movie.spoken_languages.add(SpokenLanguage.objects.get(pk=fetch_spoken_lang['iso_639_1']))
+                        except Exception as exc:
+                            print("Hej: %s" % exc)
+                            raise exc
                     for fetch_prod_country in fetched_movie['production_countries']:
-                        prod_country = ProductionCountries(movie_id=db_movie.id,
-                                                           iso_3166_1=fetch_prod_country['iso_3166_1'],
-                                                           name=fetch_prod_country['name'])
-                        prod_country.save()
-                        db_movie.production_countries.add(prod_country)
+                        db_movie.production_countries.add(ProductionCountries.objects.get(pk=fetch_prod_country['iso_3166_1']))
                     db_movie.save()
                 i+=1
                 bar.update(i)
@@ -150,7 +146,7 @@ def import_countries():
     if response.status_code == 200:
         countries_from_json = json.loads(response.content)
         for country in countries_from_json:
-            Country(iso_3166_1=country['iso_3166_1'], english_name=country['english_name']).save()
+            ProductionCountries(iso_3166_1=country['iso_3166_1'], name=country['english_name']).save()
         return "Imported: %s countries" % len(countries_from_json)
     else:
         return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
@@ -163,7 +159,7 @@ def import_languages():
     if response.status_code == 200:
         languages_from_json = json.loads(response.content)
         for language in languages_from_json:
-            Language(iso_639_1=language['iso_639_1'], english_name=language['english_name'], name=language['name']).save()
+            SpokenLanguage(iso_639_1=language['iso_639_1'], name=language['english_name']).save()
         return "Imported: %s languages" % len(languages_from_json)
     else:
         return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
