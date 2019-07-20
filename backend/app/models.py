@@ -41,7 +41,7 @@ class Movie(models.Model):
 
 
 class Genre(models.Model):
-    movie = models.ForeignKey(Movie, related_name='genres', on_delete=models.CASCADE, db_index=True)
+    # movie = models.ForeignKey(Movie, related_name='genres', on_delete=models.CASCADE, db_index=True)
     id = models.IntegerField(primary_key=True)
     name = models.TextField()
 
@@ -72,3 +72,20 @@ class ProductionCountries(models.Model):
 
     def __str__(self):
         return "iso:{iso}, name:{name}".format(iso=self.iso_3166_1, name=self.name)
+
+
+class Country(models.Model):
+    iso_3166_1 = models.CharField(max_length=4)
+    english_name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return "iso:{iso}, english_name:{english_name}".format(iso=self.iso_3166_1, english_name=self.english_name)
+
+
+class Language(models.Model):
+    iso_639_1 = models.CharField(max_length=4)
+    english_name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return "iso:{iso}, english_name:{english_name}".format(iso=self.iso_3166_1, english_name=self.english_name)

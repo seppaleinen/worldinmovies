@@ -6,7 +6,14 @@ import datetime, \
     concurrent.futures, \
     os, \
     time
-from app.models import Movie, SpokenLanguage, AlternativeTitle, ProductionCountries, Genre
+from app.models import Movie, SpokenLanguage, AlternativeTitle, ProductionCountries, Genre, Country, Language
+
+
+def base_import():
+    download_files()
+    fetch_genres()
+    fetch_countries()
+    fetch_languages()
 
 
 def download_files():
@@ -121,43 +128,40 @@ def concurrent_stuff():
     return "Fetched and saved: %s movies" % length
 
 
-def fetch_genres(request):
+def import_genres():
     api_key = os.getenv('TMDB_API', 'test')
     url = "https://api.themoviedb.org/3/genre/movie/list?api_key={api_key}&language=en-US".format(api_key=api_key)
     response = requests.get(url, stream=True)
     if response.status_code == 200:
         genres_from_json = json.loads(response.content)['genres']
         for genre in genres_from_json:
-            print(genre)
             Genre(id=genre['id'], name=genre['name']).save()
-    for genresa in Genre.objects.all():
-        print("Genre: %s" % genresa.name)
-    return HttpResponse("hejhej")
+        return "Imported: %s genres" % len(genres_from_json)
+    else:
+        return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
 
 
-def fetch_countries(request):
+def import_countries():
     api_key = os.getenv('TMDB_API', 'test')
     url = "https://api.themoviedb.org/3/configuration/countries?api_key={api_key}".format(api_key=api_key)
     response = requests.get(url, stream=True)
     if response.status_code == 200:
-        genres_from_json = json.loads(response.content)['genres']
-        for genre in genres_from_json:
-            print(genre)
-            Genre(id=genre['id'], name=genre['name']).save()
-    for genresa in Genre.objects.all():
-        print("Genre: %s" % genresa.name)
-    return HttpResponse("hejhej")
+        countries_from_json = json.loads(response.content)
+        for country in countries_from_json:
+            Country(iso_3166_1=country['iso_3166_1'], english_name=country['english_name']).save()
+        return "Imported: %s countries" % len(countries_from_json)
+    else:
+        return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
 
 
-def fetch_languages(request):
+def import_languages():
     api_key = os.getenv('TMDB_API', 'test')
     url = "https://api.themoviedb.org/3/configuration/languages?api_key={api_key}".format(api_key=api_key)
     response = requests.get(url, stream=True)
     if response.status_code == 200:
-        genres_from_json = json.loads(response.content)['genres']
-        for genre in genres_from_json:
-            print(genre)
-            Genre(id=genre['id'], name=genre['name']).save()
-    for genresa in Genre.objects.all():
-        print("Genre: %s" % genresa.name)
-    return HttpResponse("hejhej")
+        languages_from_json = json.loads(response.content)
+        for language in languages_from_json:
+            Language(iso_639_1=language['iso_639_1'], english_name=language['english_name'], name=language['name']).save()
+        return "Imported: %s languages" % len(languages_from_json)
+    else:
+        return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)

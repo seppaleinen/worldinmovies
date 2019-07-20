@@ -1,7 +1,7 @@
 import datetime, os, responses
 
 from django.test import TestCase
-from app.models import Movie
+from app.models import Movie, Language, Country, Genre
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -173,3 +173,59 @@ class StatusTests(SuperClass):
         response = self.client.get('/status')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'Daily file export have not been imported yet. No movies to be fetched')
+
+
+class FetchBaseData(SuperClass):
+    @responses.activate
+    def test_fetch_countries(self):
+        url = "https://api.themoviedb.org/3/configuration/countries?api_key=test"
+        with open("testdata/countries.json", 'rt') as img1:
+            responses.add(responses.GET,
+                          url,
+                          body=img1.read(), status=200,
+                          content_type='application/javascript',
+                          stream=True
+                          )
+
+        response = self.client.get('/fetch_countries')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, url)
+        self.assertEqual(response.content, b'Imported: 247 countries')
+        self.assertEqual(Country.objects.count(), 247)
+
+    @responses.activate
+    def test_fetch_languages(self):
+        url = "https://api.themoviedb.org/3/configuration/languages?api_key=test"
+        with open("testdata/languages.json", 'rt') as img1:
+            responses.add(responses.GET,
+                          url,
+                          body=img1.read(), status=200,
+                          content_type='application/javascript',
+                          stream=True
+                          )
+
+        response = self.client.get('/fetch_languages')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, url)
+        self.assertEqual(response.content, b'Imported: 187 languages')
+        self.assertEqual(Language.objects.count(), 187)
+
+    @responses.activate
+    def test_fetch_genres(self):
+        url = "https://api.themoviedb.org/3/genre/movie/list?api_key=test&language=en-US"
+        with open("testdata/genres.json", 'rt') as img1:
+            responses.add(responses.GET,
+                          url,
+                          body=img1.read(), status=200,
+                          content_type='application/javascript',
+                          stream=True
+                          )
+
+        response = self.client.get('/fetch_genres')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, url)
+        self.assertEqual(response.content, b'Imported: 19 genres')
+        self.assertEqual(Genre.objects.count(), 19)
