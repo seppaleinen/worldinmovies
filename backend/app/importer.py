@@ -6,7 +6,7 @@ import datetime, \
     concurrent.futures, \
     os, \
     time
-from app.models import Movie, SpokenLanguage, AlternativeTitle, ProductionCountries
+from app.models import Movie, SpokenLanguage, AlternativeTitle, ProductionCountries, Genre
 
 
 def download_files():
@@ -119,3 +119,45 @@ def concurrent_stuff():
                 return "Failed with exception: %s" % exc
         bar.finish()
     return "Fetched and saved: %s movies" % length
+
+
+def fetch_genres(request):
+    api_key = os.getenv('TMDB_API', 'test')
+    url = "https://api.themoviedb.org/3/genre/movie/list?api_key={api_key}&language=en-US".format(api_key=api_key)
+    response = requests.get(url, stream=True)
+    if response.status_code == 200:
+        genres_from_json = json.loads(response.content)['genres']
+        for genre in genres_from_json:
+            print(genre)
+            Genre(id=genre['id'], name=genre['name']).save()
+    for genresa in Genre.objects.all():
+        print("Genre: %s" % genresa.name)
+    return HttpResponse("hejhej")
+
+
+def fetch_countries(request):
+    api_key = os.getenv('TMDB_API', 'test')
+    url = "https://api.themoviedb.org/3/configuration/countries?api_key={api_key}".format(api_key=api_key)
+    response = requests.get(url, stream=True)
+    if response.status_code == 200:
+        genres_from_json = json.loads(response.content)['genres']
+        for genre in genres_from_json:
+            print(genre)
+            Genre(id=genre['id'], name=genre['name']).save()
+    for genresa in Genre.objects.all():
+        print("Genre: %s" % genresa.name)
+    return HttpResponse("hejhej")
+
+
+def fetch_languages(request):
+    api_key = os.getenv('TMDB_API', 'test')
+    url = "https://api.themoviedb.org/3/configuration/languages?api_key={api_key}".format(api_key=api_key)
+    response = requests.get(url, stream=True)
+    if response.status_code == 200:
+        genres_from_json = json.loads(response.content)['genres']
+        for genre in genres_from_json:
+            print(genre)
+            Genre(id=genre['id'], name=genre['name']).save()
+    for genresa in Genre.objects.all():
+        print("Genre: %s" % genresa.name)
+    return HttpResponse("hejhej")

@@ -20,6 +20,14 @@ Basically will be handling
 * If import fails, save to separate failure-table with movie-id, exception message, and raw dump
 * Verify memory consumption
 * ProductionCountries must be many to many
+* Fetch countries - https://api.themoviedb.org/3/configuration/countries?api_key=<<api_key>>
+* Fetch languages - https://api.themoviedb.org/3/configuration/languages?api_key=<<api_key>>
+
+
+### Notes
+* To fetch images, prefix with: https://image.tmdb.org/t/p/w500/
+
+
 
 ### Requirements
 

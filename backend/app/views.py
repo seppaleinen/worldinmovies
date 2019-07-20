@@ -3,7 +3,7 @@ import requests, json, os
 from django.http import HttpResponse
 from django.db import connection
 from app.models import Movie, Genre
-from app.importer import download_files, concurrent_stuff
+from app.importer import download_files, concurrent_stuff, fetch_genres, fetch_countries, fetch_languages
 
 
 def index(request):
@@ -43,14 +43,12 @@ def fetch_movie(request):
 
 
 def fetch_genres(request):
-    API_KEY = os.getenv('TMDB_API')
-    url = "https://api.themoviedb.org/3/genre/movie/list?api_key={api_key}&language=en-US".format(api_key=API_KEY)
-    response = requests.get(url, stream=True)
-    if response.status_code == 200:
-        genres_from_json = json.loads(response.content)['genres']
-        for genre in genres_from_json:
-            print(genre)
-            Genre(id=genre['id'], name=genre['name']).save()
-    for genresa in Genre.objects.all():
-        print("Genre: %s" % genresa.name)
-    return HttpResponse("hejhej")
+    return HttpResponse(fetch_genres())
+
+
+def fetch_countries(request):
+    return HttpResponse(fetch_countries())
+
+
+def fetch_languages(request):
+    return HttpResponse(fetch_languages())

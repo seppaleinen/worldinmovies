@@ -23,7 +23,9 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^movies$', views.download_file, name='download_file'),
     url(r'^test$', views.fetch_movie, name='fetch_movie'),
-    url(r'^genre$', views.fetch_genres, name='fetch_genres'),
+    url(r'^fetch_genres$', views.fetch_genres, name='fetch_genres'),
+    url(r'^fetch_countries$', views.fetch_countries, name='fetch_countries'),
+    url(r'^fetch_languages$', views.fetch_languages, name='fetch_languages'),
     url(r'^status$', views.import_status, name='import_status'),
     path('', views.index, name='index')
 ]

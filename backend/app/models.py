@@ -36,15 +36,13 @@ class Movie(models.Model):
         self.vote_average = fetched_movie['vote_average']
         self.vote_count = fetched_movie['vote_count']
 
-
     def __str__(self):
         return "id: %s, original_title: %s, fetched: %s" % (self.id, self.original_title, self.fetched)
 
 
-
 class Genre(models.Model):
     movie = models.ForeignKey(Movie, related_name='genres', on_delete=models.CASCADE, db_index=True)
-    # id = models.IntegerField(primary_key=True)
+    id = models.IntegerField(primary_key=True)
     name = models.TextField()
 
 
