@@ -3,7 +3,7 @@ import requests, json, os
 from django.http import HttpResponse
 from django.db import connection
 from app.models import Movie, Genre
-from app.importer import download_files, concurrent_stuff, import_genres, import_countries, import_languages
+from app.importer import download_files, concurrent_stuff, import_genres, import_countries, import_languages, base_import
 
 
 def index(request):
@@ -36,6 +36,10 @@ def import_status(request):
 
 def download_file(request):
     return HttpResponse(download_files())
+
+
+def base_fetch(request):
+    return HttpResponse(base_import())
 
 
 def fetch_movie(request):

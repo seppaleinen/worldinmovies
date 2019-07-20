@@ -10,10 +10,12 @@ from app.models import Movie, SpokenLanguage, AlternativeTitle, ProductionCountr
 
 
 def base_import():
-    download_files()
-    fetch_genres()
-    fetch_countries()
-    fetch_languages()
+    daily = download_files()
+    genres = import_genres()
+    countries = import_countries()
+    languages = import_languages()
+    return '"daily_response":"{daily_response}","genres_response":"{genres_response}", "countries_response":"{countries_response}","languages_response":"{languages_response}"'\
+        .format(daily_response=daily, genres_response=genres, countries_response=countries, languages_response=languages)
 
 
 def download_files():
@@ -47,7 +49,7 @@ def download_files():
             for i in progressbar.progressbar(range(0, len(movies), 100), redirect_stdout=True, prefix='Saving Movie IDs: '):
                 chunk = movies[i:i + 100]
                 Movie.objects.bulk_create(chunk)
-            return "Amount of movies imported: %s" % len(contents)
+            return "Imported: %s movies" % len(contents)
         except Exception as e:
             print("Error: %s" % e)
             return "Exception: %s" % e

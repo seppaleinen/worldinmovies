@@ -45,7 +45,7 @@ class ImportTests(SuperClass):
 
         response = self.client.get('/movies')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'Amount of movies imported: 3')
+        self.assertEqual(response.content, b'Imported: 3 movies')
 
     @responses.activate
     def test_fetch_3_unfetched_out_of_4(self):
@@ -228,4 +228,58 @@ class FetchBaseData(SuperClass):
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
         self.assertEqual(response.content, b'Imported: 19 genres')
+        self.assertEqual(Genre.objects.count(), 19)
+
+    @responses.activate
+    def test_base_fetch(self):
+        genres_url = "https://api.themoviedb.org/3/genre/movie/list?api_key=test&language=en-US"
+        with open("testdata/genres.json", 'rt') as img1:
+            responses.add(responses.GET,
+                            genres_url,
+                            body=img1.read(), status=200,
+                            content_type='application/javascript',
+                            stream=True
+                            )
+        languages_url = "https://api.themoviedb.org/3/configuration/languages?api_key=test"
+        with open("testdata/languages.json", 'rt') as img1:
+            responses.add(responses.GET,
+                            languages_url,
+                            body=img1.read(), status=200,
+                            content_type='application/javascript',
+                            stream=True
+                            )
+        countries_url = "https://api.themoviedb.org/3/configuration/countries?api_key=test"
+        with open("testdata/countries.json", 'rt') as img1:
+            responses.add(responses.GET,
+                            countries_url,
+                            body=img1.read(), status=200,
+                            content_type='application/javascript',
+                            stream=True
+                            )
+        yesterday = datetime.date.today() - datetime.timedelta(days=1)
+        yesterday_formatted = yesterday.strftime("%m_%d_%Y")
+        daily_url = "http://files.tmdb.org/p/exports/movie_ids_%s.json.gz" % yesterday_formatted
+        with open('testdata/movie_ids.json.gz', 'rb') as img1:
+            responses.add(responses.GET,
+                            daily_url,
+                            body=img1.read(), status=200,
+                            content_type='application/javascript',
+                            stream=True
+                            )
+
+
+        response = self.client.get('/base_fetch')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(responses.calls), 4)
+        self.assertEqual(responses.calls[0].request.url, daily_url)
+        self.assertEqual(responses.calls[1].request.url, genres_url)
+        self.assertEqual(responses.calls[2].request.url, countries_url)
+        self.assertEqual(responses.calls[3].request.url, languages_url)
+        self.assertContains(response, '"daily_response":"Imported: 3 movies"')
+        self.assertContains(response, '"genres_response":"Imported: 19 genres"')
+        self.assertContains(response, '"countries_response":"Imported: 247 countries"')
+        self.assertContains(response, '"languages_response":"Imported: 187 languages"')
+        self.assertEqual(Movie.objects.count(), 3)
+        self.assertEqual(Country.objects.count(), 247)
+        self.assertEqual(Language.objects.count(), 187)
         self.assertEqual(Genre.objects.count(), 19)
