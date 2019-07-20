@@ -110,12 +110,12 @@ def concurrent_stuff():
                         db_movie.alternative_titles.add(alt_title)
                     for fetch_spoken_lang in fetched_movie['spoken_languages']:
                         try:
-                            db_movie.spoken_languages.add(SpokenLanguage.objects.get(pk=fetch_spoken_lang['iso_639_1']))
+                            db_movie.spoken_languages.add(SpokenLanguage.objects.get(iso_639_1=fetch_spoken_lang['iso_639_1']))
                         except Exception as exc:
                             print("Hej: %s" % exc)
                             raise exc
                     for fetch_prod_country in fetched_movie['production_countries']:
-                        db_movie.production_countries.add(ProductionCountries.objects.get(pk=fetch_prod_country['iso_3166_1']))
+                        db_movie.production_countries.add(ProductionCountries.objects.get(iso_3166_1=fetch_prod_country['iso_3166_1']))
                     db_movie.save()
                 i+=1
                 bar.update(i)
@@ -146,7 +146,8 @@ def import_countries():
     if response.status_code == 200:
         countries_from_json = json.loads(response.content)
         for country in countries_from_json:
-            ProductionCountries(iso_3166_1=country['iso_3166_1'], name=country['english_name']).save()
+            if not ProductionCountries.objects.all().filter(iso_3166_1=country['iso_3166_1']).exists():
+                ProductionCountries.objects.update_or_create(iso_3166_1=country['iso_3166_1'], name=country['english_name'])
         return "Imported: %s countries" % len(countries_from_json)
     else:
         return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
@@ -159,7 +160,9 @@ def import_languages():
     if response.status_code == 200:
         languages_from_json = json.loads(response.content)
         for language in languages_from_json:
-            SpokenLanguage(iso_639_1=language['iso_639_1'], name=language['english_name']).save()
+            spokenLang = SpokenLanguage.objects.all().filter(iso_639_1=language['iso_639_1']).exists()
+            if not spokenLang:
+                SpokenLanguage(iso_639_1=language['iso_639_1'], name=language['english_name']).save()
         return "Imported: %s languages" % len(languages_from_json)
     else:
         return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)

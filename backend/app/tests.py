@@ -19,6 +19,8 @@ class SuperClass(TestCase):
     def tearDown(self):
         os.environ.clear()
         os.environ.update(self._environ)
+        ProductionCountries.objects.all().delete()
+        SpokenLanguage.objects.all().delete()
 
 
 # Create your tests here.
@@ -121,7 +123,6 @@ class ImportTests(SuperClass):
 
     @responses.activate
     def test_fetch_only_movies_marked_as_fetched_false(self):
-        SpokenLanguage(iso_639_1='en', name='English').save()
         to_be_fetched = Movie(id=601, original_title='to_be_fetched', popularity=36.213, fetched=False)
         to_be_fetched.save()
         already_fetched = Movie(id=602, original_title='already_fetched', popularity=36.213, fetched=True)

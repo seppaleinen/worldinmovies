@@ -60,7 +60,7 @@ class AlternativeTitle(models.Model):
 
 class SpokenLanguage(models.Model):
     movies = models.ManyToManyField(Movie, related_name='spoken_languages')
-    iso_639_1 = models.CharField(primary_key=True, max_length=4)
+    iso_639_1 = models.CharField(max_length=4, unique=True)
     name = models.CharField(max_length=50)
 
     def __str__(self):
@@ -69,7 +69,7 @@ class SpokenLanguage(models.Model):
 
 class ProductionCountries(models.Model):
     movies = models.ManyToManyField(Movie, related_name='production_countries')
-    iso_3166_1 = models.CharField(primary_key=True, max_length=4)
+    iso_3166_1 = models.CharField(max_length=4, unique=True)
     name = models.CharField(max_length=50)
 
     def __str__(self):
