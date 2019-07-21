@@ -4,11 +4,11 @@ from django.db import models, migrations
 
 
 def migrate_spoken_languages(apps, schema_editor):
-    SpokenLanguages = apps.get_model('app', 'SpokenLanguage')
+    Movie = apps.get_model('app', 'Movie')
 
-    for spokenLanguage in SpokenLanguages.objects.all():
-        spokenLanguage.movies.add(spokenLanguage.movie)
-
+    for movie in Movie.objects.filter(fetched=True).all():
+        for spokenLanguage in movie.spoken_languages.all():
+            movie.spoken_languages2.add(spokenLanguage)
 
 class Migration(migrations.Migration):
 

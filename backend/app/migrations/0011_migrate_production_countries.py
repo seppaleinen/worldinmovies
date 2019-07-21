@@ -4,10 +4,22 @@ from django.db import models, migrations
 
 
 def migrate_production_countries(apps, schema_editor):
+    Movie = apps.get_model('app', 'Movie')
     ProductionCountries = apps.get_model('app', 'ProductionCountries')
 
-    for productionCountry in ProductionCountries.objects.all():
-        productionCountry.movies.add(productionCountry.movie)
+    # Avatar
+    #   USA
+    #   AU
+    # Shawshank
+    #   USA
+
+    for movie in Movie.objects.filter(fetched=True).all():
+        for country in movie.production_countries.all():
+            try:
+                prodCountry = ProductionCountries.objects.get(iso_3166_1=country.iso_3166_1)
+            except Exception as exc:
+                prodCountry = country
+            movie.production_countries2.add(prodCountry)
 
 
 class Migration(migrations.Migration):
