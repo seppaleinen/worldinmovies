@@ -17,10 +17,11 @@ def migrate_production_countries(apps, schema_editor):
         for country in movie.production_countries.all():
             try:
                 prod_country = ProductionCountries.objects.get(iso_3166_1=country.iso_3166_1)
-                print("Found: %s" % prod_country.name)
+                print("Found: %s:%s" % (prod_country.id, prod_country.name))
             except Exception as exc:
                 prod_country = country
-                print("Did not find %s" % country.name)
+                print("Did not find %s:%s due to %s" % (country.id, country.name, exc))
+                prod_country.save()
             movie.production_countries2.add(prod_country)
 
 
