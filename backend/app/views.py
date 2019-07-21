@@ -33,10 +33,22 @@ def import_status(request):
 
 
 def get_best_movies_by_country(request):
-    return HttpResponse("Stuff happening!")
-
+    with connection.cursor() as cursor:
+        cursor.execute("""select country.iso_3166_1, original_title, vote_average from app_productioncountries country 
+                                join lateral (
+                                    select * from app_movie movie
+                                        inner join app_productioncountries_movies pcm on pcm.movie_id = movie.id
+                                        inner join app_productioncountries pc on pc.id = pcm.productioncountries_id
+                                        where pc.iso_3166_1 = country.iso_3166_1
+                                        and movie.fetched is true
+                                        order by movie.vote_average desc
+                                        limit 10
+                                    ) p on true
+                                order by country.iso_3166_1 asc""")
+        return HttpResponse(cursor.fetchall())
 
 # Imports
+
 
 def download_file(request):
     return HttpResponse(download_files())
