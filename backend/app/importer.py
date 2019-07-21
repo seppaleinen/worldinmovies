@@ -121,7 +121,7 @@ def concurrent_stuff():
                 i+=1
                 bar.update(i)
             except Exception as exc:
-                print(exc)
+                print("Exception: %s" % exc)
                 return "Failed with exception: %s" % exc
         bar.finish()
     return "Fetched and saved: %s movies" % length

@@ -1,6 +1,7 @@
 import datetime, os, responses
 
 from django.test import TestCase
+from django.db import transaction
 from app.models import Movie, Genre, SpokenLanguage, ProductionCountries
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -290,3 +291,22 @@ class FetchBaseData(SuperClass):
         self.assertEqual(ProductionCountries.objects.count(), 247)
         self.assertEqual(SpokenLanguage.objects.count(), 187)
         self.assertEqual(Genre.objects.count(), 19)
+
+
+class ViewData(SuperClass):
+    def test_fetch_best_movies_per_country(self):
+        for country_code in ['US', 'AU', 'GB']:
+            country = ProductionCountries.objects.get(iso_3166_1=country_code)
+            for ratings in range(0, 20):
+                with transaction.atomic():
+                    movie = Movie(id=ratings,
+                                original_title="title%s" % ratings,
+                                popularity=36.213,
+                                fetched=True,
+                                vote_average=ratings)
+                    movie.save()
+                    movie.production_countries.add(country)
+
+        response = self.client.get('/view_best_movies')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'Stuff happening!')

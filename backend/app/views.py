@@ -13,6 +13,7 @@ def index(request):
     else:
         return HttpResponse("No movies fetched yet")
 
+
 def import_status(request):
     with connection.cursor() as cursor:
         cursor.execute("""select 
@@ -30,6 +31,9 @@ def import_status(request):
             return HttpResponse("There are {fetched} fetched movies out of {amount}, which is about {percent}%"
                                 .format(fetched=fetched, amount=total, percent=percent))
 
+
+def get_best_movies_by_country(request):
+    return HttpResponse("Stuff happening!")
 
 
 # Imports
