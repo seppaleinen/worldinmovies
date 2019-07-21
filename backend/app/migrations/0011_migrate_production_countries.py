@@ -7,23 +7,15 @@ def migrate_production_countries(apps, schema_editor):
     Movie = apps.get_model('app', 'Movie')
     ProductionCountries = apps.get_model('app', 'ProductionCountries')
 
-    # Avatar
-    #   USA
-    #   AU
-    # Shawshank
-    #   USA
-
     for movie in Movie.objects.filter(fetched=True).all():
         for country in movie.production_countries.all():
             try:
                 prod_country = ProductionCountries.objects.filter(iso_3166_1=country.iso_3166_1).first()
-                print("Found: %s:%s" % (prod_country.id, prod_country.name))
             except Exception as exc:
                 prod_country = country
-                print("Did not find %s:%s due to %s" % (country.id, country.name, exc))
                 prod_country.save()
             movie.production_countries2.add(prod_country)
-    # Remove all unused prod_countrie
+    # Remove all unused prod_countries
     with connection.cursor() as cursor:
         cursor.execute("delete from app_productioncountries "
                        "where id not in (select productioncountries_id from app_productioncountries_movies)")

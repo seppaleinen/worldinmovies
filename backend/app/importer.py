@@ -128,6 +128,7 @@ def concurrent_stuff():
 
 
 def import_genres():
+    print("Importing genres")
     api_key = os.getenv('TMDB_API', 'test')
     url = "https://api.themoviedb.org/3/genre/movie/list?api_key={api_key}&language=en-US".format(api_key=api_key)
     response = requests.get(url, stream=True)
@@ -141,6 +142,7 @@ def import_genres():
 
 
 def import_countries():
+    print("Importing countries")
     api_key = os.getenv('TMDB_API', 'test')
     url = "https://api.themoviedb.org/3/configuration/countries?api_key={api_key}".format(api_key=api_key)
     response = requests.get(url, stream=True)
@@ -155,6 +157,7 @@ def import_countries():
 
 
 def import_languages():
+    print("Importing languages")
     api_key = os.getenv('TMDB_API', 'test')
     url = "https://api.themoviedb.org/3/configuration/languages?api_key={api_key}".format(api_key=api_key)
     response = requests.get(url, stream=True)
