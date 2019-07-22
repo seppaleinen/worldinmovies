@@ -19,9 +19,42 @@ Basically will be handling
 * Move import apis behind /admin
 * If import fails, save to separate failure-table with movie-id, exception message, and raw dump
 * Verify memory consumption
-* ProductionCountries must be many to many
-* Fetch countries - https://api.themoviedb.org/3/configuration/countries?api_key=<<api_key>>
-* Fetch languages - https://api.themoviedb.org/3/configuration/languages?api_key=<<api_key>>
+
+* Best 10 of each country
+	- additional fields
+		- imdb_id
+		- year
+		- id
+	- response as json
+	- look into using other than lateral join, as to make tests work
+	- alternatively, use postgres as test-db with pytest-pgsql or similar
+	- weigh ratings correctly
+		- (WR) = (v ÷ (v+m)) × R + (m ÷ (v+m)) × C where:
+          R = average for the movie (mean) = (Rating)
+          v = number of votes for the movie = (votes)
+          m = minimum votes required to be listed in the Top 250 (currently 25000)
+          C = the mean vote across the whole report (currently 7.0)
+* Convert imdb watched list to world in movies format
+	- wanted response-fields
+		- countrycode
+		- name
+		- year
+		- imdb_id
+		- id
+		- personal_rating
+		- rating
+		- unmatched
+			- name
+			- year
+			- imdbid
+* Search by name
+	- wanted response-fields
+		- imdb_id
+		- id
+		- name
+		- year
+		- poster_url
+		- countryname
 
 
 ### Notes
