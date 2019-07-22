@@ -52,7 +52,7 @@ class AlternativeTitle(models.Model):
     movie = models.ForeignKey(Movie, related_name='alternative_titles', on_delete=models.CASCADE, db_index=True)
     iso_3166_1 = models.CharField(max_length=20)
     title = models.CharField(max_length=500)
-    type = models.CharField(max_length=100, blank=True, null=True)
+    type = models.CharField(max_length=500, blank=True, null=True)
 
     def __str__(self):
         return "iso:{iso}, title:{title}".format(iso=self.iso_3166_1, title=self.title)
