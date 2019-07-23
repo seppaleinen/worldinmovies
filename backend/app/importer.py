@@ -6,7 +6,7 @@ import datetime, \
     concurrent.futures, \
     os, \
     time, \
-    sys
+    traceback
 from app.models import Movie, SpokenLanguage, AlternativeTitle, ProductionCountries, Genre
 
 
@@ -80,7 +80,7 @@ def __fetch_movie_with_id(id, index):
         return __fetch_movie_with_id(id, index)
     except requests.exceptions.ConnectionError as exc:
         print("ConnectionError: %s on url: %s\n Trying again in 10 seconds..." % (exc, url))
-        print(sys.exc_info()[0])
+        traceback.print_exc()
         time.sleep(10)
         return __fetch_movie_with_id(id, index)
     if response.status_code == 200:
