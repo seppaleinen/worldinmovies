@@ -67,13 +67,16 @@ def __unzip_file():
 
 def __fetch_movie_with_id(id, index):
     api_key = os.getenv('TMDB_API', 'test')
+    headers = {
+        'User-Agent': 'Other useragent - to test'
+    }
     url = "https://api.themoviedb.org/3/movie/{movie_id}?" \
           "api_key={api_key}&" \
           "language=en-US&" \
           "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(movie_id=id,
                                                                                                     api_key=api_key)
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, timeout=10, headers=headers)
     except requests.exceptions.Timeout:
         print("Timed out on id: %s... trying again in 10 seconds" % id)
         time.sleep(10)
