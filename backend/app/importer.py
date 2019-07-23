@@ -72,15 +72,13 @@ def __fetch_movie_with_id(id, index):
           "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(movie_id=id,
                                                                                                     api_key=api_key)
     try:
-        print("Request: %s" % url)
         response = requests.get(url, timeout=10)
-        print("Response received")
     except requests.exceptions.Timeout:
         print("Timed out on id: %s... trying again in 10 seconds" % id)
         time.sleep(10)
         return __fetch_movie_with_id(id, index)
     except Exception as exc:
-        print("Other exception: %s" % exc)
+        print("Other exception: %s, %s, \n %s" % exc, url, response)
         return None
     if response.status_code == 200:
         return response.content
@@ -108,12 +106,9 @@ def concurrent_stuff():
             try:
                 data = future.result()
                 if data is not None:
-                    print("Before json loads")
                     fetched_movie = json.loads(data)
-                    print("After json loads")
                     db_movie = Movie.objects.get(pk=fetched_movie['id'])
                     db_movie.add_fetched_info(fetched_movie)
-                    print("Before alt titles")
                     for fetch_alt_title in fetched_movie['alternative_titles']['titles']:
                         alt_title = AlternativeTitle(movie_id=db_movie.id,
                                                      iso_3166_1=fetch_alt_title['iso_3166_1'],
@@ -125,9 +120,7 @@ def concurrent_stuff():
                         db_movie.spoken_languages.add(SpokenLanguage.objects.get(iso_639_1=fetch_spoken_lang['iso_639_1']))
                     for fetch_prod_country in fetched_movie['production_countries']:
                         db_movie.production_countries.add(ProductionCountries.objects.get(iso_3166_1=fetch_prod_country['iso_3166_1']))
-                    print("Before save")
                     db_movie.save()
-                    print("After save")
                 i+=1
                 bar.update(i)
             except Exception as exc:
