@@ -77,9 +77,10 @@ def __fetch_movie_with_id(id, index):
         print("Timed out on id: %s... trying again in 10 seconds" % id)
         time.sleep(10)
         return __fetch_movie_with_id(id, index)
-    except Exception as exc:
-        print("Other exception: %s, %s" % (exc, url))
-        return None
+    except requests.exceptions.ConnectionError as exc:
+        print("ConnectionError: %s on url: %s\n Trying again in 10 seconds..." % (exc, url))
+        time.sleep(10)
+        return __fetch_movie_with_id(id, index)
     if response.status_code == 200:
         return response.content
     elif response.status_code == 429 or response.status_code == 25:
