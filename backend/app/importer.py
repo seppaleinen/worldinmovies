@@ -78,7 +78,7 @@ def __fetch_movie_with_id(id, index):
         time.sleep(10)
         return __fetch_movie_with_id(id, index)
     except Exception as exc:
-        print("Other exception: %s, %s" % exc, url)
+        print("Other exception: %s, %s" % (exc, url))
         return None
     if response.status_code == 200:
         return response.content
