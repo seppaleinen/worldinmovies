@@ -73,7 +73,7 @@ def __fetch_movie_with_id(id, index):
           "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(movie_id=id,
                                                                                                     api_key=api_key)
     try:
-        response = requests.get(url, timeout=10, verify=False)
+        response = requests.get(url, timeout=10)
     except requests.exceptions.Timeout:
         print("Timed out on id: %s... trying again in 10 seconds" % id)
         time.sleep(10)

@@ -1,4 +1,4 @@
-FROM python:3-alpine
+FROM python:3
 
 RUN \
  apk add --no-cache postgresql-libs && \
