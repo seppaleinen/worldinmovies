@@ -29,5 +29,6 @@ urlpatterns = [
     url(r'^fetch_languages$', views.fetch_languages, name='fetch_languages'),
     url(r'^status$', views.import_status, name='import_status'),
     url(r'^view_best_movies$', views.get_best_movies_by_country, name='get_best_movies_by_country'),
+    url(r'^ratings$', views.ratings, name='ratings'),
     path('', views.index, name='index')
 ]

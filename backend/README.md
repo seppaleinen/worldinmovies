@@ -20,6 +20,13 @@ Basically will be handling
 * If import fails, save to separate failure-table with movie-id, exception message, and raw dump
 * Verify memory consumption
 
+* Best 10 of specific country
+	- id
+	- imdb_id
+	- name
+	- year
+	- poster_url
+	- rating
 * Best 10 of each country
 	- additional fields
 		- imdb_id

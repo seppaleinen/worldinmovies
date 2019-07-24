@@ -44,12 +44,12 @@ class ImportTests(SuperClass):
         yesterday_formatted = yesterday.strftime("%m_%d_%Y")
         daily_export_url = "http://files.tmdb.org/p/exports/movie_ids_%s.json.gz" % yesterday_formatted
         with open('testdata/movie_ids.json.gz', 'rb') as img1:
-                responses.add(
-                    responses.GET, daily_export_url,
-                    body=img1.read(), status=200,
-                    content_type='application/javascript',
-                    stream=True
-                )
+            responses.add(
+                responses.GET, daily_export_url,
+                body=img1.read(), status=200,
+                content_type='application/javascript',
+                stream=True
+            )
 
         response = self.client.get('/movies')
         self.assertEqual(response.status_code, 200)
@@ -64,16 +64,17 @@ class ImportTests(SuperClass):
 
         for i in [601, 602, 603]:
             url = "https://api.themoviedb.org/3/movie/{movie_id}?" \
-                        "api_key={api_key}&" \
-                        "language=en-US&" \
-                        "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(api_key='test', movie_id=i)
+                  "api_key={api_key}&" \
+                  "language=en-US&" \
+                  "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(
+                api_key='test', movie_id=i)
             with open("testdata/%s.json" % i, 'rt') as img1:
                 responses.add(responses.GET,
- 			        url,
-			        body=img1.read(), status=200,
-			        content_type='application/javascript',
-			        stream=True
-		        )
+                              url,
+                              body=img1.read(), status=200,
+                              content_type='application/javascript',
+                              stream=True
+                              )
 
         response = self.client.get('/test')
         self.assertEqual(response.status_code, 200)
@@ -87,7 +88,8 @@ class ImportTests(SuperClass):
         url = "https://api.themoviedb.org/3/movie/{movie_id}?" \
               "api_key={api_key}&" \
               "language=en-US&" \
-              "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(api_key='test', movie_id=movie.id)
+              "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(api_key='test',
+                                                                                                        movie_id=movie.id)
         with open("testdata/failing_movie.json", 'rt') as img1:
             responses.add(responses.GET,
                           url,
@@ -108,14 +110,15 @@ class ImportTests(SuperClass):
         url = "https://api.themoviedb.org/3/movie/{movie_id}?" \
               "api_key={api_key}&" \
               "language=en-US&" \
-              "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(api_key='test', movie_id=movie.id)
+              "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(api_key='test',
+                                                                                                        movie_id=movie.id)
         responses.add(responses.GET,
-                        url,
-                        json={"status_code":34,"status_message":"The resource you requested could not be found."},
-                        status=404,
-                        content_type='application/javascript',
-                        stream=True
-                        )
+                      url,
+                      json={"status_code": 34, "status_message": "The resource you requested could not be found."},
+                      status=404,
+                      content_type='application/javascript',
+                      stream=True
+                      )
 
         response = self.client.get('/test')
         self.assertEqual(response.status_code, 200)
@@ -132,7 +135,8 @@ class ImportTests(SuperClass):
         url = "https://api.themoviedb.org/3/movie/{movie_id}?" \
               "api_key={api_key}&" \
               "language=en-US&" \
-              "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(api_key='test', movie_id=to_be_fetched.id)
+              "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(api_key='test',
+                                                                                                        movie_id=to_be_fetched.id)
         with open("testdata/601.json", 'rt') as img1:
             responses.add(responses.GET,
                           url,
@@ -243,38 +247,37 @@ class FetchBaseData(SuperClass):
         genres_url = "https://api.themoviedb.org/3/genre/movie/list?api_key=test&language=en-US"
         with open("testdata/genres.json", 'rt') as img1:
             responses.add(responses.GET,
-                            genres_url,
-                            body=img1.read(), status=200,
-                            content_type='application/javascript',
-                            stream=True
-                            )
+                          genres_url,
+                          body=img1.read(), status=200,
+                          content_type='application/javascript',
+                          stream=True
+                          )
         languages_url = "https://api.themoviedb.org/3/configuration/languages?api_key=test"
         with open("testdata/languages.json", 'rt') as img1:
             responses.add(responses.GET,
-                            languages_url,
-                            body=img1.read(), status=200,
-                            content_type='application/javascript',
-                            stream=True
-                            )
+                          languages_url,
+                          body=img1.read(), status=200,
+                          content_type='application/javascript',
+                          stream=True
+                          )
         countries_url = "https://api.themoviedb.org/3/configuration/countries?api_key=test"
         with open("testdata/countries.json", 'rt') as img1:
             responses.add(responses.GET,
-                            countries_url,
-                            body=img1.read(), status=200,
-                            content_type='application/javascript',
-                            stream=True
-                            )
+                          countries_url,
+                          body=img1.read(), status=200,
+                          content_type='application/javascript',
+                          stream=True
+                          )
         yesterday = datetime.date.today() - datetime.timedelta(days=1)
         yesterday_formatted = yesterday.strftime("%m_%d_%Y")
         daily_url = "http://files.tmdb.org/p/exports/movie_ids_%s.json.gz" % yesterday_formatted
         with open('testdata/movie_ids.json.gz', 'rb') as img1:
             responses.add(responses.GET,
-                            daily_url,
-                            body=img1.read(), status=200,
-                            content_type='application/javascript',
-                            stream=True
-                            )
-
+                          daily_url,
+                          body=img1.read(), status=200,
+                          content_type='application/javascript',
+                          stream=True
+                          )
 
         response = self.client.get('/base_fetch')
         self.assertEqual(response.status_code, 200)
@@ -301,13 +304,47 @@ class ViewData(SuperClass):
             for ratings in range(0, 20):
                 with transaction.atomic():
                     movie = Movie(id=ratings,
-                                original_title="title%s" % ratings,
-                                popularity=36.213,
-                                fetched=True,
-                                vote_average=ratings)
+                                  original_title="title%s" % ratings,
+                                  popularity=36.213,
+                                  fetched=True,
+                                  vote_average=ratings)
                     movie.save()
                     movie.production_countries.add(country)
 
         response = self.client.get('/view_best_movies')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'Stuff happening!')
+
+
+class MapImdbRatingsToWorldinMovies(SuperClass):
+    def test_convert_imdb_ratings(self):
+        Movie(id=1,
+              original_title="Lord of the Flies",
+              popularity=0.0,
+              fetched=True,
+              imdb_id='tt0100054',
+              vote_average=0).save()
+
+        Movie(id=2,
+              original_title="Misery",
+              popularity=0.0,
+              fetched=True,
+              imdb_id='tt0100157',
+              vote_average=0).save()
+
+        files = {
+            "file": open('testdata/mini_ratings.csv', 'r', encoding='cp1252')
+        }
+
+        response = self.client.post('/ratings', data=files, format='multipart/form-data')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode('utf-8'),
+                         '{"found_responses": [{"title": "Lord of the Flies"}, {"title": "Misery"}], "not_found": []}')
+
+    def test_convert_imdb_ratings_full_dataset(self):
+        files = {
+            "file": open('testdata/ratings.csv', 'r', encoding='cp1252')
+        }
+
+        response = self.client.post('/ratings', data=files, format='multipart/form-data')
+        self.assertEqual(response.status_code, 200)
