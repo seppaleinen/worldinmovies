@@ -341,7 +341,17 @@ class MapImdbRatingsToWorldinMovies(SuperClass):
         self.assertEqual(response.content.decode('utf-8'),
                          '{"found_responses": [{"title": "Lord of the Flies"}, {"title": "Misery"}], "not_found": []}')
 
-    def test_convert_imdb_ratings_full_dataset(self):
+    def test_convert_imdb_ratings_not_found(self):
+        files = {
+            "file": open('testdata/mini_ratings.csv', 'r', encoding='cp1252')
+        }
+
+        response = self.client.post('/ratings', data=files, format='multipart/form-data')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode('utf-8'),
+                         '{"found_responses": [], "not_found": [{"title": "Lord of the Flies"}, {"title": "Misery"}]}')
+
+    def _test_convert_imdb_ratings_full_dataset(self):
         files = {
             "file": open('testdata/ratings.csv', 'r', encoding='cp1252')
         }

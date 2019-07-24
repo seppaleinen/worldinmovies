@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.db import connection
 from app.models import Movie, Genre
 from app.importer import download_files, concurrent_stuff, import_genres, import_countries, import_languages, base_import
+from django.views.decorators.csrf import csrf_exempt
 
 
 def index(request):
@@ -48,20 +49,22 @@ def get_best_movies_by_country(request):
         return HttpResponse(cursor.fetchall())
 
 
+@csrf_exempt
 def ratings(request):
     """This should map incoming imdb ratings file, and try to match it with our dataset,
         and return it in a format we can use in frontend
+
+        curl 'http://localhost:8000/ratings' -X POST -H 'Content-Type: multipart/form-data' -F file=@testdata/ratings.csv
     """
     if request.method == 'POST':
         if 'file' in request.FILES:
             file = request.FILES['file']
-            csv_as_dicts = csv.DictReader(file.read().decode('utf-8').splitlines())
+            csv_as_dicts = csv.DictReader(file.read().decode('cp1252').splitlines())
             # Const,Your Rating,Date Rated,Title,URL,Title Type,IMDb Rating,Runtime (mins),Year,Genres,Num Votes,Release Date,Directors
             found = []
             not_found = []
             for i in csv_as_dicts:
                 row_as_json = json.loads(json.dumps(i))
-                # print(row_as_json)
                 try:
                     found_movie = Movie.objects.get(imdb_id=row_as_json['Const'])
                     found.append({"title":found_movie.original_title})
