@@ -311,7 +311,7 @@ class ViewData(SuperClass):
                     movie.save()
                     movie.production_countries.add(country)
 
-        response = self.client.get('/view_best_movies')
+        response = self.client.get('/view/best')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'Stuff happening!')
 
