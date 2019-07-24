@@ -1,4 +1,4 @@
-import datetime, os, responses
+import datetime, os, responses, json
 
 from django.test import TestCase
 from django.db import transaction
@@ -377,3 +377,49 @@ class MapImdbRatingsToWorldinMovies(SuperClass):
 
         response = self.client.post('/ratings', data=files, format='multipart/form-data')
         self.assertEqual(response.status_code, 200)
+
+
+class ViewBestFromCountry(SuperClass):
+    def test_fetch_top_from_country(self):
+        for country_code in ['US', 'AU', 'GB']:
+            country = ProductionCountries.objects.get(iso_3166_1=country_code)
+            for ratings in range(0, 20):
+                with transaction.atomic():
+                    movie = Movie(id=ratings,
+                                  original_title="title%s" % ratings,
+                                  popularity=36.213,
+                                  fetched=True,
+                                  poster_path="/path%s" % ratings,
+                                  imdb_id="imdb_id%s" % ratings,
+                                  release_date="2019-01-%s" % ratings,
+                                  vote_average=ratings)
+                    movie.save()
+                    movie.production_countries.add(country)
+
+        response = self.client.get('/view/best/US')
+        json_response = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response.status_code, 200)
+        #self.assertJSONEqual(json_response[0], {"imdb_id": "imdb_id19", "original_title": "title19", "release_date": "2019-01-19", "poster_path": "/path19", "vote_average": 19})
+        #self.assertJSONEqual(json_response[1], {"imdb_id": "imdb_id18", "original_title": "title18", "release_date": "2019-01-18", "poster_path": "/path18", "vote_average": 18})
+        #self.assertJSONEqual(json_response[2], {"imdb_id": "imdb_id17", "original_title": "title17", "release_date": "2019-01-17", "poster_path": "/path17", "vote_average": 17})
+        #self.assertJSONEqual(json_response[3], {"imdb_id": "imdb_id16", "original_title": "title16", "release_date": "2019-01-16", "poster_path": "/path16", "vote_average": 16})
+        #self.assertJSONEqual(json_response[4], {"imdb_id": "imdb_id15", "original_title": "title15", "release_date": "2019-01-15", "poster_path": "/path15", "vote_average": 15})
+        #self.assertJSONEqual(json_response[5], {"imdb_id": "imdb_id14", "original_title": "title14", "release_date": "2019-01-14", "poster_path": "/path14", "vote_average": 14})
+        #self.assertJSONEqual(json_response[6], {"imdb_id": "imdb_id13", "original_title": "title13", "release_date": "2019-01-13", "poster_path": "/path13", "vote_average": 13})
+        #self.assertJSONEqual(json_response[7], {"imdb_id": "imdb_id12", "original_title": "title12", "release_date": "2019-01-12", "poster_path": "/path12", "vote_average": 12})
+        #self.assertJSONEqual(json_response[8], {"imdb_id": "imdb_id11", "original_title": "title11", "release_date": "2019-01-11", "poster_path": "/path11", "vote_average": 11})
+        #self.assertJSONEqual(json_response[9], {"imdb_id": "imdb_id10", "original_title": "title10", "release_date": "2019-01-10", "poster_path": "/path10", "vote_average": 10})
+        self.assertJSONEqual(json_response,
+                             [
+                                 {"imdb_id": "imdb_id19", "original_title": "title19", "release_date": "2019-01-19", "poster_path": "/path19", "vote_average": 19},
+                                 {"imdb_id": "imdb_id18", "original_title": "title18", "release_date": "2019-01-18", "poster_path": "/path18", "vote_average": 18},
+                                 {"imdb_id": "imdb_id17", "original_title": "title17", "release_date": "2019-01-17", "poster_path": "/path17", "vote_average": 17},
+                                 {"imdb_id": "imdb_id16", "original_title": "title16", "release_date": "2019-01-16", "poster_path": "/path16", "vote_average": 16},
+                                 {"imdb_id": "imdb_id15", "original_title": "title15", "release_date": "2019-01-15", "poster_path": "/path15", "vote_average": 15},
+                                 {"imdb_id": "imdb_id14", "original_title": "title14", "release_date": "2019-01-14", "poster_path": "/path14", "vote_average": 14},
+                                 {"imdb_id": "imdb_id13", "original_title": "title13", "release_date": "2019-01-13", "poster_path": "/path13", "vote_average": 13},
+                                 {"imdb_id": "imdb_id12", "original_title": "title12", "release_date": "2019-01-12", "poster_path": "/path12", "vote_average": 12},
+                                 {"imdb_id": "imdb_id11", "original_title": "title11", "release_date": "2019-01-11", "poster_path": "/path11", "vote_average": 11},
+                                 {"imdb_id": "imdb_id10", "original_title": "title10", "release_date": "2019-01-10", "poster_path": "/path10", "vote_average": 10}
+                             ])
+

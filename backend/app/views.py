@@ -49,6 +49,23 @@ def get_best_movies_by_country(request):
         return HttpResponse(cursor.fetchall())
 
 
+def get_best_movies_from_country(request, country_code):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            select movie.imdb_id, movie.original_title, movie.release_date, movie.poster_path, movie.vote_average from app_movie movie
+	            inner join app_productioncountries_movies pcm on pcm.movie_id = movie.id
+	            inner join app_productioncountries pc on pc.id = pcm.productioncountries_id
+	            where movie.fetched is True
+	            and pc.iso_3166_1 = '%s'
+	            order by movie.vote_average desc
+	            limit 10
+        """ % country_code)
+        r = [dict((cursor.description[i][0], value) \
+                  for i, value in enumerate(row)) for row in cursor.fetchall()]
+        return JsonResponse(json.dumps(r), safe=False)
+    return JsonResponse({"response": []})
+
+
 @csrf_exempt
 def ratings(request):
     """This should map incoming imdb ratings file, and try to match it with our dataset,
