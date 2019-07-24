@@ -20,19 +20,11 @@ Basically will be handling
 * If import fails, save to separate failure-table with movie-id, exception message, and raw dump
 * Verify memory consumption
 
-* Best 10 of specific country
-	- id
-	- imdb_id
-	- name
-	- year
-	- poster_url
-	- rating
 * Best 10 of each country
 	- additional fields
 		- imdb_id
 		- year
 		- id
-	- response as json
 	- look into using other than lateral join, as to make tests work
 	- alternatively, use postgres as test-db with pytest-pgsql or similar
 	- weigh ratings correctly

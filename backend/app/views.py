@@ -46,7 +46,9 @@ def get_best_movies_by_country(request):
                                         limit 10
                                     ) p on true
                                 order by country.iso_3166_1 asc""")
-        return HttpResponse(cursor.fetchall())
+        r = [dict((cursor.description[i][0], value) \
+                  for i, value in enumerate(row)) for row in cursor.fetchall()]
+        return JsonResponse(json.dumps(r), safe=False)
 
 
 def get_best_movies_from_country(request, country_code):
@@ -63,7 +65,6 @@ def get_best_movies_from_country(request, country_code):
         r = [dict((cursor.description[i][0], value) \
                   for i, value in enumerate(row)) for row in cursor.fetchall()]
         return JsonResponse(json.dumps(r), safe=False)
-    return JsonResponse({"response": []})
 
 
 @csrf_exempt
