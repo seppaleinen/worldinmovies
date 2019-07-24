@@ -393,7 +393,7 @@ class ViewBestFromCountry(SuperClass):
                                   poster_path="/path%s" % ratings,
                                   imdb_id="imdb_id%s" % ratings,
                                   release_date="2019-01-%s" % ratings,
-                                  vote_average=ratings + 0.1)
+                                  vote_average=ratings + 0.09)
                     i = i + 1
                     movie.save()
                     movie.production_countries.add(country)

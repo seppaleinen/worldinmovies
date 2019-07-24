@@ -1,4 +1,4 @@
-import requests, json, os, csv
+import requests, json, os, csv, simplejson
 
 from django.http import HttpResponse, JsonResponse
 from django.db import connection
@@ -47,9 +47,10 @@ def get_best_movies_by_country(request):
                                         limit 10
                                     ) p on true
                                 order by country.iso_3166_1 asc""")
-        r = [dict((cursor.description[i][0], value) \
-                  for i, value in enumerate(row)) for row in cursor.fetchall()]
-        return JsonResponse(json.dumps(r, cls=DjangoJSONEncoder), safe=False)
+        result = []
+        for row in cursor.fetchall():
+            result.append({"title":row[0],"country_codes":row[1],"vote_average":row[2]})
+        return HttpResponse(simplejson.dumps(result), content_type='application/json')
 
 
 def get_best_movies_from_country(request, country_code):
@@ -63,10 +64,16 @@ def get_best_movies_from_country(request, country_code):
 	            order by movie.vote_average desc
 	            limit 10
         """ % country_code)
-        r = [dict((cursor.description[i][0], value) \
-                  for i, value in enumerate(row)) for row in cursor.fetchall()]
-        return HttpResponse(json.dumps(r), content_type='application/json')
-        # return JsonResponse(r, safe=False)
+        result = []
+        for row in cursor.fetchall():
+            result.append({
+                'imdb_id':row[0],
+                'original_title':row[1],
+                'release_date':row[2],
+                'poster_path':row[3],
+                'vote_average':row[4]
+            })
+        return HttpResponse(simplejson.dumps(result), content_type='application/json')
 
 
 @csrf_exempt
