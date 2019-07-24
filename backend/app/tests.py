@@ -318,19 +318,23 @@ class ViewData(SuperClass):
 
 class MapImdbRatingsToWorldinMovies(SuperClass):
     def test_convert_imdb_ratings(self):
-        Movie(id=1,
+        flies = Movie(id=1,
               original_title="Lord of the Flies",
               popularity=0.0,
               fetched=True,
               imdb_id='tt0100054',
-              vote_average=0).save()
+              vote_average=0)
+        flies.save()
+        flies.production_countries.add(ProductionCountries.objects.get(iso_3166_1='US'))
 
-        Movie(id=2,
+        misery = Movie(id=2,
               original_title="Misery",
               popularity=0.0,
               fetched=True,
               imdb_id='tt0100157',
-              vote_average=0).save()
+              vote_average=0)
+        misery.save()
+        misery.production_countries.add(ProductionCountries.objects.get(iso_3166_1='AU'))
 
         files = {
             "file": open('testdata/mini_ratings.csv', 'r', encoding='cp1252')
@@ -339,7 +343,22 @@ class MapImdbRatingsToWorldinMovies(SuperClass):
         response = self.client.post('/ratings', data=files, format='multipart/form-data')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content.decode('utf-8'),
-                         '{"found_responses": [{"title": "Lord of the Flies"}, {"title": "Misery"}], "not_found": []}')
+                         '{"found_responses": ['
+                            '{'
+                                '"title": "Lord of the Flies", '
+                                '"country_codes": ["US"], '
+                                '"year": "1990", '
+                                '"imdb_id": "tt0100054", '
+                                '"personal_rating": "7", '
+                                '"rating": "6.4"}, '
+                            '{'
+                                '"title": "Misery", '
+                                '"country_codes": ["AU"], '
+                                '"year": "1990", '
+                                '"imdb_id": "tt0100157", '
+                                '"personal_rating": "8", '
+                                '"rating": "7.8"}], '
+                         '"not_found": []}')
 
     def test_convert_imdb_ratings_not_found(self):
         files = {
@@ -349,7 +368,7 @@ class MapImdbRatingsToWorldinMovies(SuperClass):
         response = self.client.post('/ratings', data=files, format='multipart/form-data')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content.decode('utf-8'),
-                         '{"found_responses": [], "not_found": [{"title": "Lord of the Flies"}, {"title": "Misery"}]}')
+                         '{"found_responses": [], "not_found": [{"title": "Lord of the Flies", "year": "1990", "imdb_id": "tt0100054"}, {"title": "Misery", "year": "1990", "imdb_id": "tt0100157"}]}')
 
     def _test_convert_imdb_ratings_full_dataset(self):
         files = {

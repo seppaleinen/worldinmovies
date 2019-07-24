@@ -67,9 +67,20 @@ def ratings(request):
                 row_as_json = json.loads(json.dumps(i))
                 try:
                     found_movie = Movie.objects.get(imdb_id=row_as_json['Const'])
-                    found.append({"title":found_movie.original_title})
+                    found.append({
+                        "title":found_movie.original_title,
+                        "country_codes": [country.iso_3166_1 for country in found_movie.production_countries.all()],
+                        "year": row_as_json['Year'],
+                        "imdb_id": row_as_json['Const'],
+                        "personal_rating": row_as_json['Your Rating'],
+                        "rating": row_as_json['IMDb Rating']
+                        })
                 except Exception as exc:
-                    not_found.append({"title":row_as_json['Title']})
+                    not_found.append({
+                        "title":row_as_json['Title'],
+                        "year":row_as_json['Year'],
+                        "imdb_id":row_as_json['Const']
+                        })
 
             return JsonResponse({"found_responses":found, "not_found":not_found})
 

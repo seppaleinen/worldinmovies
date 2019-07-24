@@ -41,19 +41,6 @@ Basically will be handling
           v = number of votes for the movie = (votes)
           m = minimum votes required to be listed in the Top 250 (currently 25000)
           C = the mean vote across the whole report (currently 7.0)
-* Convert imdb watched list to world in movies format
-	- wanted response-fields
-		- countrycode
-		- name
-		- year
-		- imdb_id
-		- id
-		- personal_rating
-		- rating
-		- unmatched
-			- name
-			- year
-			- imdbid
 * Search by name
 	- wanted response-fields
 		- imdb_id
