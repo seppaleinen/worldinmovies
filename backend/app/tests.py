@@ -399,7 +399,7 @@ class ViewBestFromCountry(SuperClass):
                     movie.production_countries.add(country)
 
         response = self.client.get('/view/best/US')
-        json_response = json.loads(response.content.decode('utf-8'))
+        json_response = response.content.decode('utf-8')
         self.assertEqual(response.status_code, 200)
         #self.assertJSONEqual(json_response[0], {"imdb_id": "imdb_id19", "original_title": "title19", "release_date": "2019-01-19", "poster_path": "/path19", "vote_average": 19})
         #self.assertJSONEqual(json_response[1], {"imdb_id": "imdb_id18", "original_title": "title18", "release_date": "2019-01-18", "poster_path": "/path18", "vote_average": 18})

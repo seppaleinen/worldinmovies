@@ -65,7 +65,8 @@ def get_best_movies_from_country(request, country_code):
         """ % country_code)
         r = [dict((cursor.description[i][0], value) \
                   for i, value in enumerate(row)) for row in cursor.fetchall()]
-        return JsonResponse(json.dumps(r, cls=DjangoJSONEncoder), safe=False)
+        return HttpResponse(json.dumps(r), content_type='application/json')
+        # return JsonResponse(r, safe=False)
 
 
 @csrf_exempt
