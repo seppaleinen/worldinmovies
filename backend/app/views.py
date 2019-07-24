@@ -5,6 +5,7 @@ from django.db import connection
 from app.models import Movie, Genre
 from app.importer import download_files, concurrent_stuff, import_genres, import_countries, import_languages, base_import
 from django.views.decorators.csrf import csrf_exempt
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 def index(request):
@@ -48,7 +49,7 @@ def get_best_movies_by_country(request):
                                 order by country.iso_3166_1 asc""")
         r = [dict((cursor.description[i][0], value) \
                   for i, value in enumerate(row)) for row in cursor.fetchall()]
-        return JsonResponse(json.dumps(r), safe=False)
+        return JsonResponse(json.dumps(r, cls=DjangoJSONEncoder), safe=False)
 
 
 def get_best_movies_from_country(request, country_code):
@@ -64,7 +65,7 @@ def get_best_movies_from_country(request, country_code):
         """ % country_code)
         r = [dict((cursor.description[i][0], value) \
                   for i, value in enumerate(row)) for row in cursor.fetchall()]
-        return JsonResponse(json.dumps(r), safe=False)
+        return JsonResponse(json.dumps(r, cls=DjangoJSONEncoder), safe=False)
 
 
 @csrf_exempt
