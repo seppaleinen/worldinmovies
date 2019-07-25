@@ -51,7 +51,7 @@ class ImportTests(SuperClass):
                 stream=True
             )
 
-        response = self.client.get('/movies')
+        response = self.client.get('/import/tmdb/daily')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'Imported: 3 movies')
 
@@ -76,7 +76,7 @@ class ImportTests(SuperClass):
                               stream=True
                               )
 
-        response = self.client.get('/test')
+        response = self.client.get('/import/tmdb/data')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'Fetched and saved: 3 movies')
 
@@ -98,7 +98,7 @@ class ImportTests(SuperClass):
                           stream=True
                           )
 
-        response = self.client.get('/test')
+        response = self.client.get('/import/tmdb/data')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'Fetched and saved: 1 movies')
 
@@ -120,7 +120,7 @@ class ImportTests(SuperClass):
                       stream=True
                       )
 
-        response = self.client.get('/test')
+        response = self.client.get('/import/tmdb/data')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'Fetched and saved: 1 movies')
         self.assertFalse(Movie.objects.filter(pk=123)[0].fetched)
@@ -145,7 +145,7 @@ class ImportTests(SuperClass):
                           stream=True
                           )
 
-        response = self.client.get('/test')
+        response = self.client.get('/import/tmdb/data')
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
         self.assertEqual(response.status_code, 200)
@@ -199,7 +199,7 @@ class FetchBaseData(SuperClass):
                           stream=True
                           )
 
-        response = self.client.get('/fetch_countries')
+        response = self.client.get('/import/tmdb/countries')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
@@ -217,7 +217,7 @@ class FetchBaseData(SuperClass):
                           stream=True
                           )
 
-        response = self.client.get('/fetch_languages')
+        response = self.client.get('/import/tmdb/languages')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
@@ -235,7 +235,7 @@ class FetchBaseData(SuperClass):
                           stream=True
                           )
 
-        response = self.client.get('/fetch_genres')
+        response = self.client.get('/import/tmdb/genres')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
@@ -279,7 +279,7 @@ class FetchBaseData(SuperClass):
                           stream=True
                           )
 
-        response = self.client.get('/base_fetch')
+        response = self.client.get('/import/base')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(responses.calls), 4)
         self.assertEqual(responses.calls[0].request.url, daily_url)

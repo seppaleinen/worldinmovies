@@ -21,13 +21,16 @@ from app import views
 
 urlpatterns = [
     url(r'^admin/',                         admin.site.urls),
-    url(r'^movies$',                        views.download_file, name='download_file'),
-    url(r'^test$',                          views.fetch_movie, name='fetch_movie'),
-    url(r'^base_fetch$',                    views.base_fetch, name='base_fetch'),
-    url(r'^fetch_genres$',                  views.fetch_genres, name='fetch_genres'),
-    url(r'^fetch_countries$',               views.fetch_countries, name='fetch_countries'),
-    url(r'^fetch_languages$',               views.fetch_languages, name='fetch_languages'),
-    path('import/imdb/ratings',            views.fetch_imdb_ratings),
+    # Imports a daily file with the data of what movies are available to download
+    path('import/tmdb/daily',               views.download_file),
+    # Starts to fetch info from tmdb with the keys from daily
+    path('import/tmdb/data',                views.fetch_movie),
+    # Runs /daily, /genres, /countries, /languages
+    path('import/base',                     views.base_fetch),
+    path('import/tmdb/genres',              views.fetch_genres),
+    path('import/tmdb/countries',           views.fetch_countries),
+    path('import/tmdb/languages',           views.fetch_languages),
+    path('import/imdb/ratings',             views.fetch_imdb_ratings),
     url(r'^status$',                        views.import_status, name='import_status'),
     url(r'^ratings$',                       views.ratings, name='ratings'),
     path('view/best',                       views.get_best_movies_by_country),
