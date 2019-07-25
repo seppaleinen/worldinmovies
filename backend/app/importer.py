@@ -6,7 +6,7 @@ import datetime, \
     concurrent.futures, \
     os, \
     time, \
-    traceback
+    csv
 from app.models import Movie, SpokenLanguage, AlternativeTitle, ProductionCountries, Genre
 
 
@@ -31,7 +31,7 @@ def download_files():
             f.write(response.content)
 
         movies = []
-        contents = __unzip_file()
+        contents = __unzip_file('movies.json.gz')
         for i in contents:
             try:
                 data = json.loads(i)
@@ -58,8 +58,8 @@ def download_files():
         return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
 
 
-def __unzip_file():
-    f = gzip.open('movies.json.gz', 'rt', encoding='utf-8')
+def __unzip_file(file_name):
+    f = gzip.open(file_name, 'rt', encoding='utf-8')
     file_content = f.read()
     f.close()
     return file_content.splitlines()
@@ -170,9 +170,35 @@ def import_languages():
     if response.status_code == 200:
         languages_from_json = json.loads(response.content)
         for language in languages_from_json:
-            spokenLang = SpokenLanguage.objects.all().filter(iso_639_1=language['iso_639_1']).exists()
-            if not spokenLang:
+            spoken_lang = SpokenLanguage.objects.all().filter(iso_639_1=language['iso_639_1']).exists()
+            if not spoken_lang:
                 SpokenLanguage(iso_639_1=language['iso_639_1'], name=language['english_name']).save()
         return "Imported: %s languages" % len(languages_from_json)
     else:
         return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
+
+
+def import_imdb_ratings():
+    url = 'https://datasets.imdbws.com/title.ratings.tsv.gz'
+    response = requests.get(url)
+    with open('title.ratings.tsv.gz', 'wb') as f:
+        f.write(response.content)
+    if response.status_code == 200:
+        counter = 0
+        contents = __unzip_file('title.ratings.tsv.gz')
+        # tconst  averageRating   numVotes
+        reader = csv.reader(contents, delimiter='\t')
+        for row in reader:
+            tconst = row[0]
+            try:
+                movie = Movie.objects.get(imdb_id=tconst)
+                movie.imdb_vote_average = row[1]
+                movie.imdb_vote_count = row[2]
+                movie.save()
+                print("Updated: %s" % movie.imdb_id)
+                counter = counter + 1
+            except Exception:
+                pass
+        return "Imported: %s" % counter
+
+

@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^fetch_genres$',                  views.fetch_genres, name='fetch_genres'),
     url(r'^fetch_countries$',               views.fetch_countries, name='fetch_countries'),
     url(r'^fetch_languages$',               views.fetch_languages, name='fetch_languages'),
+    path('import/imdb/ratings',            views.fetch_imdb_ratings),
     url(r'^status$',                        views.import_status, name='import_status'),
     url(r'^ratings$',                       views.ratings, name='ratings'),
     path('view/best',                       views.get_best_movies_by_country),

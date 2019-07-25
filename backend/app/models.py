@@ -16,6 +16,8 @@ class Movie(models.Model):
     runtime = models.IntegerField(null=True, blank=True)
     vote_average = models.DecimalField(decimal_places=1, max_digits=10, null=True, blank=True)
     vote_count = models.IntegerField(null=True, blank=True)
+    imdb_vote_average = models.DecimalField(decimal_places=1, max_digits=10, null=True, blank=True)
+    imdb_vote_count = models.IntegerField(null=True, blank=True)
     raw_response = models.TextField(null=True, blank=True)
 
     class Meta:

@@ -1,11 +1,10 @@
-import requests, json, os, csv, simplejson
+import json, csv, simplejson
 
 from django.http import HttpResponse, JsonResponse
 from django.db import connection
 from app.models import Movie, Genre
-from app.importer import download_files, concurrent_stuff, import_genres, import_countries, import_languages, base_import
+from app.importer import download_files, concurrent_stuff, import_genres, import_countries, import_languages, base_import, import_imdb_ratings
 from django.views.decorators.csrf import csrf_exempt
-from django.core.serializers.json import DjangoJSONEncoder
 
 
 def index(request):
@@ -49,7 +48,11 @@ def get_best_movies_by_country(request):
                                 order by country.iso_3166_1 asc""")
         result = []
         for row in cursor.fetchall():
-            result.append({"title":row[0],"country_codes":row[1],"vote_average":row[2]})
+            result.append({
+                "title": row[0],
+                "country_codes": row[1],
+                "vote_average": row[2]
+            })
         return HttpResponse(simplejson.dumps(result), content_type='application/json')
 
 
@@ -67,11 +70,11 @@ def get_best_movies_from_country(request, country_code):
         result = []
         for row in cursor.fetchall():
             result.append({
-                'imdb_id':row[0],
-                'original_title':row[1],
-                'release_date':row[2],
-                'poster_path':row[3],
-                'vote_average':row[4]
+                'imdb_id': row[0],
+                'original_title': row[1],
+                'release_date': row[2],
+                'poster_path': row[3],
+                'vote_average': row[4]
             })
         return HttpResponse(simplejson.dumps(result, indent=2 * ' '), content_type='application/json; charset=utf-8')
 
@@ -95,7 +98,7 @@ def ratings(request):
                 try:
                     found_movie = Movie.objects.get(imdb_id=row_as_json['Const'])
                     found.append({
-                        "title":found_movie.original_title,
+                        "title": found_movie.original_title,
                         "country_codes": [country.iso_3166_1 for country in found_movie.production_countries.all()],
                         "year": row_as_json['Year'],
                         "imdb_id": row_as_json['Const'],
@@ -104,9 +107,9 @@ def ratings(request):
                         })
                 except Exception as exc:
                     not_found.append({
-                        "title":row_as_json['Title'],
-                        "year":row_as_json['Year'],
-                        "imdb_id":row_as_json['Const']
+                        "title": row_as_json['Title'],
+                        "year": row_as_json['Year'],
+                        "imdb_id": row_as_json['Const']
                         })
 
             return JsonResponse({"found_responses":found, "not_found":not_found})
@@ -139,3 +142,7 @@ def fetch_countries(request):
 
 def fetch_languages(request):
     return HttpResponse(import_languages())
+
+
+def fetch_imdb_ratings(request):
+    return HttpResponse(import_imdb_ratings())

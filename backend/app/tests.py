@@ -425,3 +425,42 @@ class ViewBestFromCountry(SuperClass):
                                  {"imdb_id": "imdb_id10", "original_title": "titlö10", "release_date": "2019-01-10", "poster_path": "/path10", "vote_average": 10.1}
                              ])
 
+
+class ImportImdbData(SuperClass):
+    @responses.activate
+    def test_import_imdb_data(self):
+        movie = Movie(id=19995, original_title='Avatar', popularity=36.213, fetched=False, imdb_id='tt0000001')
+        movie.save()
+
+        url = "https://datasets.imdbws.com/title.ratings.tsv.gz"
+        with open("testdata/mini_ratings.tsv.gz", 'rb') as img1:
+            responses.add(responses.GET,
+                          url,
+                          body=img1.read(), status=200,
+                          content_type='binary/octet-stream',
+                          stream=True
+                          )
+
+        response = self.client.get('/import/imdb/ratings')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, url)
+        self.assertEqual(response.content.decode('utf-8'), 'Imported: 1')
+
+    @responses.activate
+    def test_import_imdb_data_no_match(self):
+        url = "https://datasets.imdbws.com/title.ratings.tsv.gz"
+        with open("testdata/mini_ratings.tsv.gz", 'rb') as img1:
+            responses.add(responses.GET,
+                          url,
+                          body=img1.read(), status=200,
+                          content_type='binary/octet-stream',
+                          stream=True
+                          )
+
+        response = self.client.get('/import/imdb/ratings')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, url)
+        self.assertEqual(response.content.decode('utf-8'), 'Imported: 0')
+
