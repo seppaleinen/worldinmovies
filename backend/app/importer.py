@@ -178,6 +178,12 @@ def import_languages():
         return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
 
 
+def __chunks(list, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(list), n):
+        yield list[i:i + n]
+
+
 def import_imdb_ratings():
     url = 'https://datasets.imdbws.com/title.ratings.tsv.gz'
     response = requests.get(url)
@@ -188,14 +194,18 @@ def import_imdb_ratings():
         contents = __unzip_file('title.ratings.tsv.gz')
         # tconst  averageRating   numVotes
         reader = csv.reader(contents, delimiter='\t')
+        chunks_of_reader_maybe = __chunks(reader, 50)
         for row in reader:
             tconst = row[0]
             try:
+                # map rows into map<tconst, {'vote_average','vote_count}
+                # create sublists up to 100
+                # objects.filter(imdb_id__in=list_of_tconst
+                # Entry.objects.bulk_update(objects, batch_size=50)
                 movie = Movie.objects.get(imdb_id=tconst)
                 movie.imdb_vote_average = row[1]
                 movie.imdb_vote_count = row[2]
                 movie.save()
-                # print("Updated: %s" % movie.imdb_id)
                 counter = counter + 1
             except Exception:
                 pass
