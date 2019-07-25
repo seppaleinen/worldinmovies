@@ -66,6 +66,7 @@ def get_best_movies_from_country(request, country_code):
         """ % country_code)
         result = []
         for row in cursor.fetchall():
+            print("Title: %s" % row[1])
             result.append({
                 'imdb_id':row[0],
                 'original_title':row[1],
@@ -73,7 +74,7 @@ def get_best_movies_from_country(request, country_code):
                 'poster_path':row[3],
                 'vote_average':row[4]
             })
-        return HttpResponse(simplejson.dumps(result), content_type='application/json')
+        return HttpResponse(simplejson.dumps(result, indent=2 * ' '), content_type='application/json')
 
 
 @csrf_exempt
