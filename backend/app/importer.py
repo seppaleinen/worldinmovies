@@ -195,7 +195,7 @@ def import_imdb_ratings():
                 movie.imdb_vote_average = row[1]
                 movie.imdb_vote_count = row[2]
                 movie.save()
-                print("Updated: %s" % movie.imdb_id)
+                # print("Updated: %s" % movie.imdb_id)
                 counter = counter + 1
             except Exception:
                 pass
