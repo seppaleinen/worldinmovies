@@ -31,7 +31,16 @@ def download_files():
             f.write(response.content)
 
         movies = []
+        movies_to_update = []
+        movie_ids_to_delete = []
         contents = __unzip_file('movies.json.gz')
+        # Map<ID, Movie>
+        # List of movies to create
+        # List of movies to update
+        # List of movies to delete (unfetched movies, not in tmdb anymore)
+        # bulk_create(movies_to_create)
+        # for movie in movies_to_update: movie.save()
+        # Movie.objects.filter(pk__in=movies_to_delete).delete()
         for i in contents:
             try:
                 data = json.loads(i)
@@ -41,16 +50,37 @@ def download_files():
                 video = data['video']
                 popularity = data['popularity']
                 if video is False and adult is False:
-                    movies.append(Movie(id=id, original_title=original_title, popularity=popularity, fetched=False))
+                    try:
+                        movie = Movie.objects.get(pk=id)
+                        # If data has changed. then update
+                        if movie.popularity != popularity or movie.original_title != original_title:
+                            movie.original_title = original_title
+                            movie.popularity = popularity
+                            movies_to_update.append(movie)
+                    except Exception as exc:
+                        # Film not yet imported
+                        movies.append(Movie(id=id, original_title=original_title, popularity=popularity, fetched=False))
             except Exception as e:
                 print("This line fucked up: %s, because of %s" % (i, e))
+        all_unfetched_movie_ids = Movie.objects.filter(fetched=False).all().values_list('id', flat=True)
+        for potential_id_to_delete in all_unfetched_movie_ids:
+            if any(movie.id == potential_id_to_delete for movie in movies):
+                pass
+            elif any(movie.id == potential_id_to_delete for movie in movies_to_update):
+                pass
+            else:
+                movie_ids_to_delete.append(potential_id_to_delete)
         # Creates all, but crashes as soon as you try to update the list
         try:
             print('Persisting stuff - Having this until progressbar actually shows in docker-compose')
             for i in progressbar.progressbar(range(0, len(movies), 100), redirect_stdout=True, prefix='Saving Movie IDs: '):
                 chunk = movies[i:i + 100]
                 Movie.objects.bulk_create(chunk)
-            return "Imported: %s movies" % len(contents)
+            for movie_to_update in movies_to_update:
+                movie_to_update.save()
+            for movie_to_delete in movie_ids_to_delete:
+                Movie.objects.get(pk=movie_to_delete).delete()
+            return "Imported: %s new movies, updated: %s, and deleted: %s" % (len(movies), len(movies_to_update), len(movie_ids_to_delete))
         except Exception as e:
             print("Error: %s" % e)
             return "Exception: %s" % e
@@ -178,13 +208,18 @@ def import_languages():
         return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
 
 
-def __chunks(list, n):
-    """Yield successive n-sized chunks from l."""
-    for i in range(0, len(list), n):
-        yield list[i:i + n]
+def __chunks(__list, n):
+    """Yield successive n-sized chunks from list."""
+    for i in range(0, len(__list), n):
+        yield __list[i:i + n]
 
 
 def import_imdb_ratings():
+    """Data-dump of imdbs ratings of all films
+       TSV Headers are: tconst, averageRating, numVotes
+       and file is about 1 million rows, which takes awhile to process...
+       While we only have around 450k rows in our database.
+    """
     url = 'https://datasets.imdbws.com/title.ratings.tsv.gz'
     response = requests.get(url)
     with open('title.ratings.tsv.gz', 'wb') as f:
@@ -192,9 +227,8 @@ def import_imdb_ratings():
     if response.status_code == 200:
         counter = 0
         contents = __unzip_file('title.ratings.tsv.gz')
-        # tconst  averageRating   numVotes
         reader = csv.reader(contents, delimiter='\t')
-        chunks_of_reader_maybe = __chunks(reader, 50)
+        # chunks_of_reader_maybe = __chunks(reader, 50)
         for row in reader:
             tconst = row[0]
             try:
