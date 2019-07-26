@@ -73,11 +73,12 @@ def download_files():
         # Creates all, but crashes as soon as you try to update the list
         try:
             print('Persisting stuff - Having this until progressbar actually shows in docker-compose')
-            for i in progressbar.progressbar(range(0, len(movies), 100), redirect_stdout=True, prefix='Saving Movie IDs: '):
-                chunk = movies[i:i + 100]
+            for chunk in __chunks(movies, 100):
                 Movie.objects.bulk_create(chunk)
+            print("Updating movies")
             for movie_to_update in movies_to_update:
                 movie_to_update.save()
+            print("Deleting movies")
             for movie_to_delete in movie_ids_to_delete:
                 Movie.objects.get(pk=movie_to_delete).delete()
             return "Imported: %s new movies, updated: %s, and deleted: %s" % (len(movies), len(movies_to_update), len(movie_ids_to_delete))
@@ -229,20 +230,23 @@ def import_imdb_ratings():
         contents = __unzip_file('title.ratings.tsv.gz')
         reader = csv.reader(contents, delimiter='\t')
         # chunks_of_reader_maybe = __chunks(reader, 50)
+        all_imdb_ids = Movie.objects.filter(fetched=True).all().values_list('imdb_id', flat=True)
+        #Multithread this maybe?
         for row in reader:
             tconst = row[0]
-            try:
-                # map rows into map<tconst, {'vote_average','vote_count}
-                # create sublists up to 100
-                # objects.filter(imdb_id__in=list_of_tconst
-                # Entry.objects.bulk_update(objects, batch_size=50)
-                movie = Movie.objects.get(imdb_id=tconst)
-                movie.imdb_vote_average = row[1]
-                movie.imdb_vote_count = row[2]
-                movie.save()
-                counter = counter + 1
-            except Exception:
-                pass
+            if tconst in all_imdb_ids:
+                try:
+                    # map rows into map<tconst, {'vote_average','vote_count}
+                    # create sublists up to 100
+                    # objects.filter(imdb_id__in=list_of_tconst
+                    # Entry.objects.bulk_update(objects, batch_size=50)
+                    movie = Movie.objects.get(imdb_id=tconst)
+                    movie.imdb_vote_average = row[1]
+                    movie.imdb_vote_count = row[2]
+                    movie.save()
+                    counter = counter + 1
+                except Exception:
+                    pass
         return "Imported: %s" % counter
 
 

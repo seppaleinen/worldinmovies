@@ -476,7 +476,7 @@ class ViewBestFromCountry(SuperClass):
 class ImportImdbData(SuperClass):
     @responses.activate
     def test_import_imdb_data(self):
-        movie = Movie(id=19995, original_title='Avatar', popularity=36.213, fetched=False, imdb_id='tt0000001')
+        movie = Movie(id=19995, original_title='Avatar', popularity=36.213, fetched=True, imdb_id='tt0000001')
         movie.save()
 
         url = "https://datasets.imdbws.com/title.ratings.tsv.gz"
