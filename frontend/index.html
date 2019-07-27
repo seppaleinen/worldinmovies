@@ -31,19 +31,65 @@
                     function(data) {
                         string = data
                             .map(item => item['original_title'] + ':' + item['vote_average'])
-                            .join('\n')
-                        alert(string);
-                        data.forEach(item => console.log(item));
-                        //alert('page content: ' + array.forEach(item => console.log(item));
+                            .join('<br/>')
+                        html = '<div>Top ranked movies from: ' + region + '</div>'
+                            + '<div>'
+                            + string
+                            + '</div>'
+                        var modal = document.getElementById("myModal");
+                        var modalText = document.getElementById("modal-text");
+                        modalText.innerHTML = html;
+                        modal.style.display = "block";
                     }
                 );
-                //var message = 'You clicked "'
-                //    + region
-                //    + '" which has the code: '
-                //    + code.toUpperCase();
-                //alert(message);
+            },
+            onLabelShow: function(event, label, code) {
+                $.get("http://localhost:8000/view/best/" + code.toUpperCase(),
+                    function(data) {
+                        var countryName = label[0].innerHTML;
+                        string = data
+                            .map(item => item['original_title'] + ':' + item['vote_average'])
+                            .join('<br/>')
+                        html = '<div>Top ranked movies from: ' + countryName + '</div>'
+                            + '<div>'
+                            + string
+                            + '</div>'
+                        label.html(html)
+                    }
+                );
             }
         });
+
+        var modal = document.getElementById("myModal");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        function sizeMap() {
+            var containerWidth = $('body').width(),
+                containerHeight = (containerWidth / 1.4);
+
+            $('#vmap').css({
+                'width': containerWidth,
+                'height': containerHeight
+            });
+        }
+
+        sizeMap();
+        $(window).on("resize", sizeMap);
+        $('#vmap').fadeIn().resize();
     })
 
     </script>
@@ -53,9 +99,17 @@
 	{{ message }}
 </div>
 
-  <body>
-    <div id="vmap" style="width: 600px; height: 400px;"></div>
-  </body>
+<div id="vmap" style="width: 600px; height: 400px;"></div>
+
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <div id="modal-text"></div>
+  </div>
+
+</div>
 
 <script src="index.js"></script>
 </body>
