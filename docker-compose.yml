@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:10.5-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql
+    ports:
+      - "5433:5432"
+  backend:
+    image: worldinmovies_backend
+    build: backend/
+    volumes:
+      - ./backend/:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    restart: always
+    environment:
+      - TMDB_API=${TMDB_API}
+      - SENTRY_URL=${SENTRY_URL}
+volumes:
+  pgdata:
