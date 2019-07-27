@@ -4,6 +4,7 @@ requests>=2.20.0
 gunicorn>=19.9.0
 sentry-sdk>=0.10.2
 simplejson
+django-cors-headers
 
 # For tests
 responses>=0.10.6
