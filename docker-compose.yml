@@ -1,12 +1,27 @@
 version: '3'
 
 services:
+  traefik:
+    image: traefik
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Give access to all containers to traefik
+      - ./traefik/traefik.toml:/traefik.toml # Basic config file
+      - ./traefik/acme.json:/acme.json # Stores the Let’s Encrypt certificate date
+    networks:
+      - web
   db:
     image: postgres:10.5-alpine
     volumes:
       - pgdata:/var/lib/postgresql
     ports:
       - "5433:5432"
+    networks:
+      - internal
   backend:
     image: worldinmovies_backend
     build: backend/
@@ -20,5 +35,18 @@ services:
     environment:
       - TMDB_API=${TMDB_API}
       - SENTRY_URL=${SENTRY_URL}
+    networks:
+      - web
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=backend"
+      - "traefik.docker.network=web"
+      - "traefik.frontend.rule=Host:seppatest.duckdns.org"
+      - "traefik.port=8000"
 volumes:
   pgdata:
+networks:
+  internal:
+  web:
+    external: true
