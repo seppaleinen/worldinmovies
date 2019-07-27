@@ -31,10 +31,10 @@
                 $.get("http://localhost:8000/view/best/" + code.toUpperCase(),
                     function(data) {
                         tableRowsHtml = data
-                            .map(item => '<tr><td style="padding: 5px 15px 5px 10px;">' + item['original_title'] + '</td><td style="padding: 5px 15px 5px 10px;">' + item['vote_average'] + '</td></tr>').join('')
+                            .map(item => '<tr><td style="padding: 5px 15px 5px 10px;"></td><td style="padding: 5px 15px 5px 10px;"><a style="font-family: Helvetica; text-decoration: none; " href="https://www.imdb.com/title/' + item['imdb_id'] + '">' + item['original_title'] + '</a></td><td style="padding: 5px 15px 5px 10px;">' + item['vote_average'] + '</td></tr>').join('')
                         html = '<h2>Top ranked movies from ' + region + '</h2>'
                             + '<table class="superduper">'
-                            + '<tr><th style="text-align:left; padding: 5px 15px 5px 10px;">Title</th><th style="padding: 5px 15px 5px 10px;">Rating</th></tr>'
+                            + '<tr><th style="text-align:left; padding: 5px 15px 5px 10px;">#</th><th style="text-align:left; padding: 5px 15px 5px 10px;">Title</th><th style="padding: 5px 15px 5px 10px;">Rating</th></tr>'
                             + tableRowsHtml
                             + '</table>'
                         var modal = document.getElementById("myModal");
@@ -51,10 +51,10 @@
                         string = data
                             .map(item => item['original_title'] + ':' + item['vote_average'])
                             .join('<br/>')
-                        html = '<h2>Top ranked movies from: ' + countryName + '</h2>'
-                            + '<div>'
-                            + string
-                            + '</div>'
+                        html = '<div>View top ranked movies from ' + countryName + '</div>'
+                        //    + '<div>'
+                        //    + string
+                        //    + '</div>'
                         label.html(html)
                     }
                 );

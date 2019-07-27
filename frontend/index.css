@@ -11,10 +11,30 @@ html, body {
 .superduper tr:nth-child(odd){
 		background: #c9dfaf; /* Green */
 }
+
 .superduper tr:nth-child(even){
 		background: #a5bfdd; /* Blueish */
 }
 
+.superduper {
+    counter-reset: rowNumber;
+}
+
+.superduper tr:not(:first-child) {
+    counter-increment: rowNumber;
+}
+
+.superduper tr td:first-child::before {
+    content: counter(rowNumber);
+    min-width: 1em;
+    margin-right: 0.5em;
+}
+
+.greger {
+    background-color: #e6f3f7;
+    color: #F5DE50;
+    font-family: Helvetica;
+}
 
 /* The Modal (background) */
 .modal {
@@ -31,14 +51,29 @@ html, body {
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
+a:link {
+  color: black;
+}
+/* visited link */
+a:visited {
+  color: black;
+}
+/* selected link */
+a:active {
+  color: black;
+}
+a:hover {
+  color: darkgreen;
+}
+
 /* Modal Content */
 .modal-content {
-  background-color: #fefefe;
+  background-color: #e6f3f7;
   margin: auto;
   padding: 20px;
   border: 1px solid #888;
   width: 35%;
-  font-family: verdana;
+  font-family: Helvetica;
 }
 
 /* The Close Button */
