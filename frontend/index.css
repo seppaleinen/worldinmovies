@@ -8,6 +8,13 @@ html, body {
   height: 100%;
 }
 
+.superduper tr:nth-child(odd){
+		background: #c9dfaf; /* Green */
+}
+.superduper tr:nth-child(even){
+		background: #a5bfdd; /* Blueish */
+}
+
 
 /* The Modal (background) */
 .modal {
@@ -30,12 +37,13 @@ html, body {
   margin: auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%;
+  width: 35%;
+  font-family: verdana;
 }
 
 /* The Close Button */
 .close {
-  color: #aaaaaa;
+  color: F5DE50;
   float: right;
   font-size: 28px;
   font-weight: bold;

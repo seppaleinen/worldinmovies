@@ -1,6 +1,7 @@
 <html>
 <head>
 	<link rel="stylesheet" href="index.css">
+    <link rel="shortcut icon" href="llama.ico" />
 
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -29,13 +30,13 @@
             onRegionClick: function(element, code, region) {
                 $.get("http://localhost:8000/view/best/" + code.toUpperCase(),
                     function(data) {
-                        string = data
-                            .map(item => item['original_title'] + ':' + item['vote_average'])
-                            .join('<br/>')
-                        html = '<div>Top ranked movies from: ' + region + '</div>'
-                            + '<div>'
-                            + string
-                            + '</div>'
+                        tableRowsHtml = data
+                            .map(item => '<tr><td style="padding: 5px 15px 5px 10px;">' + item['original_title'] + '</td><td style="padding: 5px 15px 5px 10px;">' + item['vote_average'] + '</td></tr>').join('')
+                        html = '<h2>Top ranked movies from ' + region + '</h2>'
+                            + '<table class="superduper">'
+                            + '<tr><th style="text-align:left; padding: 5px 15px 5px 10px;">Title</th><th style="padding: 5px 15px 5px 10px;">Rating</th></tr>'
+                            + tableRowsHtml
+                            + '</table>'
                         var modal = document.getElementById("myModal");
                         var modalText = document.getElementById("modal-text");
                         modalText.innerHTML = html;
@@ -50,7 +51,7 @@
                         string = data
                             .map(item => item['original_title'] + ':' + item['vote_average'])
                             .join('<br/>')
-                        html = '<div>Top ranked movies from: ' + countryName + '</div>'
+                        html = '<h2>Top ranked movies from: ' + countryName + '</h2>'
                             + '<div>'
                             + string
                             + '</div>'
