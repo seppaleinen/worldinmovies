@@ -1,6 +1,6 @@
-import json, csv, simplejson
+import json, csv, simplejson, time
 
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.db import connection
 from app.models import Movie, Genre
 from app.importer import download_files, concurrent_stuff, import_genres, import_countries, import_languages, base_import, import_imdb_ratings
@@ -13,6 +13,16 @@ def index(request):
         return HttpResponse("Amount of movies in DB: %s, first is: %s" % (movies_count, Movie.objects.first().id))
     else:
         return HttpResponse("No movies fetched yet")
+
+
+def stream_response_generator():
+    for x in range(1,3):
+        yield "%s<br/>" % x  # Returns a chunk of the response to the browser
+        time.sleep(1)
+
+
+def stream_response_test(request):
+	return StreamingHttpResponse(stream_response_generator())
 
 
 def import_status(request):
