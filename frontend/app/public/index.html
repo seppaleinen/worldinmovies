@@ -60,19 +60,23 @@
                 );
             },
             onLabelShow: function(event, label, code) {
-                $.get("%REACT_APP_BACKEND_URL%/view/best/" + code.toUpperCase(),
-                    function(data) {
-                        var countryName = label[0].innerHTML;
-                        string = data
-                            .map(item => item['original_title'] + ':' + item['vote_average'])
-                            .join('<br/>')
-                        html = '<div>View top ranked movies from ' + countryName + '</div>'
-                        //    + '<div>'
-                        //    + string
-                        //    + '</div>'
-                        label.html(html)
-                    }
-                );
+                var countryName = label[0].innerHTML;
+                html = '<div>View top ranked movies from ' + countryName + '</div>'
+                label.html(html)
+                //
+                //$.get("%REACT_APP_BACKEND_URL%/view/best/" + code.toUpperCase(),
+                //    function(data) {
+                //        var countryName = label[0].innerHTML;
+                //        string = data
+                //            .map(item => item['original_title'] + ':' + item['vote_average'])
+                //            .join('<br/>')
+                //        html = '<div>View top ranked movies from ' + countryName + '</div>'
+                //        //    + '<div>'
+                //        //    + string
+                //        //    + '</div>'
+                //        label.html(html)
+                //    }
+                //);
             }
         });
 
