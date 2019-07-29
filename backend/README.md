@@ -52,7 +52,13 @@ Basically will be handling
   1. ```bash docker exec -ti containerId /bin/sh ```
   2. ```bash pg_dump -U username dbname > dbexport.pgsql ```
   3. logout and ```bash docker copy containerId:/dbexport.pgsql ./dbexport.pgsql ```
-  4. clean target db (Add instructions...)
+  4. clean target db 
+    - ```sql
+        DROP SCHEMA public CASCADE;
+        CREATE SCHEMA public;
+        GRANT ALL ON SCHEMA public TO postgres;
+        GRANT ALL ON SCHEMA public TO public;
+        ```
   5. ```bash docker copy dbexport.pgsql containerId:/dbexport.pgsql ```
   6. ```bash docker exec -ti containerId /bin/sh ```
   7. ```bash psql -U username dbname < dbexport.pgsql ```
