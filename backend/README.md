@@ -19,6 +19,8 @@ Basically will be handling
 * Move import apis behind /admin
 * If import fails, save to separate failure-table with movie-id, exception message, and raw dump
 * Verify memory consumption
+* Traefik
+* Nginx for frontend assets?
 
 * Best 10 of each country
 	- additional fields
@@ -45,6 +47,15 @@ Basically will be handling
 
 ### Notes
 * To fetch images, prefix with: https://image.tmdb.org/t/p/w500/
+
+* DB Migration Guide
+  1. ```bash docker exec -ti containerId /bin/sh ```
+  2. ```bash pg_dump -U username dbname > dbexport.pgsql ```
+  3. logout and ```bash docker copy containerId:/dbexport.pgsql ./dbexport.pgsql ```
+  4. clean target db (Add instructions...)
+  5. ```bash docker copy dbexport.pgsql containerId:/dbexport.pgsql ```
+  6. ```bash docker exec -ti containerId /bin/sh ```
+  7. ```bash psql -U username dbname < dbexport.pgsql ```
 
 
 
