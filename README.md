@@ -14,6 +14,10 @@ data from their new API. I'll try and make a new start of this project from scra
 I've decided against using java, as it's too resource consuming for the basic servers that I will use.
 
 
+## TODO
+
+* Traefik
+
 ## To start
 Dependencies:
 

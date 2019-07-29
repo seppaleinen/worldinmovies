@@ -1,6 +1,12 @@
 # Frontend of World in Movies
 
 
+### TODO
+
+* Check out serving from nginx instead of serve
+  - docker multi-stage build
+    1. node -> npm build
+    2. nginx fetch build/
 
 ### Commands
 
