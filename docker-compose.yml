@@ -20,5 +20,12 @@ services:
     environment:
       - TMDB_API=${TMDB_API}
       - SENTRY_URL=${SENTRY_URL}
+  webapp:
+    image: worldinmovies_webapp
+    build: frontend/app/
+    ports:
+      - "5000:5000"
+    expose:
+      - "5000"
 volumes:
   pgdata:
