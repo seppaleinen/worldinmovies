@@ -22,7 +22,7 @@ def stream_response_generator():
 
 
 def stream_response_test(request):
-	return StreamingHttpResponse(stream_response_generator())
+    return StreamingHttpResponse(stream_response_generator())
 
 
 def import_status(request):
@@ -66,6 +66,7 @@ def get_best_movies_by_country(request):
         return HttpResponse(simplejson.dumps(result), content_type='application/json')
 
 
+@csrf_exempt
 def get_best_movies_from_country(request, country_code):
     with connection.cursor() as cursor:
         cursor.execute("""
