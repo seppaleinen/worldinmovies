@@ -43,7 +43,7 @@
             selectedRegions: null,
             showTooltip: true,
             onRegionClick: function(element, code, region) {
-                $.get("http://localhost:8000/view/best/" + code.toUpperCase(),
+                $.get("%REACT_APP_BACKEND_URL%/view/best/" + code.toUpperCase(),
                     function(data) {
                         tableRowsHtml = data
                             .map(item => '<tr><td style="padding: 5px 15px 5px 10px;"></td><td style="padding: 5px 15px 5px 10px;"><a style="font-family: Helvetica; text-decoration: none; " href="https://www.imdb.com/title/' + item['imdb_id'] + '">' + item['original_title'] + '</a></td><td style="padding: 5px 15px 5px 10px;">' + item['vote_average'] + '</td></tr>').join('')
@@ -60,7 +60,7 @@
                 );
             },
             onLabelShow: function(event, label, code) {
-                $.get("http://localhost:8000/view/best/" + code.toUpperCase(),
+                $.get("%REACT_APP_BACKEND_URL%/view/best/" + code.toUpperCase(),
                     function(data) {
                         var countryName = label[0].innerHTML;
                         string = data

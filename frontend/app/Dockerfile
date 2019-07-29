@@ -7,11 +7,13 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
 # install and cache app dependencies
-COPY . /app/
+COPY package.json /app/
 RUN npm install --silent
 RUN npm install react-scripts@3.0.1 -g --silent
-RUN npm run build
 RUN yarn global add serve
+
+COPY . /app/
+RUN npm run build
 
 # start app
 CMD ["serve", "-s", "build"]
