@@ -1,4 +1,4 @@
-# Worldinmovies
+# World in Movies
 
 
 This webapp project is for showing which parts of the world that you've seen movies from.
@@ -13,35 +13,6 @@ data from their new API. I'll try and make a new start of this project from scra
 
 I've decided against using java, as it's too resource consuming for the basic servers that I will use.
 
-
-## Todo
-* Backend
-  - Import
-  - Find suitable DB
-    - Low RAM consumption
-    - Preferably built for searches
-  - API
-* Frontend
-  - React
-    - Initial setup
-    - Basic layout
-    - Framework for map integration
-* Integration Tests
-  - Security
-  - Functional
-  - Performance
-
-## To start docker instances by maven:
-Dependencies:
-
-* Docker https://docs.docker.com/engine/installation/
-* Docker-compose https://docs.docker.com/compose/install/
-
-```bash
-mvn clean install -Pdocker
-
-docker-compose up --build
-```
 
 ## To start
 Dependencies:
