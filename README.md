@@ -17,11 +17,21 @@ I've decided against using java, as it's too resource consuming for the basic se
 ## TODO
 
 * Traefik
-* Way of verifying memory usage and general performance
 * Travis
 * Create new image, showing overall architecture
 * Create image with example showing map
 
+## Performance Metrics
+
+Check why backend takes so much memory.
+
+```docker stats worldinmovies_webapp_1 worldinmovies_backend_1 worldinmovies_db_1 ```
+
+| CONTAINER ID |           NAME          |  CPU % |    MEM USAGE / LIMIT   |   MEM % |      NET I/O   | BLOCK I/O       | PIDS |
+|:------------:|:-----------------------:|:------:|:----------------------:|:-------:|:--------------:|:---------------:|:----:|
+| faa56a493bf0 | worldinmovies_webapp_1  |  0.00% | 18.16MiB / 3.732GiB    |  0.48%  | 2.69MB / 654kB | 34.9MB / 0B     | 11   |
+| 56cee9abd0ea | worldinmovies_backend_1 |  0.03% | 279.8MiB / 3.732GiB    |  7.32%  | 2.63MB / 494kB | 19.3MB / 0B     | 10   |
+| 764ee594592b | worldinmovies_db_1      |  0.00% | 27.04MiB / 3.732GiB    |  0.71%  | 2.71MB / 221kB | 5.89GB / 8.37GB | 16   |
 
 ## To start
 Dependencies:
