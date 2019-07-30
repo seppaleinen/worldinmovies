@@ -24,8 +24,6 @@ services:
     image: worldinmovies_webapp
     build: frontend/app/
     ports:
-      - "5000:5000"
-    expose:
-      - "5000"
+      - "81:80"
 volumes:
   pgdata:
