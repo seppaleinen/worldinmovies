@@ -25,7 +25,5 @@ services:
     build: frontend/app/
     ports:
       - "81:80"
-    expose:
-      - "80"
 volumes:
   pgdata:
