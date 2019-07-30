@@ -29,3 +29,4 @@ onHostRule = true
 domain = "seppa.duckdns.org:8888"
 watch = true
 network = "web"
+logLevel = "DEBUG"

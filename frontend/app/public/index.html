@@ -45,6 +45,7 @@
             onRegionClick: function(element, code, region) {
                 $.get("%REACT_APP_BACKEND_URL%/view/best/" + code.toUpperCase(),
                     function( data ) {
+                        console.log("%REACT_APP_BACKEND_URL%");
                         tableRowsHtml = data
                             .map(item => '<tr>'
                               + '<td style="padding: 5px 15px 5px 10px;"></td>'
@@ -62,7 +63,7 @@
                         modal.style.display = "block";
                     }
                 ).fail(function(data) {
-                  console.log(data);
+                  console.log(data.status_code);
                 });
             },
             onLabelShow: function(event, label, code) {

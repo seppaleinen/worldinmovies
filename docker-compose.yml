@@ -44,24 +44,22 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=backend"
       - "traefik.docker.network=web"
-      - "traefik.frontend.rule=Host:some-backend.localhost"
+      - "traefik.frontend.rule=Host:https://some-backend.localhost"
       - "traefik.port=8000"
   webapp:
     image: worldinmovies_webapp
     build: frontend/app/
     depends_on:
       - backend
-    #ports:
-    #  - "5001:5000"
     expose:
       - "5000"
     networks:
       - web
     labels:
       - "traefik.enable=true"
-      - "traefik.backend=frontend"
+      - "traefik.backend=webapp"
       - "traefik.docker.network=web"
-      - "traefik.frontend.rule=Host:some-nginx.localhost"
+      - "traefik.frontend.rule=Host:some-webapp.localhost"
       - "traefik.port=5000"
 volumes:
   pgdata:
