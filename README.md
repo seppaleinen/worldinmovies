@@ -24,6 +24,9 @@ I've decided against using java, as it's too resource consuming for the basic se
 ## Performance Metrics
 
 Check why backend takes so much memory.
+  - Seems to be related to gunicorn spawning multiple processes.
+    When setting gunicorn workers to 1, mem usage goes down to 40MB
+    But haven't actually loadtested anything yet, this is only when just started, as is.
 
 ```docker stats worldinmovies_webapp_1 worldinmovies_backend_1 worldinmovies_db_1 ```
 
