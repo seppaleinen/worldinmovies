@@ -9,6 +9,7 @@ backend.log
 **/phantomjsdriver.log
 *.db
 *.gz
+!**/testdata/*.gz
 
 .DS_Store
 .idea/

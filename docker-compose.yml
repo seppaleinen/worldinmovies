@@ -44,6 +44,15 @@ services:
       - "traefik.docker.network=web"
       - "traefik.frontend.rule=Host:seppatest.duckdns.org"
       - "traefik.port=8000"
+  webapp:
+    image: worldinmovies_webapp
+    build: frontend/app/
+    ports:
+      - "5000:5000"
+    expose:
+      - "5000"
+    networks:
+      - web
 volumes:
   pgdata:
 networks:

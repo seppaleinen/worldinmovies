@@ -18,7 +18,6 @@ Basically will be handling
 * Cron-like way of starting imports daily
 * Move import apis behind /admin
 * If import fails, save to separate failure-table with movie-id, exception message, and raw dump
-* Verify memory consumption
 
 * Best 10 of each country
 	- additional fields
@@ -45,6 +44,21 @@ Basically will be handling
 
 ### Notes
 * To fetch images, prefix with: https://image.tmdb.org/t/p/w500/
+
+* DB Migration Guide
+  1. ```bash docker exec -ti containerId /bin/sh ```
+  2. ```bash pg_dump -U username dbname > dbexport.pgsql ```
+  3. logout and ```bash docker copy containerId:/dbexport.pgsql ./dbexport.pgsql ```
+  4. clean target db 
+    - ```sql
+        DROP SCHEMA public CASCADE;
+        CREATE SCHEMA public;
+        GRANT ALL ON SCHEMA public TO postgres;
+        GRANT ALL ON SCHEMA public TO public;
+        ```
+  5. ```bash docker copy dbexport.pgsql containerId:/dbexport.pgsql ```
+  6. ```bash docker exec -ti containerId /bin/sh ```
+  7. ```bash psql -U username dbname < dbexport.pgsql ```
 
 
 
