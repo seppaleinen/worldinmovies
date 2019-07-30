@@ -54,7 +54,7 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
-    'http://localhost', 'https://localhost'
+    'http://localhost', 'https://localhost', 'some-backend.localhost'
 )
 
 ROOT_URLCONF = 'settings.urls'

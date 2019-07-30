@@ -19,7 +19,7 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <link href="%PUBLIC_URL%/jqvmap.min.css" media="screen" rel="stylesheet" type="text/css">
 
     <script type="text/javascript" src="%PUBLIC_URL%/jquery.vmap.min.js"></script>
@@ -44,9 +44,13 @@
             showTooltip: true,
             onRegionClick: function(element, code, region) {
                 $.get("%REACT_APP_BACKEND_URL%/view/best/" + code.toUpperCase(),
-                    function(data) {
+                    function( data ) {
                         tableRowsHtml = data
-                            .map(item => '<tr><td style="padding: 5px 15px 5px 10px;"></td><td style="padding: 5px 15px 5px 10px;"><a style="font-family: Helvetica; text-decoration: none; " href="https://www.imdb.com/title/' + item['imdb_id'] + '">' + item['original_title'] + '</a></td><td style="padding: 5px 15px 5px 10px;">' + item['vote_average'] + '</td></tr>').join('')
+                            .map(item => '<tr>'
+                              + '<td style="padding: 5px 15px 5px 10px;"></td>'
+                              + '<td style="padding: 5px 15px 5px 10px;"><a style="font-family: Helvetica; text-decoration: none; " href="https://www.imdb.com/title/' + item['imdb_id'] + '">' + item['original_title'] + '</a></td>'
+                              + '<td style="padding: 5px 15px 5px 10px;">' + item['vote_average'] + '</td>'
+                              + '</tr>').join('')
                         html = '<h2>Top ranked movies from ' + region + '</h2>'
                             + '<table class="superduper">'
                             + '<tr><th style="text-align:left; padding: 5px 15px 5px 10px;">#</th><th style="text-align:left; padding: 5px 15px 5px 10px;">Title</th><th style="padding: 5px 15px 5px 10px;">Rating</th></tr>'
@@ -57,7 +61,9 @@
                         modalText.innerHTML = html;
                         modal.style.display = "block";
                     }
-                );
+                ).fail(function(data) {
+                  console.log(data);
+                });
             },
             onLabelShow: function(event, label, code) {
                 var countryName = label[0].innerHTML;

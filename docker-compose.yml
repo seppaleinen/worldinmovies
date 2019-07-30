@@ -2,7 +2,7 @@ version: '3'
 
 services:
   traefik:
-    image: traefik
+    image: traefik:alpine
     restart: always
     ports:
       - "80:80"
@@ -22,13 +22,15 @@ services:
       - "5433:5432"
     networks:
       - internal
+    labels:
+      - "traefik.enable=false"
   backend:
     image: worldinmovies_backend
     build: backend/
     volumes:
       - ./backend/:/code
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     depends_on:
       - db
     restart: always
@@ -42,17 +44,25 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=backend"
       - "traefik.docker.network=web"
-      - "traefik.frontend.rule=Host:seppatest.duckdns.org"
+      - "traefik.frontend.rule=Host:some-backend.localhost"
       - "traefik.port=8000"
   webapp:
     image: worldinmovies_webapp
     build: frontend/app/
-    ports:
-      - "5000:5000"
+    depends_on:
+      - backend
+    #ports:
+    #  - "5001:5000"
     expose:
       - "5000"
     networks:
       - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=frontend"
+      - "traefik.docker.network=web"
+      - "traefik.frontend.rule=Host:some-nginx.localhost"
+      - "traefik.port=5000"
 volumes:
   pgdata:
 networks:

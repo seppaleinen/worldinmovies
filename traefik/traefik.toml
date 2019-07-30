@@ -1,34 +1,31 @@
-debug = false
-logLevel = "ERROR"
-
 defaultEntryPoints = ["http", "https"]
 
-[web]
-# Port for the status/dashboard page
-address = ":8080"
-
 [entryPoints]
-    [entryPoints.http]
+  [entryPoints.dashboard]
+    address = ":8080"
+    [entryPoints.dashboard.auth]
+      [entryPoints.dashboard.auth.basic]
+        users = ["admin:$apr1$RhZptN/O$8qcKDcw8ghXdocTY.BIG91"]
+  [entryPoints.http]
     address = ":80"
-        [entryPoints.http.redirect]
+      [entryPoints.http.redirect]
         entryPoint = "https"
-
-    [entryPoints.https]
+  [entryPoints.https]
     address = ":443"
-    [entryPoints.https.tls]
+      [entryPoints.https.tls]
 
-[retry]
-
-[docker]
-endpoint = "unix:///var/run/docker.sock"
-domain = "kilian.io"
-watch = true
-exposedByDefault = false
+[api]
+entrypoint="dashboard"
 
 [acme]
 email = "davideriksson@swedenmail.com"
 storage = "acme.json"
 entryPoint = "https"
 onHostRule = true
-    [acme.httpChallenge]
-    entryPoint = "http"
+  [acme.httpChallenge]
+  entryPoint = "http"
+
+[docker]
+domain = "seppa.duckdns.org:8888"
+watch = true
+network = "web"
