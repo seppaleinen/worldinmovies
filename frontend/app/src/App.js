@@ -8,7 +8,7 @@ function App() {
 
             <div id="myModal" className="modal">
                 <div className="modal-content">
-                    <span className="close">&times;</span>
+                    <span className='close'>&times;</span>
                     <div id="modal-text"></div>
                 </div>
             </div>
