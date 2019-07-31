@@ -77,7 +77,7 @@ def get_best_movies_from_country(request, country_code):
 	            and pc.iso_3166_1 = '%s'
 	            and movie.vote_count > 100
 	            and movie.vote_average > 0
-	            order by (movie.vote_count / (cast(movie.vote_count as numeric) / 10)) * movie.vote_average / (10 / (cast(movie.vote_count as numeric) / 10)) desc
+	            order by (movie.vote_count / (cast(movie.vote_count as numeric) + 10)) * movie.vote_average + (10 / (cast(movie.vote_count as numeric) + 10)) desc
 	            limit 10
         """ % country_code)
         result = []
