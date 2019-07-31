@@ -52,7 +52,9 @@ def get_best_movies_by_country(request):
                                         inner join app_productioncountries pc on pc.id = pcm.productioncountries_id
                                         where pc.iso_3166_1 = country.iso_3166_1
                                         and movie.fetched is true
-                                        order by movie.vote_average desc
+                                        and movie.vote_count > 100
+										and movie.vote_average > 0
+                                        order by (movie.vote_count / (cast(movie.vote_count as numeric) + 10)) * movie.vote_average + (10 / (cast(movie.vote_count as numeric) + 10)) desc
                                         limit 10
                                     ) p on true
                                 order by country.iso_3166_1 asc""")
