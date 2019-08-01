@@ -1,0 +1,24 @@
+server {
+    listen 80;
+    server_name worldinmovies;
+    charset utf-8;
+    root /var/www/app/;
+
+    index index.html;
+
+    location ~ /.well-known {
+        allow all;
+        default_type "text/plain";
+        root /tmp/letsencrypt-auto;
+    }
+
+    location /static {
+        expires 7d;
+        proxy_cache STATIC;
+        proxy_cache_valid 200 7d;
+        add_header Cache-Control "public";
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+        alias /var/www/app/static;
+    }
+}

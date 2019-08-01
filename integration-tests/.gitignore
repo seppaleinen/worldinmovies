@@ -1,0 +1,5 @@
+cypress/videos
+cypress/screenshots
+examples/
+
+package-lock.json

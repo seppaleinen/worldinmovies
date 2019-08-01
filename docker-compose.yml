@@ -42,17 +42,21 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=backend"
       - "traefik.docker.network=web"
-      - "traefik.frontend.rule=Host:seppatest.duckdns.org"
+      - "traefik.frontend.rule=Host:localhost:backend"
       - "traefik.port=8000"
   webapp:
     image: worldinmovies_webapp
     build: frontend/app/
     ports:
-      - "5000:5000"
-    expose:
-      - "5000"
+      - "81:80"
     networks:
       - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=frontend"
+      - "traefik.docker.network=web"
+      - "traefik.frontend.rule=Host:localhost.frontend"
+      - "traefik.port=81"
 volumes:
   pgdata:
 networks:
