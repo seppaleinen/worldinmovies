@@ -81,6 +81,8 @@ gunicorn --config=gunicorn.config.py settings.wsgi
 # To start server without gunicorn
 ./manage.py runserver
 
+# Lint project
+pylint --load-plugins pylint_django app/ settings/
 
 # Or with docker
 # Build and start servers
