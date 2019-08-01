@@ -1,3 +1,4 @@
 cypress/videos
 examples/
 
+package-lock.json
