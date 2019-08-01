@@ -17,6 +17,8 @@ I've decided against using java, as it's too resource consuming for the basic se
 ## TODO
 
 * Traefik
+  - admin:password
+* Way of verifying memory usage and general performance
 * Travis
 * Create new image, showing overall architecture
 * Create image with example showing map

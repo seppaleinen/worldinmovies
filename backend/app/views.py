@@ -91,7 +91,9 @@ def get_best_movies_from_country(request, country_code):
                 'poster_path': row[3],
                 'vote_average': row[4]
             })
-        return HttpResponse(simplejson.dumps(result, indent=2 * ' '), content_type='application/json; charset=utf-8')
+        resp = HttpResponse(simplejson.dumps(result, indent=2 * ' '), content_type='application/json; charset=utf-8')
+        resp['ACCESS_CONTROL_ALLOW_ORIGIN'] = "*"
+        return resp
 
 
 @csrf_exempt
