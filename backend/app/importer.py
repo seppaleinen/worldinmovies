@@ -231,7 +231,7 @@ def import_imdb_ratings():
         reader = csv.reader(contents, delimiter='\t')
         # chunks_of_reader_maybe = __chunks(reader, 50)
         all_imdb_ids = Movie.objects.filter(fetched=True).all().values_list('imdb_id', flat=True)
-        #Multithread this maybe?
+        # Multithread this maybe?
         for row in reader:
             tconst = row[0]
             if tconst in all_imdb_ids:
@@ -247,6 +247,10 @@ def import_imdb_ratings():
                     counter = counter + 1
                 except Exception:
                     pass
+            if counter % 100 == 0:
+                print("Persisted: %s imdb ratings" % counter)
         return "Imported: %s" % counter
+    else:
+        return "Response: %s, %s" % (response.status_code, response.content)
 
 
