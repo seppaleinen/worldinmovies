@@ -230,11 +230,11 @@ def import_imdb_ratings():
         contents = __unzip_file('title.ratings.tsv.gz')
         reader = csv.reader(contents, delimiter='\t')
         # chunks_of_reader_maybe = __chunks(reader, 50)
-        all_imdb_ids = Movie.objects.filter(fetched=True).all().values_list('imdb_id', flat=True)
+        # all_imdb_ids = Movie.objects.filter(fetched=True).all().values_list('imdb_id', flat=True)
         # Multithread this maybe?
         for row in reader:
             tconst = row[0]
-            if tconst in all_imdb_ids:
+            if Movie.objects.filter(fetched=True).filter(imdb_id=tconst).exists():
                 try:
                     # map rows into map<tconst, {'vote_average','vote_count}
                     # create sublists up to 100

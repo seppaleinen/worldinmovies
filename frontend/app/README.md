@@ -10,13 +10,8 @@ Second hand, show you which countries you've seen movies from and from which you
 
 ### TODO
 
-* Check out serving from nginx instead of serve
-  - docker multi-stage build
-    1. node -> npm build
-    2. nginx fetch build/
 * Sentry
 * Tests
-* Check if possible to minify, or make site load faster
 * Pages
   - Admin
     - Start imports
