@@ -10,30 +10,59 @@ function Index() {
     </div>
   )
 }
-const onRegionOver = (event, code) => {
-    console.log(`You're hovering ${code}`)
-};
 
 const onRegionClick = (event, code) => {
-    console.log(`You have clicked ${code}`)
+    var html = '<h2>Top ranked movies from ' + code + '</h2>';
+    var modal = document.getElementById("myModal");
+    var modalText = document.getElementById("modal-text");
+    modalText.innerHTML = html;
+    modal.style.display = "block";
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    };
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
 };
 
+const onRegionTipShow = (event, element, code) => {
+    element.html('View top ranked movies from ' + element.html());
+};
 
 class Map extends React.Component {
     render() {
         return (
-            <div style={{width: 500, height: 500}}>
-                <VectorMap map={'world_mill'}
-                           backgroundColor="#a5bfdd"
-                           ref="map"
-                           containerStyle={{
-                               width: '100%',
-                               height: '100%'
-                           }}
-                           onRegionOver={onRegionOver}
-                           onRegionClick={onRegionClick}
-                           containerClassName="map"
-                />
+            <div>
+                <div style={{width: '80%', height: 500}}>
+                    <VectorMap map={'world_mill'}
+                            backgroundColor="#a5bfdd"
+                            ref="map"
+                            containerStyle={{
+                                width: '100%',
+                                height: '100%'
+                            }}
+                            regionStyle={{hover: {fill: '#c9dfaf'}}}
+                            onRegionClick={onRegionClick}
+                            onRegionTipShow={onRegionTipShow}
+                            containerClassName="map"
+                    />
+
+                    <div id="myModal" className="modal">
+                        <div className="modal-content">
+                            <span className='close'>&times;</span>
+                            <div id="modal-text"/>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
