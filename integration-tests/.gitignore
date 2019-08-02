@@ -1,5 +1,6 @@
 cypress/videos
 cypress/screenshots
 examples/
+node_modules/
 
 package-lock.json
