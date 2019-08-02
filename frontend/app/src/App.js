@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { VectorMap } from "react-jvectormap"
+import axios from 'axios';
 
 function Index() {
   return (
@@ -12,26 +13,39 @@ function Index() {
 }
 
 const onRegionClick = (event, code) => {
-    var html = '<h2>Top ranked movies from ' + code + '</h2>';
-    var modal = document.getElementById("myModal");
-    var modalText = document.getElementById("modal-text");
-    modalText.innerHTML = html;
-    modal.style.display = "block";
+    axios.get(process.env.REACT_APP_BACKEND_URL + "/view/best/" + code.toUpperCase())
+        .then((response) => {
+            var tableRowsHtml = response.data
+                .map(item => '<tr><td style="padding: 5px 15px 5px 10px;"></td><td style="padding: 5px 15px 5px 10px;"><a style="font-family: Helvetica; text-decoration: none; " href="https://www.imdb.com/title/' + item['imdb_id'] + '">' + item['original_title'] + '</a></td><td style="padding: 5px 15px 5px 10px;">' + item['vote_average'] + '</td></tr>').join('')
+            var html = '<h2>Top ranked movies from ' + code + '</h2>'
+                + '<table class="superduper">'
+                + '<tr><th style="text-align:left; padding: 5px 15px 5px 10px;">#</th><th style="text-align:left; padding: 5px 15px 5px 10px;">Title</th><th style="padding: 5px 15px 5px 10px;">Rating</th></tr>'
+                + tableRowsHtml
+                + '</table>';
 
-    // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("close")[0];
+            var modal = document.getElementById("myModal");
+            var modalText = document.getElementById("modal-text");
+            modalText.innerHTML = html;
+            modal.style.display = "block";
 
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-        modal.style.display = "none";
-    };
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
 
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    }
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function() {
+                modal.style.display = "none";
+            };
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+                if (event.target === modal) {
+                    modal.style.display = "none";
+                }
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 };
 
 const onRegionTipShow = (event, element, code) => {
