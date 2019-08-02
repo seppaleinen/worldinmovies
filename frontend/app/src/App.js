@@ -4,12 +4,14 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { VectorMap } from "react-jvectormap"
 import axios from 'axios';
 
-function Index() {
-  return (
-    <div>
-      Welcome!
-    </div>
-  )
+class Index extends React.Component {
+    render() {
+        return (
+            <div className="main">
+                Welcome!
+            </div>
+        )
+    }
 }
 
 class Map extends React.Component {
@@ -23,13 +25,16 @@ class Map extends React.Component {
             .then((response) => {
                 var tableRowsHtml = response.data
                     .map(item => '<tr>' +
-                        '<td style="padding: 5px 15px 5px 10px;"></td>' +
-                        '<td style="padding: 5px 15px 5px 10px;"><a style="font-family: Helvetica; text-decoration: none; " href="https://www.imdb.com/title/' + item['imdb_id'] + '">' + item['original_title'] + '</a></td>' +
-                        '<td style="padding: 5px 15px 5px 10px;">' + item['vote_average'] + '</td>' +
+                        '<td></td>' +
+                        '<td><a href="https://www.imdb.com/title/' + item['imdb_id'] + '">' + item['original_title'] + '</a></td>' +
+                        '<td>' + item['vote_average'] + '</td>' +
                         '</tr>').join('')
                 var html = '<h2>Top ranked movies from ' + regionName + '</h2>'
-                    + '<table class="superduper">'
-                    + '<tr><th style="text-align:left; padding: 5px 15px 5px 10px;">#</th><th style="text-align:left; padding: 5px 15px 5px 10px;">Title</th><th style="padding: 5px 15px 5px 10px;">Rating</th></tr>'
+                    + '<table class="modal-table">'
+                    + '<tr>'
+                    + '<th>#</th>'
+                    + '<th>Title</th>'
+                    + '<th>Rating</th></tr>'
                     + tableRowsHtml
                     + '</table>';
 
@@ -60,8 +65,8 @@ class Map extends React.Component {
 
     render() {
         return (
-            <div>
-                <div id="mappy" style={{width: '80%', height: 500}}>
+            <div className="main">
+                <div id="mappy">
                     <VectorMap
                             map={'world_mill'}
                             backgroundColor="#a5bfdd"
@@ -88,12 +93,6 @@ class Map extends React.Component {
     }
 }
 
-function Next() {
-  return (
-    <h2>hej</h2>
-  )
-}
-
 function Header() {
   return (
     <Router>
@@ -106,15 +105,11 @@ function Header() {
             <li>
               <Link to="/map/">Map</Link>
             </li>
-            <li>
-              <Link to="/next/">Next</Link>
-            </li>
           </ul>
         </nav>
 
         <Route path="/" exact component={Index} />
         <Route path="/map" exact component={Map} />
-        <Route path="/next/" component={Next} />
       </div>
     </Router>
   )
