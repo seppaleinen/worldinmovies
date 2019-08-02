@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { VectorMap } from "react-jvectormap"
 
 function Index() {
   return (
@@ -9,20 +10,33 @@ function Index() {
     </div>
   )
 }
+const onRegionOver = (event, code) => {
+    console.log(`You're hovering ${code}`)
+};
 
-function Map() {
-  return (
-        <div>
-            <div id="vmap" style={{width: '600px', height: '400px'}}></div>
+const onRegionClick = (event, code) => {
+    console.log(`You have clicked ${code}`)
+};
 
-            <div id="myModal" className="modal">
-                <div className="modal-content">
-                    <span className='close'>&times;</span>
-                    <div id="modal-text"></div>
-                </div>
+
+class Map extends React.Component {
+    render() {
+        return (
+            <div style={{width: 500, height: 500}}>
+                <VectorMap map={'world_mill'}
+                           backgroundColor="#a5bfdd"
+                           ref="map"
+                           containerStyle={{
+                               width: '100%',
+                               height: '100%'
+                           }}
+                           onRegionOver={onRegionOver}
+                           onRegionClick={onRegionClick}
+                           containerClassName="map"
+                />
             </div>
-        </div>
-  );
+        );
+    }
 }
 
 function Next() {

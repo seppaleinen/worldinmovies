@@ -20,88 +20,9 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <link href="%PUBLIC_URL%/jqvmap.min.css" media="screen" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jvectormap/2.0.4/jquery-jvectormap.css" type="text/css" media="screen"/>
 
-    <script type="text/javascript" src="%PUBLIC_URL%/jquery.vmap.min.js"></script>
-    <script type="text/javascript" src="%PUBLIC_URL%/jquery.vmap.world.js" charset="utf-8"></script>
 
-    <script type="text/javascript">
-    $(document).ready(function(){
-        if($('#vmap').length == 0) {}
-        else {
-        jQuery('#vmap').vectorMap({
-            map: 'world_en',
-            backgroundColor: '#a5bfdd',
-            borderColor: '#818181',
-            borderOpacity: 0.25,
-            borderWidth: 1,
-            color: '#f4f3f0',
-            enableZoom: true,
-            hoverColor: '#c9dfaf',
-            hoverOpacity: null,
-            normalizeFunction: 'linear',
-            scaleColors: ['#b6d6ff', '#005ace'],
-            selectedColor: '#c9dfaf',
-            selectedRegions: null,
-            showTooltip: true,
-            onRegionClick: function(element, code, region) {
-                $.get("%REACT_APP_BACKEND_URL%/view/best/" + code.toUpperCase(),
-                    function(data) {
-                        tableRowsHtml = data
-                            .map(item => '<tr><td style="padding: 5px 15px 5px 10px;"></td><td style="padding: 5px 15px 5px 10px;"><a style="font-family: Helvetica; text-decoration: none; " href="https://www.imdb.com/title/' + item['imdb_id'] + '">' + item['original_title'] + '</a></td><td style="padding: 5px 15px 5px 10px;">' + item['vote_average'] + '</td></tr>').join('')
-                        html = '<h2>Top ranked movies from ' + region + '</h2>'
-                            + '<table class="superduper">'
-                            + '<tr><th style="text-align:left; padding: 5px 15px 5px 10px;">#</th><th style="text-align:left; padding: 5px 15px 5px 10px;">Title</th><th style="padding: 5px 15px 5px 10px;">Rating</th></tr>'
-                            + tableRowsHtml
-                            + '</table>'
-                        var modal = document.getElementById("myModal");
-                        var modalText = document.getElementById("modal-text");
-                        modalText.innerHTML = html;
-                        modal.style.display = "block";
-                    }
-                );
-            },
-            onLabelShow: function(event, label, code) {
-                var countryName = label[0].innerHTML;
-                html = '<div>View top ranked movies from ' + countryName + '</div>'
-                label.html(html)
-            }
-        });
-
-        var modal = document.getElementById("myModal");
-
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-
-        function sizeMap() {
-            var containerWidth = $('body').width(),
-                containerHeight = (containerWidth / 1.4);
-
-            $('#vmap').css({
-                'width': containerWidth,
-                'height': containerHeight
-            });
-        }
-
-        sizeMap();
-        $(window).on("resize", sizeMap);
-        $('#vmap').fadeIn().resize();
-        }
-    })
-
-    </script>
     <title>World in Movies</title>
   </head>
   <body>
