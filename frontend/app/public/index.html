@@ -27,6 +27,8 @@
 
     <script type="text/javascript">
     $(document).ready(function(){
+        if($('#vmap').length == 0) {}
+        else {
         jQuery('#vmap').vectorMap({
             map: 'world_en',
             backgroundColor: '#a5bfdd',
@@ -96,6 +98,7 @@
         sizeMap();
         $(window).on("resize", sizeMap);
         $('#vmap').fadeIn().resize();
+        }
     })
 
     </script>
