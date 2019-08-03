@@ -129,6 +129,7 @@ def ratings(request):
 
         curl 'http://localhost:8000/ratings' -X POST -H 'Content-Type: multipart/form-data' -F file=@testdata/ratings.csv
     """
+    print("Receiving stuff")
     if request.method == 'POST':
         if 'file' in request.FILES:
             file = request.FILES['file']
