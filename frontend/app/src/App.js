@@ -3,6 +3,7 @@ import './App.css';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import ProductionCountryMap from './ProductionCountryMap';
 import LanguageBasedMap from './LanguageBasedMap';
+import MyMoviesMap from './MyMoviesMap';
 import FileUpload from './FileUpload';
 
 class Index extends React.Component {
@@ -40,6 +41,7 @@ function Header() {
         <Route path="/map/production-country" exact component={ProductionCountryMap} />
         <Route path="/map/language" exact component={LanguageBasedMap} />
         <Route path="/file" exact component={FileUpload} />
+        <Route path="/map/mine" exact component={MyMoviesMap} />
       </div>
     </Router>
   )
