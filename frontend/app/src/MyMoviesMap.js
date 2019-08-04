@@ -9,19 +9,34 @@ class MyMoviesMap extends React.Component {
         this.state = {
             data: props.data
         }
-
     }
 
     onRegionTipShow = (event, element, code) => {
         element.html("View which movies you've seen from " + element.html());
     };
 
+    generateColors = () => {
+        var colors = {}, key;
+        console.log("asd");
+        for (key in this.refs.map.getMapObject().regions) {
+            var found = this.props.data.found_responses.find(movie => {return movie.country_codes.find(country_code => {return key === country_code;});})
+            var color = (found ? 'green' : 'red');
+            colors[key] = color;
+        }
+        return colors;
+    };
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if(this.props.data !== prevProps.data) {
+            this.refs.map.getMapObject().series.regions[0].setValues(this.generateColors());
+        }
+    }
+
     onRegionClick = (event, code) => {
         var html;
         if (this.props.data === undefined || this.props.data === null || this.props.data.length === 0) {
             html = '<h2>No movies fetched yet</h2>';
         } else {
-            console.log(this.props.data);
             const regionName = this.refs.map.getMapObject().getRegionName(code);
             let rows = this.props.data.found_responses
                 .filter(movie => {
@@ -120,6 +135,7 @@ class MyMoviesMap extends React.Component {
                                 width: '100%',
                                 height: '100%'
                             }}
+                            series={{'regions': [{'attribute': 'fill'}]}}
                             regionStyle={{hover: {fill: '#c9dfaf'}}}
                             onRegionClick={this.onRegionClick}
                             onRegionTipShow={this.onRegionTipShow2}
