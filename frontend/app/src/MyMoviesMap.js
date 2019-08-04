@@ -15,18 +15,22 @@ class MyMoviesMap extends React.Component {
         element.html("View which movies you've seen from " + element.html());
     };
 
+    is_movie_from_country(movie, code) {
+        return movie.country_codes.find(country_code => {return code === country_code;});
+    }
+
     generateColors = () => {
         var colors = {}, key;
-        console.log("asd");
+
         for (key in this.refs.map.getMapObject().regions) {
-            var found = this.props.data.found_responses.find(movie => {return movie.country_codes.find(country_code => {return key === country_code;});})
+            var found = this.props.data.found_responses.find(movie => this.is_movie_from_country(movie, key));
             var color = (found ? 'green' : 'red');
             colors[key] = color;
         }
         return colors;
     };
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate(prevProps) {
         if(this.props.data !== prevProps.data) {
             this.refs.map.getMapObject().series.regions[0].setValues(this.generateColors());
         }
@@ -39,10 +43,9 @@ class MyMoviesMap extends React.Component {
         } else {
             const regionName = this.refs.map.getMapObject().getRegionName(code);
             let rows = this.props.data.found_responses
-                .filter(movie => {
-                    return movie.country_codes.find(country_code => {return country_code === code;});
-                })
+                .filter(movie => this.is_movie_from_country(movie, code))
                 .sort((a, b) => (a.personal_rating > b.personal_rating) ? -1 : 1)
+                .slice(0, 10)
                 .map(item => '<tr>' +
                             '<td></td>' +
                             '<td><a href="https://www.imdb.com/title/' + item['imdb_id'] + '">' + item['title'] + '</a></td>' +
@@ -91,12 +94,12 @@ class MyMoviesMap extends React.Component {
                         console.log(error);
                     });
             } else {
-            html = '<h2>Top ranked movies from ' + regionName + '</h2>'
+            html = '<h2>Your top ranked movies from ' + regionName + '</h2>'
                         + '<table class="modal-table">'
                         + '<tr>'
                         + '<th>#</th>'
                         + '<th>Title</th>'
-                        + '<th>Rating</th></tr>'
+                        + '<th>Your rating</th></tr>'
                         + rows
                         + '</table>';
             }
