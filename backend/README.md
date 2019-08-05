@@ -18,6 +18,12 @@ Basically will be handling
 * Cron-like way of starting imports daily
 * Move import apis behind /admin
 * If import fails, save to separate failure-table with movie-id, exception message, and raw dump
+* Get movie changes
+    - Get list of which movies have been changed between dates
+    - https://api.themoviedb.org/3/movie/changes?api_key=<<api_key>>&end_date=2019-08-01&start_date=2019-08-05&page=1
+* Get countries
+    - Hoped that it would contain languages per country as well. but no.
+    - https://api.themoviedb.org/3/configuration/countries?api_key=<<api_key>>
 * Imdb ratings doesn't get all rows
     - e.g id=337401	title=Mulan	fetched=true imdb_id=tt4566758
         * not released yet, therefore has no ratings on imdb
