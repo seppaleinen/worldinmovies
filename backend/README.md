@@ -18,6 +18,7 @@ Basically will be handling
 * Cron-like way of starting imports daily
 * Move import apis behind /admin
 * If import fails, save to separate failure-table with movie-id, exception message, and raw dump
+* https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/70feba9f-294e-491e-b6eb-56532684c37f
 * Get movie changes
     - Get list of which movies have been changed between dates
     - https://api.themoviedb.org/3/movie/changes?api_key=<<api_key>>&end_date=2019-08-01&start_date=2019-08-05&page=1
