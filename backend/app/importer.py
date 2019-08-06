@@ -254,3 +254,14 @@ def import_imdb_ratings():
         return "Response: %s, %s" % (response.status_code, response.content)
 
 
+def check_which_movies_needs_update():
+    api_key = os.getenv('TMDB_API', 'test')
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
+    start_date=yesterday.strftime("%Y-%m-%d")
+    end_date=datetime.date.today().strftime("%Y-%m-%d")
+    page=1
+    url = "https://api.themoviedb.org/3/movie/changes?api_key={api_key}&start_date={start_date}&end_date={end_date}&page={page}"\
+        .format(api_key=api_key, start_date=start_date, end_date=end_date, page=page)
+    response = requests.get(url, stream=True)
+    if response.status_code == 200:
+        print("Hurra")
