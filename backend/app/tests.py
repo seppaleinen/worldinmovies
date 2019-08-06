@@ -480,6 +480,8 @@ class ImportImdbData(SuperClass):
     def test_import_imdb_data(self):
         movie = Movie(id=19995, original_title='Avatar', popularity=36.213, fetched=True, imdb_id='tt0000001')
         movie.save()
+        Movie(id=1, original_title='1', popularity=36.213, fetched=True, imdb_id='').save()
+        Movie(id=1, original_title='1', popularity=36.213, fetched=True, imdb_id=None)
 
         url = "https://datasets.imdbws.com/title.ratings.tsv.gz"
         with open("testdata/mini_ratings.tsv.gz", 'rb') as img1:

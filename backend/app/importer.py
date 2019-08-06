@@ -230,7 +230,12 @@ def import_imdb_ratings():
         contents = __unzip_file('title.ratings.tsv.gz')
         reader = csv.reader(contents, delimiter='\t')
         # chunks_of_reader_maybe = __chunks(reader, 50)
-        all_imdb_ids = Movie.objects.filter(fetched=True).all().values_list('imdb_id', flat=True)
+        all_imdb_ids = Movie.objects.filter(fetched=True) \
+            .exclude(imdb_id__isnull=True)\
+            .exclude(imdb_id__exact='')\
+            .all()\
+            .values_list('imdb_id', flat=True)
+
         # Multithread this maybe?
         for row in reader:
             tconst = row[0]
