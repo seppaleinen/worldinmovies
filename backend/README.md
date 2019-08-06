@@ -25,15 +25,6 @@ Basically will be handling
 * Get countries
     - Hoped that it would contain languages per country as well. but no.
     - https://api.themoviedb.org/3/configuration/countries?api_key=<<api_key>>
-* Imdb ratings doesn't get all rows
-    - e.g id=337401	title=Mulan	fetched=true imdb_id=tt4566758
-        * not released yet, therefore has no ratings on imdb
-    - e.g id=441595
-        * imdb_id is empty
-    - e.g id=443005
-        * no votes in imdb
-    - e.g id=418548 title="everybody happy" year=2016 imdb_id=tt6038926
-        * imdb_id should be tt4440508
 * Best 10 of each country
 	- additional fields
 		- imdb_id
