@@ -49,6 +49,11 @@ docker-compose kill #To stop the running services
 docker-compose down #To stop and cleanup after running services
 ```
 
-## General design
-![Architecture](worldinmovies-architecture.png)
+## Examples
+#### Top ranked from USA
+![Example of map #1](Top Ranked From US.png)
+#### My top ranked from country
+![Example of map #2](My Top Ranked From SE.png)
+#### How it looks after uploading imdb ratings
+![Example of map #3](Countries Ive Seen Movies From.png)
 
