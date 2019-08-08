@@ -1,0 +1,17 @@
+section {
+    width: 60%;
+    height: 200px;
+    background: aqua;
+    margin: auto;
+    padding: 10px;
+}
+section div#rankedMoviesTable {
+    width: 40%;
+    height: 200px;
+    float: left;
+}
+section div#myMoviesTable {
+    margin-left: 15%;
+    height: 200px;
+    background: black;
+}
