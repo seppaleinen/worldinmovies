@@ -23,25 +23,12 @@ function Header() {
         <nav>
           <ul>
             <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/map/production-country">Map</Link>
-            </li>
-            <li>
-              <Link to="/map/language">Map by language</Link>
-            </li>
-            <li>
-              <Link to="/file">Upload file</Link>
+              <a href="/">Home</a>
             </li>
           </ul>
         </nav>
 
-        <Route path="/" exact component={Index} />
-        <Route path="/map/production-country" exact component={ProductionCountryMap} />
-        <Route path="/map/language" exact component={LanguageBasedMap} />
-        <Route path="/file" exact component={FileUpload} />
-        <Route path="/map/mine" exact component={MyMoviesMap} />
+        <FileUpload/>
       </div>
     </Router>
   )
