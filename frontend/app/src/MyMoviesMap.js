@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+//import './App.css';
 import './MyMoviesMap.css';
 import { VectorMap } from "react-jvectormap"
 import axios from 'axios';
@@ -75,7 +75,6 @@ class MyMoviesMap extends React.Component {
     }
 
     onRegionClick = (event, code) => {
-        var html;
         const regionName = this.refs.map.getMapObject().getRegionName(code);
         axios.get(process.env.REACT_APP_BACKEND_URL + "/view/lang/best/" + code.toUpperCase())
                     .then((response) => {

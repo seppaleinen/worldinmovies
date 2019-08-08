@@ -1,17 +1,108 @@
 section {
-    width: 60%;
-    height: 200px;
-    background: aqua;
+    height: auto;
     margin: auto;
     padding: 10px;
+    display: flex;
 }
+
 section div#rankedMoviesTable {
-    width: 40%;
-    height: 200px;
-    float: left;
+    width: 50%;
+    display: inline-block;
 }
+
 section div#myMoviesTable {
-    margin-left: 15%;
-    height: 200px;
-    background: black;
+    flex-grow: 1;
+    float: right;
+}
+
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-table a:link {
+    color: black;
+}
+
+.modal-table tr td a {
+    font-family: Helvetica;
+    text-decoration: none;
+}
+
+/* visited link */
+.modal-table a:visited {
+    color: black;
+}
+/* selected link */
+.modal-table a:active {
+    color: black;
+}
+.modal-table a:hover {
+    color: darkgreen;
+}
+
+.modal-table tr:nth-child(odd){
+	background: #c9dfaf; /* Green */
+}
+
+.modal-table tr:nth-child(even){
+	background: #a5bfdd; /* Blueish */
+}
+
+.modal-table {
+    counter-reset: rowNumber;
+}
+
+.modal-table tr:not(:first-child) {
+    counter-increment: rowNumber;
+}
+
+.modal-table tr td:first-child::before {
+    content: counter(rowNumber);
+    min-width: 1em;
+    margin-right: 0.5em;
+}
+
+.modal-table tr td {
+    padding: 5px 15px 5px 10px;
+}
+
+.modal-table tr th {
+    text-align:left;
+    padding: 5px 15px 5px 10px;
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #e6f3f7;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 65%;
+    font-family: Helvetica;
+}
+
+/* The Close Button */
+.close {
+    color: #f5d450;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover, .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
 }
