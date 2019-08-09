@@ -1,3 +1,10 @@
+#mappy {
+    width: 90%;
+    height: 90vh;
+    padding: 0;
+    float: right;
+}
+
 section {
     height: auto;
     margin: auto;
@@ -91,6 +98,7 @@ section div#myMoviesTable {
     border: 1px solid #888;
     width: 65%;
     font-family: Helvetica;
+
 }
 
 /* The Close Button */

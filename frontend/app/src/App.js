@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import FileUpload from './FileUpload';
+import Welcome from './Welcome';
 
 function Header() {
   return (
@@ -13,6 +14,7 @@ function Header() {
           </ul>
         </nav>
 
+        <Welcome/>
         <FileUpload/>
       </div>
   )

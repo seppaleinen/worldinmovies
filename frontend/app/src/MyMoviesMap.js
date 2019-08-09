@@ -43,7 +43,7 @@ class MyMoviesMap extends React.Component {
                                 '<td><a href="https://www.imdb.com/title/' + item['imdb_id'] + '">' + item['original_title'] + '</a></td>' +
                                 '<td>' + item['vote_average'] + '</td>' +
                                 '</tr>').join('')
-        return '<div id="rankedMoviesTable"><h2>Hera are some recommendations from ' + regionName + '</h2>'
+        return '<div id="rankedMoviesTable"><h2>Top ranked movies from ' + regionName + '</h2>'
                         + '<table class="modal-table">'
                         + '<tr>'
                         + '<th>#</th>'
