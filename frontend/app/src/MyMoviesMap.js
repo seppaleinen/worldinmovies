@@ -25,7 +25,7 @@ class MyMoviesMap extends React.Component {
 
         for (key in this.refs.map.getMapObject().regions) {
             var found = this.props.data.found_responses.find(movie => this.is_movie_from_country(movie, key));
-            var color = (found ? 'green' : 'red');
+            var color = (found ? '#c9dfaf' /* light green */ : '#F08080' /* light red */);
             colors[key] = color;
         }
         return colors;
