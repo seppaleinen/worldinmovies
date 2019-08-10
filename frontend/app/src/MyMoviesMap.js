@@ -1,6 +1,7 @@
 import React from 'react';
 //import './App.css';
 import './MyMoviesMap.css';
+import FileUpload from './FileUpload';
 import { VectorMap } from "react-jvectormap"
 import axios from 'axios';
 
@@ -12,10 +13,6 @@ class MyMoviesMap extends React.Component {
         }
     }
 
-    onRegionTipShow = (event, element, code) => {
-        element.html("View which movies you've seen from " + element.html());
-    };
-
     is_movie_from_country(movie, code) {
         return movie.country_codes.find(country_code => {return code === country_code;});
     }
@@ -24,15 +21,15 @@ class MyMoviesMap extends React.Component {
         var colors = {}, key;
 
         for (key in this.refs.map.getMapObject().regions) {
-            var found = this.props.data.found_responses.find(movie => this.is_movie_from_country(movie, key));
+            var found = this.state.data.found_responses.find(movie => this.is_movie_from_country(movie, key));
             var color = (found ? '#c9dfaf' /* light green */ : '#F08080' /* light red */);
             colors[key] = color;
         }
         return colors;
     };
 
-    componentDidUpdate(prevProps) {
-        if(this.props.data !== prevProps.data) {
+    componentDidUpdate(prevProps, prevState) {
+        if(this.state.data !== prevState.data) {
             this.refs.map.getMapObject().series.regions[0].setValues(this.generateColors());
         }
     }
@@ -80,8 +77,8 @@ class MyMoviesMap extends React.Component {
                     .then((response) => {
                         var containingSection = '<section id="containingSection">';
                         var html = this.createBestMoviesTable(response.data, regionName);
-                        if(this.props.data !== undefined && this.props.data !== null &&  this.props.data.length !== 0) {
-                            html += this.createMyMoviesTable(this.props.data.found_responses, code, regionName);
+                        if(this.state.data !== undefined && this.state.data !== null &&  this.state.data.length !== 0) {
+                            html += this.createMyMoviesTable(this.state.data.found_responses, code, regionName);
                         }
                         containingSection += html + '</section';
 
@@ -111,9 +108,16 @@ class MyMoviesMap extends React.Component {
 
     };
 
+    changeDataStateCallback = (data) => {
+      this.setState({
+        data: data
+      })
+    }
+
     render() {
         return (
             <div className="main">
+                <FileUpload changeDataStateCallback={this.changeDataStateCallback}/>
                 <div id="mappy">
                     <VectorMap
                             map={'world_mill'}
@@ -126,7 +130,6 @@ class MyMoviesMap extends React.Component {
                             series={{'regions': [{'attribute': 'fill'}]}}
                             regionStyle={{hover: {fill: '#c9dfaf'}}}
                             onRegionClick={this.onRegionClick}
-                            onRegionTipShow={this.onRegionTipShow2}
                             containerClassName="map"
                     />
 

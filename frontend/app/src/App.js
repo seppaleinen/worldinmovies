@@ -1,10 +1,18 @@
 import React from 'react';
 import './App.css';
-import FileUpload from './FileUpload';
 import Welcome from './Welcome';
+import MyMoviesMap from './MyMoviesMap';
 
-function Header() {
-  return (
+class Header extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: props.data
+    }
+  }
+
+  render() {
+    return (
       <div>
         <nav>
           <ul>
@@ -15,9 +23,10 @@ function Header() {
         </nav>
 
         <Welcome/>
-        <FileUpload/>
+        <MyMoviesMap data={this.state.data}/>
       </div>
-  )
+    )
+  }
 }
 
 export default Header;

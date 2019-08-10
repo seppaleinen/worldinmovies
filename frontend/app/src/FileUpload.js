@@ -1,21 +1,18 @@
 import React from 'react';
 import axios from 'axios';
-import MyMoviesMap from './MyMoviesMap';
 import './FileUpload.css';
 
 class FileUpload extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedFile: null,
-            data: null
+            selectedFile: null
         }
     }
 
     onChangeHandler=event=>{
         this.setState({
-            selectedFile: event.target.files[0],
-            loaded: 0,
+            selectedFile: event.target.files[0]
         })
     }
     onClickHandler = () => {
@@ -25,12 +22,7 @@ class FileUpload extends React.Component {
         axios.post(process.env.REACT_APP_BACKEND_URL + "/ratings", data, {})
             .then(res => { // then print response status
                 document.getElementById("loader").style.display = "none";
-                console.log(res.statusText);
-                console.log(res.data);
-                this.movies = res.data;
-                this.setState(state => ({
-                    data: res.data
-                }));
+                this.props.changeDataStateCallback(res.data);
             })
             .catch(function (error) {
                 console.log(error);
@@ -44,7 +36,6 @@ class FileUpload extends React.Component {
                 <br/>
                 <input type="file" name="file" onChange={this.onChangeHandler}/>
                 <button type="button" className="btn btn-success btn-block" onClick={this.onClickHandler}>Upload</button>
-                <MyMoviesMap data={this.state.data}/>
                 <div id="loader">
                     <div className="sk-circle">
                         <div className="sk-circle1 sk-child"></div>
