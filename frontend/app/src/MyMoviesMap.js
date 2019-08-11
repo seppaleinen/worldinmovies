@@ -8,7 +8,8 @@ class MyMoviesMap extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: props.data
+            data: props.data,
+            importModalShow: false
         }
     }
 
@@ -110,6 +111,17 @@ class MyMoviesMap extends React.Component {
     changeDataStateCallback = (data) => {
       this.setState({
         data: data
+      })
+    }
+
+    showModal = () => {
+      this.setState({
+        importModalShow: true
+      })
+    }
+    hideModal = () => {
+      this.setState({
+        importModalShow: false
       })
     }
 

@@ -4,38 +4,35 @@ import './FileUpload.css';
 
 class FileUpload extends React.Component {
     constructor(props) {
-        super(props);
-        this.state = {
-            selectedFile: null
-        }
+      super(props);
     }
 
-    onChangeHandler=event=>{
-        this.setState({
-            selectedFile: event.target.files[0]
-        })
-    }
-    onClickHandler = () => {
+    onChangeHandler = (event) => {
         document.getElementById("loader").style.display = "block";
         const data = new FormData()
-        data.append('file', this.state.selectedFile)
+        data.append('file', event.target.files[0])
         axios.post(process.env.REACT_APP_BACKEND_URL + "/ratings", data, {})
-            .then(res => { // then print response status
-                document.getElementById("loader").style.display = "none";
-                this.props.changeDataStateCallback(res.data);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-
+          .then(res => { // then print response status
+            console.log(res.data);
+            this.props.changeDataStateCallback(res.data);
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
+          .finally(function () {
+            document.getElementById("loader").style.display = "none";
+          });
     }
+
+
     render() {
         return (
             <div className="import">
-                Helloooo
-                <br/>
-                <input type="file" name="file" onChange={this.onChangeHandler}/>
-                <button type="button" className="btn btn-success btn-block" onClick={this.onClickHandler}>Upload</button>
+                <div className="upload-btn-wrapper">
+                  <button className="btn btn-success btn-block">Import IMDB data</button>
+                  <input type="file" name="file" onChange={this.onChangeHandler}/>
+                </div>
+
                 <div id="loader">
                     <div className="sk-circle">
                         <div className="sk-circle1 sk-child"></div>

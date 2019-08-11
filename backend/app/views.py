@@ -158,7 +158,7 @@ def ratings(request):
 
             return JsonResponse({"found_responses":found, "not_found":not_found})
 
-    return HttpResponse("NoCanDo")
+    return HttpResponse("Method: %s, not allowed" % request.method, status=400)
 
 
 # Imports
