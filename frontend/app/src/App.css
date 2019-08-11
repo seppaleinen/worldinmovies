@@ -1,8 +1,17 @@
 html, body {
-    padding-top: 50px;
-    margin: 5px;
+    margin: 0px;
     padding: 0;
+    display: grid;
+    grid-template-areas:
+    'nav'
+    'welcome'
+    'map-container';
 }
+
+nav { grid-area: nav; }
+.welcome { grid-area: welcome; }
+.map-container { grid-area: map-container; }
+
 
 .main {
     padding-top: 50px;
@@ -11,7 +20,6 @@ html, body {
 /* Navbar */
 
 nav ul {
-    position: fixed;
     top: 0;
     width: 100%;
     list-style-type: none;

@@ -31,7 +31,7 @@ class FileUpload extends React.Component {
     }
     render() {
         return (
-            <div className="main">
+            <div className="import">
                 Helloooo
                 <br/>
                 <input type="file" name="file" onChange={this.onChangeHandler}/>

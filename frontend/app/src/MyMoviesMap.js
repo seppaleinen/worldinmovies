@@ -1,5 +1,4 @@
 import React from 'react';
-//import './App.css';
 import './MyMoviesMap.css';
 import FileUpload from './FileUpload';
 import { VectorMap } from "react-jvectormap"
@@ -116,7 +115,7 @@ class MyMoviesMap extends React.Component {
 
     render() {
         return (
-            <div className="main">
+            <div className="map-container inner-map-container">
                 <FileUpload changeDataStateCallback={this.changeDataStateCallback}/>
                 <div id="mappy">
                     <VectorMap
@@ -140,6 +139,7 @@ class MyMoviesMap extends React.Component {
                         </div>
                     </div>
                 </div>
+                <div className="something"/>
             </div>
         );
     }
