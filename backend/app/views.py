@@ -70,21 +70,30 @@ def get_best_movies_by_country(request):
 
 @csrf_exempt
 def get_best_movies_from_country(request, country_code):
+    if request.method != 'GET':
+        return HttpResponse("Method not allowed", status=400)
+    page = int(request.GET.get('page', 0)) * 10
     with connection.cursor() as cursor:
         cursor.execute("""
-            select movie.imdb_id, movie.original_title, movie.release_date, movie.poster_path, movie.vote_average, movie.vote_count from app_movie movie
+            select movie.imdb_id, movie.original_title, movie.release_date, movie.poster_path, movie.vote_average, movie.vote_count, count(*) OVER() as total_count from app_movie movie
 	            inner join app_productioncountries_movies pcm on pcm.movie_id = movie.id
 	            inner join app_productioncountries pc on pc.id = pcm.productioncountries_id
 	            where movie.fetched is True
-	            and pc.iso_3166_1 = '%s'
+	            and pc.iso_3166_1 = '{country_code}'
 	            and movie.vote_count > 5
 	            and movie.vote_average > 0
 	            order by (movie.vote_count / (cast(movie.vote_count as numeric) + 10)) * movie.vote_average + (10 / (cast(movie.vote_count as numeric) + 10)) desc
 	            limit 10
-        """ % country_code)
-        result = []
+	            offset {offset}
+        """.format(country_code=country_code, offset=page))
+        result = {"result": [], "total_result": None}
+        print(result)
         for row in cursor.fetchall():
-            result.append({
+            try:
+                result['total_result'] = row[6]
+            except Exception as e:
+                print("asd" + e)
+            result['result'].append({
                 'imdb_id': row[0],
                 'original_title': row[1],
                 'release_date': row[2],
