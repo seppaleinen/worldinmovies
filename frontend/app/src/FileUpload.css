@@ -2,12 +2,13 @@
   position: relative;
   overflow: hidden;
   display: inline-block;
+  margin-left: 44%;
 }
 
 .btn {
   border: 2px solid gray;
   color: gray;
-  background-color: white;
+  background-color: #f5d450;
   padding: 8px 20px;
   border-radius: 8px;
   font-size: 20px;
@@ -20,6 +21,7 @@
   left: 0;
   top: 0;
   opacity: 0;
+
 }
 
 

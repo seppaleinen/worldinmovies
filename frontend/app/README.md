@@ -15,8 +15,6 @@ Second hand, show you which countries you've seen movies from and from which you
 * Pages
   - Admin
     - Start imports
-  - First page
-  - "Visited" Countries
 
 
 ### Commands
