@@ -4,9 +4,9 @@
 .inner-map-container {
   display: grid;
   grid-template-areas:
-  'import map map map map'
-  'something map map map map'
-  'something map map map map';
+  'import'
+  'map'
+  'map';
 }
 
 #mappy {

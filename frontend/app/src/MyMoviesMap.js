@@ -143,7 +143,11 @@ class MyMoviesMap extends React.Component {
                                 height: '100%'
                             }}
                             series={{'regions': [{'attribute': 'fill'}]}}
-                            regionStyle={{hover: {fill: '#c9dfaf'}}}
+                            regionStyle={{
+                              hover: {fill: '#c9dfaf'},
+                              initial: {fill: '#c9dfaf'}
+                            }}
+                            zoomOnScroll={false}
                             onRegionClick={this.onRegionClick}
                             containerClassName="map"
                     />
@@ -155,7 +159,6 @@ class MyMoviesMap extends React.Component {
                         </div>
                     </div>
                 </div>
-                <div className="something"/>
             </div>
         );
     }
