@@ -22,7 +22,7 @@ class MyMoviesMap extends React.Component {
 
         for (key in this.refs.map.getMapObject().regions) {
             var found = this.state.data.found_responses.find(movie => this.is_movie_from_country(movie, key));
-            var color = (found ? '#c9dfaf' /* light green */ : '#A8A8A8' /* gray */);
+            var color = (found ? 'seen' /* light green */ : 'unseen' /* gray */);
             colors[key] = color;
         }
         return colors;
