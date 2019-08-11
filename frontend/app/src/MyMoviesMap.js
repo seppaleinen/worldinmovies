@@ -22,7 +22,7 @@ class MyMoviesMap extends React.Component {
 
         for (key in this.refs.map.getMapObject().regions) {
             var found = this.state.data.found_responses.find(movie => this.is_movie_from_country(movie, key));
-            var color = (found ? '#c9dfaf' /* light green */ : '#F08080' /* light red */);
+            var color = (found ? '#c9dfaf' /* light green */ : '#A8A8A8' /* gray */);
             colors[key] = color;
         }
         return colors;
@@ -61,7 +61,8 @@ class MyMoviesMap extends React.Component {
                             '<td>' + item['personal_rating'] + '</td>' +
                             '</tr>')
                 .join('')
-        return '<div id="myMoviesTable"><h2>Your top ranked movies from ' + regionName + '</h2>'
+        if(rows.length !== 0) {
+          return '<div id="myMoviesTable"><h2>Your top ranked movies from ' + regionName + '</h2>'
                         + '<table class="modal-table">'
                         + '<tr>'
                         + '<th>#</th>'
@@ -69,6 +70,9 @@ class MyMoviesMap extends React.Component {
                         + '<th>Your rating</th></tr>'
                         + rows
                         + '</table></div>';
+        } else {
+          return '';
+        }
     }
 
     onRegionClick = (event, code) => {
@@ -77,8 +81,8 @@ class MyMoviesMap extends React.Component {
                     .then((response) => {
                         var containingSection = '<section id="containingSection">';
                         var html = this.createBestMoviesTable(response.data, regionName);
-                        if(this.state.data !== undefined && this.state.data !== null &&  this.state.data.length !== 0) {
-                            html += this.createMyMoviesTable(this.state.data.found_responses, code, regionName);
+                        if(this.state.data !== undefined && this.state.data !== null && this.state.data.found_responses.length !== 0) {
+                           html += this.createMyMoviesTable(this.state.data.found_responses, code, regionName);
                         }
                         containingSection += html + '</section';
 
