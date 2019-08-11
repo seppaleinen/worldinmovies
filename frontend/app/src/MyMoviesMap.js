@@ -142,7 +142,13 @@ class MyMoviesMap extends React.Component {
                                 width: '100%',
                                 height: '100%'
                             }}
-                            series={{'regions': [{'attribute': 'fill'}]}}
+                            series={{'regions':
+                              [{
+                                'attribute': 'fill',
+                                scale: {seen: '#c9dfaf', unseen: '#A8A8A8'},
+                                legend: {vertical: true, title: 'Country colors'}
+                              }]
+                            }}
                             regionStyle={{
                               hover: {fill: '#c9dfaf'},
                               initial: {fill: '#c9dfaf'}
