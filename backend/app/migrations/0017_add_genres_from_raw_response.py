@@ -3,17 +3,23 @@ import json, ast
 from django.db import models, migrations, connection, transaction
 
 
+def __chunks(__list, n):
+    """Yield successive n-sized chunks from list."""
+    for i in range(0, len(__list), n):
+        yield __list[i:i + n]
+
+
 def add_genres_from_raw_response(apps, schema_editor):
     Movie = apps.get_model('app', 'Movie')
     Genres = apps.get_model('app', 'Genre')
 
-    for movie in Movie.objects.filter(fetched=True).all():
-        genres_from_movie = ast.literal_eval(movie.raw_response)["genres"]
-        for genre in genres_from_movie:
-            movie.genres.add(Genres.objects.filter(id=genre["id"]).first())
+    for sublist in __chunks(Movie.objects.filter(fetched=True).all(), 10):
         with transaction.atomic():
-            movie.save()
-
+            for movie in sublist:
+                genres_from_movie = ast.literal_eval(movie.raw_response)["genres"]
+                for genre in genres_from_movie:
+                    movie.genres.add(Genres.objects.filter(id=genre["id"]).first())
+                movie.save()
 
 
 class Migration(migrations.Migration):
