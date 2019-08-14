@@ -46,9 +46,9 @@ Basically will be handling
 * To fetch images, prefix with: https://image.tmdb.org/t/p/w500/
 
 * DB Migration Guide
-  1. ```bash docker exec -ti worldinmovies_db_1 pg_dump -U postgres postgres --clean --format=tar --file=/tmp/dbexport.sql.tar```
-  2. Move postgres-data/dbexport.sql.tar to machine where it should be imported
-  3. ```bash docker exec -ti worldinmovies_db_1 psql -U postgres --file=/tmp/dbexport.sql.tar ```
+  1. ```bash docker exec -ti worldinmovies_db_1 pg_dump -U postgres postgres --clean --file=/tmp/dbexport.pgsql ```
+  2. Move postgres-data/dbexport.pgsql to machine where it should be imported
+  3. ```bash docker exec -ti worldinmovies_db_1 psql -U postgres --file=/tmp/dbexport.pgsql ```
 
 
 
