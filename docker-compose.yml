@@ -1,4 +1,4 @@
-version: '3'
+version: '3.3'
 
 services:
   traefik:
@@ -45,7 +45,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=backend"
       - "traefik.docker.network=web"
-      - "traefik.frontend.rule=Host:localhost:backend"
+      - "traefik.frontend.rule=Host:backend.${DOMAIN:-localhost}"
       - "traefik.port=8000"
   webapp:
     image: worldinmovies_webapp
@@ -54,16 +54,14 @@ services:
       - "81:80"
     depends_on:
       - backend
-    expose:
-      - "5000"
     networks:
       - web
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=web"
-      - "traefik.frontend.rule=Host:localhost.frontend"
+      - "traefik.frontend.rule=Host:frontend.localhost"
       - "traefik.backend=webapp"
-      - "traefik.port=5000"
+      - "traefik.port=80"
 volumes:
   pgdata:
 networks:
