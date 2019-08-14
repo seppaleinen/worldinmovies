@@ -1,19 +1,32 @@
 import React from 'react';
 import './App.css';
+import Welcome from './Welcome';
+import MyMoviesMap from './MyMoviesMap';
 
-function App() {
-  return (
-        <div>
-            <div id="vmap" style={{width: '600px', height: '400px'}}></div>
+class Header extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: props.data
+    }
+  }
 
-            <div id="myModal" className="modal">
-                <div className="modal-content">
-                    <span className='close'>&times;</span>
-                    <div id="modal-text"></div>
-                </div>
-            </div>
-        </div>
-  );
+  render() {
+    return (
+      <div>
+        <nav>
+          <ul>
+            <li>
+              <a href="/">Home</a>
+            </li>
+          </ul>
+        </nav>
+
+        <Welcome/>
+        <MyMoviesMap data={this.state.data}/>
+      </div>
+    )
+  }
 }
 
-export default App;
+export default Header;

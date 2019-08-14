@@ -31,10 +31,11 @@ urlpatterns = [
     path('import/tmdb/countries',           views.fetch_countries),
     path('import/tmdb/languages',           views.fetch_languages),
     path('import/imdb/ratings',             views.fetch_imdb_ratings),
-    path('stream_response_test',             views.stream_response_test),
+    path('stream_response_test',            views.stream_response_test),
     url(r'^status$',                        views.import_status, name='import_status'),
     url(r'^ratings$',                       views.ratings, name='ratings'),
     path('view/best',                       views.get_best_movies_by_country),
     path('view/best/<str:country_code>',    views.get_best_movies_from_country),
+    path('view/lang/best/<str:country_code>', views.get_best_movies_from_country_by_language),
     path('', views.index, name='index')
 ]

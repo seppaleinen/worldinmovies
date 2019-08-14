@@ -12,7 +12,6 @@ RUN npm install --silent --production
 
 COPY . /app/
 RUN npm run build
-RUN ls -l /app/
 
 
 FROM nginx:alpine

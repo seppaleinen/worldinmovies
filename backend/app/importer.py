@@ -230,8 +230,13 @@ def import_imdb_ratings():
         contents = __unzip_file('title.ratings.tsv.gz')
         reader = csv.reader(contents, delimiter='\t')
         # chunks_of_reader_maybe = __chunks(reader, 50)
-        all_imdb_ids = Movie.objects.filter(fetched=True).all().values_list('imdb_id', flat=True)
-        #Multithread this maybe?
+        all_imdb_ids = Movie.objects.filter(fetched=True) \
+            .exclude(imdb_id__isnull=True)\
+            .exclude(imdb_id__exact='')\
+            .all()\
+            .values_list('imdb_id', flat=True)
+
+        # Multithread this maybe?
         for row in reader:
             tconst = row[0]
             if tconst in all_imdb_ids:
@@ -247,6 +252,21 @@ def import_imdb_ratings():
                     counter = counter + 1
                 except Exception:
                     pass
+            if counter % 100 == 0:
+                print("Persisted: %s imdb ratings" % counter)
         return "Imported: %s" % counter
+    else:
+        return "Response: %s, %s" % (response.status_code, response.content)
 
 
+def check_which_movies_needs_update():
+    api_key = os.getenv('TMDB_API', 'test')
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
+    start_date=yesterday.strftime("%Y-%m-%d")
+    end_date=datetime.date.today().strftime("%Y-%m-%d")
+    page=1
+    url = "https://api.themoviedb.org/3/movie/changes?api_key={api_key}&start_date={start_date}&end_date={end_date}&page={page}"\
+        .format(api_key=api_key, start_date=start_date, end_date=end_date, page=page)
+    response = requests.get(url, stream=True)
+    if response.status_code == 200:
+        print("Hurra")

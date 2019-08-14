@@ -21,7 +21,6 @@ I've decided against using java, as it's too resource consuming for the basic se
 * Way of verifying memory usage and general performance
 * Travis
 * Create new image, showing overall architecture
-* Create image with example showing map
 
 ## Performance Metrics
 
@@ -51,6 +50,11 @@ docker-compose kill #To stop the running services
 docker-compose down #To stop and cleanup after running services
 ```
 
-## General design
-![Architecture](worldinmovies-architecture.png)
+## Examples
+#### Top ranked from USA
+![Example of map #1](Top Ranked From US.png)
+#### My top ranked from country
+![Example of map #2](My Top Ranked From SE.png)
+#### How it looks after uploading imdb ratings
+![Example of map #3](Countries Ive Seen Movies From.png)
 

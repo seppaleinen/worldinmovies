@@ -18,6 +18,7 @@ services:
     image: postgres:10.5-alpine
     volumes:
       - pgdata:/var/lib/postgresql
+      - ./postgres-data:/tmp/
     ports:
       - "5433:5432"
     networks:

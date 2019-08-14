@@ -9,3 +9,5 @@ django-cors-headers
 # For tests
 responses>=0.10.6
 progressbar2>=3.42.0
+pylint
+pylint-django

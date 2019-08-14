@@ -14,7 +14,6 @@ Cypress is a framework for testing GUI in a easy way.
 * Rest Integration Tests
   - Chai - https://www.chaijs.com
 * Performance Tests
-  - Artillery - https://artillery.io
 
 
 ```bash

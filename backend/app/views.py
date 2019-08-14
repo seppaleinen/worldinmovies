@@ -52,7 +52,7 @@ def get_best_movies_by_country(request):
                                         inner join app_productioncountries pc on pc.id = pcm.productioncountries_id
                                         where pc.iso_3166_1 = country.iso_3166_1
                                         and movie.fetched is true
-                                        and movie.vote_count > 100
+                                        and movie.vote_count > 20
 										and movie.vote_average > 0
                                         order by (movie.vote_count / (cast(movie.vote_count as numeric) + 10)) * movie.vote_average + (10 / (cast(movie.vote_count as numeric) + 10)) desc
                                         limit 10
@@ -70,14 +70,50 @@ def get_best_movies_by_country(request):
 
 @csrf_exempt
 def get_best_movies_from_country(request, country_code):
+    if request.method != 'GET':
+        return HttpResponse("Method not allowed", status=400)
+    page = int(request.GET.get('page', 0)) * 10
     with connection.cursor() as cursor:
         cursor.execute("""
-            select movie.imdb_id, movie.original_title, movie.release_date, movie.poster_path, movie.vote_average from app_movie movie
+            select movie.imdb_id, movie.original_title, movie.release_date, movie.poster_path, movie.vote_average, movie.vote_count, count(*) OVER() as total_count from app_movie movie
+	            inner join app_productioncountries_movies pcm on pcm.movie_id = movie.id
+	            inner join app_productioncountries pc on pc.id = pcm.productioncountries_id
+	            where movie.fetched is True
+	            and pc.iso_3166_1 = '{country_code}'
+	            and movie.vote_count > 5
+	            and movie.vote_average > 0
+	            order by (movie.vote_count / (cast(movie.vote_count as numeric) + 10)) * movie.vote_average + (10 / (cast(movie.vote_count as numeric) + 10)) desc
+	            limit 10
+	            offset {offset}
+        """.format(country_code=country_code, offset=page))
+        result = {"result": [], "total_result": None}
+        print(result)
+        for row in cursor.fetchall():
+            try:
+                result['total_result'] = row[6]
+            except Exception as e:
+                print("asd" + e)
+            result['result'].append({
+                'imdb_id': row[0],
+                'original_title': row[1],
+                'release_date': row[2],
+                'poster_path': row[3],
+                'vote_average': row[4],
+                'vote_count': row[5]
+            })
+        return HttpResponse(simplejson.dumps(result, indent=2 * ' '), content_type='application/json; charset=utf-8')
+
+
+@csrf_exempt
+def get_best_movies_from_country_by_language(request, country_code):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            select movie.imdb_id, movie.original_title, movie.release_date, movie.poster_path, movie.vote_average, movie.vote_count from app_movie movie
 	            inner join app_productioncountries_movies pcm on pcm.movie_id = movie.id
 	            inner join app_productioncountries pc on pc.id = pcm.productioncountries_id
 	            where movie.fetched is True
 	            and pc.iso_3166_1 = '%s'
-	            and movie.vote_count > 100
+	            and movie.vote_count > 5
 	            and movie.vote_average > 0
 	            order by (movie.vote_count / (cast(movie.vote_count as numeric) + 10)) * movie.vote_average + (10 / (cast(movie.vote_count as numeric) + 10)) desc
 	            limit 10
@@ -89,7 +125,8 @@ def get_best_movies_from_country(request, country_code):
                 'original_title': row[1],
                 'release_date': row[2],
                 'poster_path': row[3],
-                'vote_average': row[4]
+                'vote_average': row[4],
+                'vote_count': row[5]
             })
         resp = HttpResponse(simplejson.dumps(result, indent=2 * ' '), content_type='application/json; charset=utf-8')
         resp['ACCESS_CONTROL_ALLOW_ORIGIN'] = "*"
@@ -103,6 +140,7 @@ def ratings(request):
 
         curl 'http://localhost:8000/ratings' -X POST -H 'Content-Type: multipart/form-data' -F file=@testdata/ratings.csv
     """
+    print("Receiving stuff")
     if request.method == 'POST':
         if 'file' in request.FILES:
             file = request.FILES['file']
@@ -131,7 +169,7 @@ def ratings(request):
 
             return JsonResponse({"found_responses":found, "not_found":not_found})
 
-    return HttpResponse("NoCanDo")
+    return HttpResponse("Method: %s, not allowed" % request.method, status=400)
 
 
 # Imports

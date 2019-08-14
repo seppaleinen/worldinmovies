@@ -18,7 +18,13 @@ Basically will be handling
 * Cron-like way of starting imports daily
 * Move import apis behind /admin
 * If import fails, save to separate failure-table with movie-id, exception message, and raw dump
-
+* https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/70feba9f-294e-491e-b6eb-56532684c37f
+* Get movie changes
+    - Get list of which movies have been changed between dates
+    - https://api.themoviedb.org/3/movie/changes?api_key=<<api_key>>&end_date=2019-08-01&start_date=2019-08-05&page=1
+* Get countries
+    - Hoped that it would contain languages per country as well. but no.
+    - https://api.themoviedb.org/3/configuration/countries?api_key=<<api_key>>
 * Best 10 of each country
 	- additional fields
 		- imdb_id
@@ -26,12 +32,6 @@ Basically will be handling
 		- id
 	- look into using other than lateral join, as to make tests work
 	- alternatively, use postgres as test-db with pytest-pgsql or similar
-	- weigh ratings correctly
-		- (WR) = (v ÷ (v+m)) × R + (m ÷ (v+m)) × C where:
-          R = average for the movie (mean) = (Rating)
-          v = number of votes for the movie = (votes)
-          m = minimum votes required to be listed in the Top 250 (currently 25000)
-          C = the mean vote across the whole report (currently 7.0)
 * Search by name
 	- wanted response-fields
 		- imdb_id
@@ -46,19 +46,9 @@ Basically will be handling
 * To fetch images, prefix with: https://image.tmdb.org/t/p/w500/
 
 * DB Migration Guide
-  1. ```bash docker exec -ti containerId /bin/sh ```
-  2. ```bash pg_dump -U username dbname > dbexport.pgsql ```
-  3. logout and ```bash docker copy containerId:/dbexport.pgsql ./dbexport.pgsql ```
-  4. clean target db 
-    - ```sql
-        DROP SCHEMA public CASCADE;
-        CREATE SCHEMA public;
-        GRANT ALL ON SCHEMA public TO postgres;
-        GRANT ALL ON SCHEMA public TO public;
-        ```
-  5. ```bash docker copy dbexport.pgsql containerId:/dbexport.pgsql ```
-  6. ```bash docker exec -ti containerId /bin/sh ```
-  7. ```bash psql -U username dbname < dbexport.pgsql ```
+  1. ```bash docker exec -ti worldinmovies_db_1 pg_dump -U postgres postgres --clean --file=/tmp/dbexport.pgsql ```
+  2. Move postgres-data/dbexport.pgsql to machine where it should be imported
+  3. ```bash docker exec -ti worldinmovies_db_1 psql -U postgres --file=/tmp/dbexport.pgsql ```
 
 
 
@@ -81,17 +71,7 @@ gunicorn --config=gunicorn.config.py settings.wsgi
 # To start server without gunicorn
 ./manage.py runserver
 
+# Lint project
+pylint --load-plugins pylint_django app/ settings/
 
-# Or with docker
-# Build and start servers
-docker-compose up --build -d
-
-# Read logs
-docker-compose logs -f
-
-# Shut down servers
-docker-compose kill
-
-# Shut down servers and delete all data
-docker-compose down
 ```
