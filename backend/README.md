@@ -46,19 +46,9 @@ Basically will be handling
 * To fetch images, prefix with: https://image.tmdb.org/t/p/w500/
 
 * DB Migration Guide
-  1. ```bash docker exec -ti containerId /bin/sh ```
-  2. ```bash pg_dump -U username dbname > dbexport.pgsql ```
-  3. logout and ```bash docker copy containerId:/dbexport.pgsql ./dbexport.pgsql ```
-  4. clean target db 
-    - ```sql
-        DROP SCHEMA public CASCADE;
-        CREATE SCHEMA public;
-        GRANT ALL ON SCHEMA public TO postgres;
-        GRANT ALL ON SCHEMA public TO public;
-        ```
-  5. ```bash docker copy dbexport.pgsql containerId:/dbexport.pgsql ```
-  6. ```bash docker exec -ti containerId /bin/sh ```
-  7. ```bash psql -U username dbname < dbexport.pgsql ```
+  1. ```bash docker exec -ti worldinmovies_db_1 pg_dump -U postgres postgres --clean --format=tar --file=/tmp/dbexport.sql.tar```
+  2. Move postgres-data/dbexport.sql.tar to machine where it should be imported
+  3. ```bash docker exec -ti worldinmovies_db_1 psql -U postgres --file=/tmp/dbexport.sql.tar ```
 
 
 
@@ -84,16 +74,4 @@ gunicorn --config=gunicorn.config.py settings.wsgi
 # Lint project
 pylint --load-plugins pylint_django app/ settings/
 
-# Or with docker
-# Build and start servers
-docker-compose up --build -d
-
-# Read logs
-docker-compose logs -f
-
-# Shut down servers
-docker-compose kill
-
-# Shut down servers and delete all data
-docker-compose down
 ```
