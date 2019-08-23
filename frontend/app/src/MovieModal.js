@@ -76,7 +76,6 @@ var MovieModal = inject("store")(
         span.onclick = function() {
           this.props.store.showMovieModal = false;
           this.setState({rerender: Math.random()});
-          this.props.callback();
         }.bind(this);;
 
         // When the user clicks anywhere outside of the modal, close it

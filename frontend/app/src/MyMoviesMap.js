@@ -13,7 +13,6 @@ var MyMoviesMap = inject("store")(
         super(props);
         this.state = {
             data: props.data,
-            importModalShow: false,
             rerenderModal: Math.random()
         }
     }
@@ -37,9 +36,6 @@ var MyMoviesMap = inject("store")(
         if(this.state.data !== prevState.data) {
             this.refs.map.getMapObject().series.regions[0].setValues(this.generateColors());
         }
-        if(this.state.rerenderModal !== prevState.rerenderModal) {
-          this.setState({rerenderModal: Math.random()});
-        }
     }
 
     onRegionClick = (event, code) => {
@@ -61,17 +57,6 @@ var MyMoviesMap = inject("store")(
     changeDataStateCallback = (data) => {
       this.setState({
         data: data
-      })
-    }
-
-    showModal = () => {
-      this.setState({
-        importModalShow: true
-      })
-    }
-    hideModal = () => {
-      this.setState({
-        importModalShow: false
       })
     }
 
