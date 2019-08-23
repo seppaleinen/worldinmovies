@@ -50,9 +50,9 @@ docker-compose down #To stop and cleanup after running services
 
 ## Examples
 #### Top ranked from USA
-![Example of map #1](Top Ranked From US.png)
+![Example of map #1](TopRankedFromUS.png)
 #### My top ranked from country
-![Example of map #2](My Top Ranked From SE.png)
+![Example of map #2](MyTopRankedFromSE.png)
 #### How it looks after uploading imdb ratings
-![Example of map #3](Countries Ive Seen Movies From.png)
+![Example of map #3](CountriesIveSeenMoviesFrom.png)
 
