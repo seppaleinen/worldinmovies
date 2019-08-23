@@ -27,17 +27,12 @@ var MovieModal = inject("store")(
         }
       }
 
-      is_movie_from_country(movie, code) {
-        return movie.country_codes.find(country_code => {return code === country_code;});
-      }
-
       shouldIRenderMyMovies(){
-        return this.props.store.myMovies !== undefined && this.props.store.myMovies.length !== 0;
+        return this.props.store.myMovies !== undefined && this.props.store.myMovies.length !== 0 && this.props.store.code in this.props.store.myMovies;
       }
 
       renderMyMovies(data) {
-        let rows = data
-          .filter(movie => this.is_movie_from_country(movie, this.props.store.code))
+        let rows = data[this.props.store.code].slice()
           .sort((a, b) => (a.personal_rating > b.personal_rating) ? -1 : 1)
           .slice(0, 10)
           .map(item => (

@@ -17,7 +17,7 @@ var FileUpload = inject("store")(
         axios.post(process.env.REACT_APP_BACKEND_URL + "/ratings", data, {})
           .then(res => { // then print response status
             this.props.changeDataStateCallback(res.data);
-            this.props.store.myMovies = res.data.found_responses;
+            this.props.store.myMovies = res.data.found;
           })
           .catch(function (error) {
             console.log(error);

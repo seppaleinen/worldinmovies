@@ -25,7 +25,7 @@ var MyMoviesMap = inject("store")(
         var colors = {}, key;
 
         for (key in this.refs.map.getMapObject().regions) {
-            var found = this.state.data.found_responses.find(movie => this.is_movie_from_country(movie, key));
+            var found = key in this.state.data.found;
             var color = (found ? 'seen' /* light green */ : 'unseen' /* gray */);
             colors[key] = color;
         }

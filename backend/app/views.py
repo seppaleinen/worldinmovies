@@ -113,28 +113,28 @@ def ratings(request):
             file = request.FILES['file']
             csv_as_dicts = csv.DictReader(file.read().decode('cp1252').splitlines())
             # Const,Your Rating,Date Rated,Title,URL,Title Type,IMDb Rating,Runtime (mins),Year,Genres,Num Votes,Release Date,Directors
-            found = []
-            not_found = []
+            result = {'found': {}, 'not_found': []}
             for i in csv_as_dicts:
                 row_as_json = json.loads(json.dumps(i))
                 try:
                     found_movie = Movie.objects.get(imdb_id=row_as_json['Const'])
-                    found.append({
-                        "title": found_movie.original_title,
-                        "country_codes": [country.iso_3166_1 for country in found_movie.production_countries.all()],
-                        "year": row_as_json['Year'],
-                        "imdb_id": row_as_json['Const'],
-                        "personal_rating": row_as_json['Your Rating'],
-                        "rating": row_as_json['IMDb Rating']
+                    for country in found_movie.production_countries.all():
+                        result['found'].setdefault(country.iso_3166_1, []).append({
+                            "title": found_movie.original_title,
+                            "country_code": country.iso_3166_1,
+                            "year": row_as_json['Year'],
+                            "imdb_id": row_as_json['Const'],
+                            "personal_rating": row_as_json['Your Rating'],
+                            "rating": row_as_json['IMDb Rating']
                         })
                 except Exception as exc:
-                    not_found.append({
+                    result['not_found'].append({
                         "title": row_as_json['Title'],
                         "year": row_as_json['Year'],
                         "imdb_id": row_as_json['Const']
                         })
 
-            return JsonResponse({"found_responses":found, "not_found":not_found})
+            return JsonResponse(result)
 
     return HttpResponse("Method: %s, not allowed" % request.method, status=400)
 
