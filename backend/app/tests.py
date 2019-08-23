@@ -390,22 +390,7 @@ class MapImdbRatingsToWorldinMovies(SuperClass):
         response = self.client.post('/ratings', data=files, format='multipart/form-data')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content.decode('utf-8'),
-                         '{"found_responses": ['
-                            '{'
-                                '"title": "Lord of the Flies", '
-                                '"country_codes": ["US"], '
-                                '"year": "1990", '
-                                '"imdb_id": "tt0100054", '
-                                '"personal_rating": "7", '
-                                '"rating": "6.4"}, '
-                            '{'
-                                '"title": "Misery", '
-                                '"country_codes": ["AU"], '
-                                '"year": "1990", '
-                                '"imdb_id": "tt0100157", '
-                                '"personal_rating": "8", '
-                                '"rating": "7.8"}], '
-                         '"not_found": []}')
+                         '{"found": {"US": [{"title": "Lord of the Flies", "country_code": "US", "year": "1990", "imdb_id": "tt0100054", "personal_rating": "7", "rating": "6.4"}], "AU": [{"title": "Misery", "country_code": "AU", "year": "1990", "imdb_id": "tt0100157", "personal_rating": "8", "rating": "7.8"}]}, "not_found": []}')
 
     def test_convert_imdb_ratings_not_found(self):
         files = {
@@ -415,7 +400,7 @@ class MapImdbRatingsToWorldinMovies(SuperClass):
         response = self.client.post('/ratings', data=files, format='multipart/form-data')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content.decode('utf-8'),
-                         '{"found_responses": [], "not_found": [{"title": "Lord of the Flies", "year": "1990", "imdb_id": "tt0100054"}, {"title": "Misery", "year": "1990", "imdb_id": "tt0100157"}]}')
+                         '{"found": {}, "not_found": [{"title": "Lord of the Flies", "year": "1990", "imdb_id": "tt0100054"}, {"title": "Misery", "year": "1990", "imdb_id": "tt0100157"}]}')
 
     def _test_convert_imdb_ratings_full_dataset(self):
         files = {
@@ -514,3 +499,24 @@ class ImportImdbData(SuperClass):
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
         self.assertEqual(response.content.decode('utf-8'), 'Imported: 0')
+
+
+class CheckTMDBForChanges(SuperClass):
+    @responses.activate
+    def test_1(self):
+        movie = Movie(id=1, original_title='Avatar', popularity=36.213, fetched=True, imdb_id='tt0000001')
+        movie.save()
+        movie = Movie(id=2, original_title='Avatar', popularity=36.213, fetched=True, imdb_id='tt0000001')
+        movie.save()
+
+        url = "https://api.themoviedb.org/3/movie/changes?api_key=test&start_date=2019-01-01&end_date=2019-01-02&page=1"
+        body = '{"results": [{"id": 1,"adult": false},{"id": 2,"adult": false},{"id": 3,"adult": true}],"page": 1,"total_pages": 1,"total_results": 1}'
+        responses.add(responses.GET, url, body=body, status=200, stream=True)
+
+        response = self.client.get('/import/tmdb/changes?start_date=2019-01-01&end_date=2019-01-02')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual("2 movies are set to be updated", response.content.decode('utf-8'))
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, url)
+        self.assertEqual(False, Movie.objects.get(pk=1).fetched)
+        self.assertEqual(False, Movie.objects.get(pk=2).fetched)

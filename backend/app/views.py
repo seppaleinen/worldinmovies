@@ -1,9 +1,9 @@
-import json, csv, simplejson, time
+import json, csv, simplejson, time, datetime
 
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.db import connection
 from app.models import Movie, Genre
-from app.importer import download_files, concurrent_stuff, import_genres, import_countries, import_languages, base_import, import_imdb_ratings
+from app.importer import download_files, concurrent_stuff, import_genres, import_countries, import_languages, base_import, import_imdb_ratings, check_which_movies_needs_update
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -168,3 +168,10 @@ def fetch_languages(request):
 
 def fetch_imdb_ratings(request):
     return HttpResponse(import_imdb_ratings())
+
+
+def check_tmdb_for_changes(request):
+    start_date = request.GET.get('start_date', (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
+    end_date = request.GET.get('end_date', datetime.date.today().strftime("%Y-%m-%d"))
+    amount_to_be_updated = check_which_movies_needs_update(start_date, end_date)
+    return HttpResponse("%s movies are set to be updated" % amount_to_be_updated)
