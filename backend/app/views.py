@@ -43,7 +43,7 @@ def import_status(request):
                                 .format(fetched=fetched, amount=total, percent=percent))
 
 
-def get_best_movies_by_country(request):
+def get_best_movies_from_all_countries(request):
     with connection.cursor() as cursor:
         cursor.execute("""select country.iso_3166_1, original_title, vote_average from app_productioncountries country 
                                 join lateral (
@@ -87,40 +87,9 @@ def get_best_movies_from_country(request, country_code):
 	            offset {offset}
         """.format(country_code=country_code, offset=page))
         result = {"result": [], "total_result": None}
-        print(result)
         for row in cursor.fetchall():
-            try:
-                result['total_result'] = row[6]
-            except Exception as e:
-                print("asd" + e)
+            result['total_result'] = row[6]
             result['result'].append({
-                'imdb_id': row[0],
-                'original_title': row[1],
-                'release_date': row[2],
-                'poster_path': row[3],
-                'vote_average': row[4],
-                'vote_count': row[5]
-            })
-        return HttpResponse(simplejson.dumps(result, indent=2 * ' '), content_type='application/json; charset=utf-8')
-
-
-@csrf_exempt
-def get_best_movies_from_country_by_language(request, country_code):
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            select movie.imdb_id, movie.original_title, movie.release_date, movie.poster_path, movie.vote_average, movie.vote_count from app_movie movie
-	            inner join app_productioncountries_movies pcm on pcm.movie_id = movie.id
-	            inner join app_productioncountries pc on pc.id = pcm.productioncountries_id
-	            where movie.fetched is True
-	            and pc.iso_3166_1 = '%s'
-	            and movie.vote_count > 5
-	            and movie.vote_average > 0
-	            order by (movie.vote_count / (cast(movie.vote_count as numeric) + 10)) * movie.vote_average + (10 / (cast(movie.vote_count as numeric) + 10)) desc
-	            limit 10
-        """ % country_code)
-        result = []
-        for row in cursor.fetchall():
-            result.append({
                 'imdb_id': row[0],
                 'original_title': row[1],
                 'release_date': row[2],

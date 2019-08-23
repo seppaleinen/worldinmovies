@@ -40,10 +40,10 @@ var MyMoviesMap = inject("store")(
 
     onRegionClick = (event, code) => {
         const regionName = this.refs.map.getMapObject().getRegionName(code);
-        this.props.store.showMovieModal = true;
-        axios.get(process.env.REACT_APP_BACKEND_URL + "/view/lang/best/" + code.toUpperCase())
+        axios.get(process.env.REACT_APP_BACKEND_URL + "/view/best/" + code.toUpperCase())
                     .then((response) => {
-                      this.props.store.movies = response.data;
+                      this.props.store.showMovieModal = true;
+                      this.props.store.movies = response.data.result;
                       this.props.store.code = code;
                       this.props.store.regionName = regionName;
                       this.setState({rerenderModal: Math.random()});
