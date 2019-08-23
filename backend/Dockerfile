@@ -18,4 +18,6 @@ ADD . /app
 
 WORKDIR /app
 
-ENTRYPOINT ["/bin/sh", "-c", "python manage.py makemigrations && python manage.py migrate && gunicorn --config=gunicorn.config.py settings.wsgi"]
+RUN python manage.py crontab add
+
+ENTRYPOINT ["/bin/sh", "-c", " crond & python manage.py makemigrations && python manage.py migrate && gunicorn --config=gunicorn.config.py settings.wsgi"]

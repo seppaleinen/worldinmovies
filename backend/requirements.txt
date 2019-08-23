@@ -5,6 +5,7 @@ gunicorn>=19.9.0
 sentry-sdk>=0.10.2
 simplejson
 django-cors-headers
+django-crontab
 
 # For tests
 responses>=0.10.6
