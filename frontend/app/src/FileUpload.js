@@ -1,20 +1,23 @@
 import React from 'react';
 import axios from 'axios';
 import './FileUpload.css';
+import { inject, observer } from "mobx-react";
 
-class FileUpload extends React.Component {
-    constructor(props) {
-      super(props);
-    }
+var FileUpload = inject("store")(
+  observer(
+    class FileUpload extends React.Component {
+      constructor(props) {
+        super(props);
+      }
 
-    onChangeHandler = (event) => {
+      onChangeHandler = (event) => {
         document.getElementById("loader").style.display = "block";
         const data = new FormData()
         data.append('file', event.target.files[0])
         axios.post(process.env.REACT_APP_BACKEND_URL + "/ratings", data, {})
           .then(res => { // then print response status
-            console.log(res.data);
             this.props.changeDataStateCallback(res.data);
+            this.props.store.myMovies = res.data.found_responses;
           })
           .catch(function (error) {
             console.log(error);
@@ -22,10 +25,10 @@ class FileUpload extends React.Component {
           .finally(function () {
             document.getElementById("loader").style.display = "none";
           });
-    }
+      }
 
 
-    render() {
+      render() {
         return (
             <div className="import">
                 <div className="upload-btn-wrapper">
@@ -51,7 +54,9 @@ class FileUpload extends React.Component {
                 </div>
             </div>
         )
+      }
     }
-}
+  )
+)
 
 export default FileUpload;
