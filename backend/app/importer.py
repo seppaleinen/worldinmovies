@@ -41,7 +41,7 @@ def download_files():
         # bulk_create(movies_to_create)
         # for movie in movies_to_update: movie.save()
         # Movie.objects.filter(pk__in=movies_to_delete).delete()
-        for i in contents:
+        for i in __log_progress(contents, "TMDB Daily Export"):
             try:
                 data = json.loads(i)
                 id = data['id']
@@ -134,9 +134,9 @@ def concurrent_stuff():
     length = len(movie_ids)
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         future_to_url = (executor.submit(__fetch_movie_with_id, movie_id, index) for index, movie_id in enumerate(movie_ids))
-        bar = progressbar.ProgressBar(max_value=length, redirect_stdout=True, prefix='Fetching data from TMDB').start()
+        #bar = progressbar.ProgressBar(max_value=length, redirect_stdout=True, prefix='Fetching data from TMDB').start()
         i = 0
-        for future in concurrent.futures.as_completed(future_to_url):
+        for future in __log_progress(concurrent.futures.as_completed(future_to_url), "TMDB Fetch", length=length):
             try:
                 data = future.result()
                 if data is not None:
@@ -156,11 +156,9 @@ def concurrent_stuff():
                         db_movie.production_countries.add(ProductionCountries.objects.get(iso_3166_1=fetch_prod_country['iso_3166_1']))
                     db_movie.save()
                 i+=1
-                bar.update(i)
             except Exception as exc:
                 print("Exception: %s" % exc)
                 return "Failed with exception: %s" % exc
-        bar.finish()
     return "Fetched and saved: %s movies" % length
 
 
@@ -171,7 +169,7 @@ def import_genres():
     response = requests.get(url, stream=True)
     if response.status_code == 200:
         genres_from_json = json.loads(response.content)['genres']
-        for genre in genres_from_json:
+        for genre in __log_progress(genres_from_json, "TMDB Genres"):
             Genre(id=genre['id'], name=genre['name']).save()
         return "Imported: %s genres" % len(genres_from_json)
     else:
@@ -185,7 +183,7 @@ def import_countries():
     response = requests.get(url, stream=True)
     if response.status_code == 200:
         countries_from_json = json.loads(response.content)
-        for country in countries_from_json:
+        for country in __log_progress(countries_from_json, "TMDB Countries"):
             if not ProductionCountries.objects.all().filter(iso_3166_1=country['iso_3166_1']).exists():
                 ProductionCountries.objects.update_or_create(iso_3166_1=country['iso_3166_1'], name=country['english_name'])
         return "Imported: %s countries" % len(countries_from_json)
@@ -200,7 +198,7 @@ def import_languages():
     response = requests.get(url, stream=True)
     if response.status_code == 200:
         languages_from_json = json.loads(response.content)
-        for language in languages_from_json:
+        for language in __log_progress(languages_from_json, "TMDB Languages"):
             spoken_lang = SpokenLanguage.objects.all().filter(iso_639_1=language['iso_639_1']).exists()
             if not spoken_lang:
                 SpokenLanguage(iso_639_1=language['iso_639_1'], name=language['english_name']).save()
@@ -237,7 +235,7 @@ def import_imdb_ratings():
             .values_list('imdb_id', flat=True)
 
         # Multithread this maybe?
-        for row in reader:
+        for row in __log_progress(list(reader), "IMDB Ratings"):
             tconst = row[0]
             if tconst in all_imdb_ids:
                 try:
@@ -272,8 +270,21 @@ def check_which_movies_needs_update(start_date, end_date):
     if response.status_code == 200:
         data = json.loads(response.content)
         count = 0
-        for movie in data['results']:
+        for movie in __log_progress(data['results'], "TMDB Changes"):
             if not movie['adult']:
                 count += 1
                 Movie.objects.filter(pk=movie['id']).update(fetched=False)
         return count
+
+
+def __log_progress(iterable, message, length=None):
+    count = 1
+    percentage = 0
+    total_count = length if length else len(iterable)
+    for i in iterable:
+        temp_perc = int(100 * count / total_count)
+        if percentage != temp_perc:
+            percentage = temp_perc
+            print("{message} data handling in progress - {percentage}%".format(message=message, percentage=percentage))
+        count += 1
+        yield i
