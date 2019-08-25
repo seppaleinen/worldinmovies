@@ -26,5 +26,8 @@ services:
     build: frontend/app/
     ports:
       - "81:80"
+    environment:
+      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
+      - REACT_APP_SENTRY_URL=${SENTRY_URL_FRONTEND}
 volumes:
   pgdata:

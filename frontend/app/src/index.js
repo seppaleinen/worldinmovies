@@ -5,6 +5,12 @@ import App from './App';
 import { Provider } from "mobx-react";
 import Store from "./MobxStore";
 import * as serviceWorker from './serviceWorker';
+import * as Sentry from '@sentry/browser';
+
+const sentryUrl = process.env.REACT_APP_SENTRY_URL;
+if(sentryUrl !== undefined && sentryUrl.length !== 0) {
+  Sentry.init({dsn: sentryUrl});
+}
 
 const stores  = {
   store: new Store()
