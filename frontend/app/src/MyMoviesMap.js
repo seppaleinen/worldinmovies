@@ -2,6 +2,7 @@ import React from 'react';
 import './MyMoviesMap.css';
 import FileUpload from './FileUpload';
 import MovieModal from './MovieModal';
+import Import from './Import';
 import { VectorMap } from "react-jvectormap"
 import axios from 'axios';
 import { inject, observer } from "mobx-react";
@@ -63,7 +64,7 @@ var MyMoviesMap = inject("store")(
     render() {
         return (
             <div className="map-container inner-map-container">
-                <FileUpload changeDataStateCallback={this.changeDataStateCallback}/>
+                <Import changeDataStateCallback={this.changeDataStateCallback}/>
                 <div id="mappy">
                     <VectorMap
                             map={'world_mill'}
