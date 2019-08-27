@@ -277,6 +277,12 @@ def check_which_movies_needs_update(start_date, end_date):
         return count
 
 
+def cron_endpoint_for_checking_updateable_movies():
+    start_date = (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+    end_date = (datetime.date.today()).strftime("%Y-%m-%d")
+    check_which_movies_needs_update(start_date, end_date)
+
+
 def __log_progress(iterable, message, length=None):
     count = 1
     percentage = 0
