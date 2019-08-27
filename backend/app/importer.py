@@ -30,58 +30,32 @@ def download_files():
         with open('movies.json.gz', 'wb') as f:
             f.write(response.content)
 
-        movies = []
-        movies_to_update = []
-        movie_ids_to_delete = []
+        movies_to_add = []
+        tmdb_movie_ids = set()
         contents = __unzip_file('movies.json.gz')
-        # Map<ID, Movie>
-        # List of movies to create
-        # List of movies to update
-        # List of movies to delete (unfetched movies, not in tmdb anymore)
-        # bulk_create(movies_to_create)
-        # for movie in movies_to_update: movie.save()
-        # Movie.objects.filter(pk__in=movies_to_delete).delete()
         for i in __log_progress(contents, "TMDB Daily Export"):
             try:
                 data = json.loads(i)
-                id = data['id']
                 adult = data['adult']
-                original_title = data['original_title']
                 video = data['video']
-                popularity = data['popularity']
                 if video is False and adult is False:
-                    try:
-                        movie = Movie.objects.get(pk=id)
-                        # If data has changed. then update
-                        if movie.popularity != popularity or movie.original_title != original_title:
-                            movie.original_title = original_title
-                            movie.popularity = popularity
-                            movies_to_update.append(movie)
-                    except Exception as exc:
-                        # Film not yet imported
-                        movies.append(Movie(id=id, original_title=original_title, popularity=popularity, fetched=False))
+                    id = data['id']
+                    tmdb_movie_ids.add(id)
+                    if not Movie.objects.filter(pk=id).exists():
+                        movies_to_add.append(Movie(id=id, original_title=data['original_title'], popularity=data['popularity'], fetched=False))
             except Exception as e:
                 print("This line fucked up: %s, because of %s" % (i, e))
         all_unfetched_movie_ids = Movie.objects.filter(fetched=False).all().values_list('id', flat=True)
-        for potential_id_to_delete in all_unfetched_movie_ids:
-            if any(movie.id == potential_id_to_delete for movie in movies):
-                pass
-            elif any(movie.id == potential_id_to_delete for movie in movies_to_update):
-                pass
-            else:
-                movie_ids_to_delete.append(potential_id_to_delete)
-        # Creates all, but crashes as soon as you try to update the list
+        movie_ids_to_delete = (set(all_unfetched_movie_ids).difference(tmdb_movie_ids))
+        print("ASD: %s" % movie_ids_to_delete)
         try:
             print('Persisting stuff - Having this until progressbar actually shows in docker-compose')
-            for chunk in __chunks(movies, 100):
+            for chunk in __chunks(movies_to_add, 100):
                 Movie.objects.bulk_create(chunk)
-            print("Updating movies")
-            for movie_to_update in movies_to_update:
-                movie_to_update.save()
-            print("Deleting movies")
+            print("Deleting unfetched movies not in tmdb anymore")
             for movie_to_delete in movie_ids_to_delete:
                 Movie.objects.get(pk=movie_to_delete).delete()
-            return "Imported: %s new movies, updated: %s, and deleted: %s" % (len(movies), len(movies_to_update), len(movie_ids_to_delete))
+            return "Imported: %s new movies, and deleted: %s" % (len(movies_to_add), len(movie_ids_to_delete))
         except Exception as e:
             print("Error: %s" % e)
             return "Exception: %s" % e

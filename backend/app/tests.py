@@ -3,7 +3,6 @@ import datetime, os, responses, json
 from django.test import TestCase
 from django.db import transaction
 from app.models import Movie, Genre, SpokenLanguage, ProductionCountries
-from decimal import Decimal
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -55,31 +54,7 @@ class ImportTests(SuperClass):
 
         response = self.client.get('/import/tmdb/daily')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content.decode(), 'Imported: 3 new movies, updated: 0, and deleted: 0')
-
-    @responses.activate
-    def test_daily_file_import_update_existing(self):
-        Movie(id=601, original_title='E.T. the Extra-Terrestrial', popularity=0, fetched=False).save()
-        Movie(id=602, original_title='Independence Day', popularity=1, fetched=False).save()
-        Movie(id=603, original_title='The Matrix', popularity=2, fetched=False).save()
-
-        yesterday = datetime.date.today() - datetime.timedelta(days=1)
-        yesterday_formatted = yesterday.strftime("%m_%d_%Y")
-        daily_export_url = "http://files.tmdb.org/p/exports/movie_ids_%s.json.gz" % yesterday_formatted
-        with open('testdata/movie_ids.json.gz', 'rb') as img1:
-            responses.add(
-                responses.GET, daily_export_url,
-                body=img1.read(), status=200,
-                content_type='application/javascript',
-                stream=True
-            )
-
-        response = self.client.get('/import/tmdb/daily')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content.decode('utf-8'), 'Imported: 0 new movies, updated: 3, and deleted: 0')
-        self.assertEqual(Movie.objects.filter(id=601).first().popularity, Decimal('19.634'))
-        self.assertEqual(Movie.objects.filter(id=602).first().popularity, Decimal('20.011'))
-        self.assertEqual(Movie.objects.filter(id=603).first().popularity, Decimal('31.475'))
+        self.assertEqual(response.content.decode(), 'Imported: 3 new movies, and deleted: 0')
 
     @responses.activate
     def test_daily_file_import_delete(self):
@@ -99,7 +74,7 @@ class ImportTests(SuperClass):
 
         response = self.client.get('/import/tmdb/daily')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content.decode('utf-8'), 'Imported: 2 new movies, updated: 1, and deleted: 1')
+        self.assertEqual(response.content.decode('utf-8'), 'Imported: 2 new movies, and deleted: 1')
         self.assertFalse(Movie.objects.filter(pk=604).exists())
 
     @responses.activate
@@ -333,7 +308,7 @@ class FetchBaseData(SuperClass):
         self.assertEqual(responses.calls[1].request.url, genres_url)
         self.assertEqual(responses.calls[2].request.url, countries_url)
         self.assertEqual(responses.calls[3].request.url, languages_url)
-        self.assertContains(response, '"daily_response":"Imported: 3 new movies, updated: 0, and deleted: 0"')
+        self.assertContains(response, '"daily_response":"Imported: 3 new movies, and deleted: 0"')
         self.assertContains(response, '"genres_response":"Imported: 19 genres"')
         self.assertContains(response, '"countries_response":"Imported: 247 countries"')
         self.assertContains(response, '"languages_response":"Imported: 187 languages"')
