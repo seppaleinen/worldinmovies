@@ -9,7 +9,8 @@ var Import = inject("store")(
       constructor(props) {
         super(props);
         this.state = {
-          view: "FIRST"
+          view: "FIRST",
+          rerenderImport: Math.random()
         }
       }
 
@@ -21,11 +22,42 @@ var Import = inject("store")(
         this.setState({view: "TRAKT"})
       }
 
+      componentDidUpdate(prevProps) {
+        if(this.props.rerenderImport !== prevProps.rerenderImport) {
+          this.setState({rerenderImport: this.props.rerenderImport});
+        }
+      }
+
+      componentDidMount() {
+        var modal = document.getElementById("importModal");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementById("importModalClose");
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+          console.log("CLICKY");
+          this.props.store.showImportModal = false;
+          this.setState({rerenderImport: Math.random()});
+        }.bind(this);;
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+          if (event.target === modal) {
+            console.log("CLICKY OUTSIDE!");
+            this.props.store.showImportModal = false;
+            this.setState({rerenderImport: Math.random()});
+          }
+        }.bind(this);
+      }
+
+
       render() {
+        const showModal = this.props.store.showImportModal ? 'block' : 'none';
         switch(this.state.view) {
           case 'FIRST':
             return (
-              <div className="import">
+              <div id="importModal" className="import modal modal-content" style={{display: showModal}}>
+                <span id="importModalClose" className='close'>&times;</span>
                 <div>Import</div>
                 <div>
                   Choose how you want to import your data
@@ -36,13 +68,15 @@ var Import = inject("store")(
             );
           case 'IMDB':
             return (
-              <div className="import">
+              <div id="importModal" className="import modal" style={{display: showModal}}>
+                <span className='close'>&times;</span>
                 <FileUpload changeDataStateCallback={this.props.changeDataStateCallback}/>
               </div>
             );
           case 'TRAKT':
             return (
-              <div className="import">
+              <div id="importModal" className="import modal" style={{display: showModal}}>
+                <span className='close'>&times;</span>
                 <div>auth</div>
               </div>
             );

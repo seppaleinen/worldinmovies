@@ -14,7 +14,8 @@ var MyMoviesMap = inject("store")(
         super(props);
         this.state = {
             data: props.data,
-            rerenderModal: Math.random()
+            rerenderModal: Math.random(),
+            rerenderImportModal: Math.random()
         }
     }
 
@@ -61,10 +62,15 @@ var MyMoviesMap = inject("store")(
       })
     }
 
+    show_import_modal = () => {
+      this.props.store.showImportModal = true;
+    }
+
     render() {
         return (
             <div className="map-container inner-map-container">
-                <Import changeDataStateCallback={this.changeDataStateCallback}/>
+                <button onClick={this.show_import_modal}>Import</button>
+                <Import changeDataStateCallback={this.changeDataStateCallback} rerenderImport={this.state.rerenderImportModal}/>
                 <div id="mappy">
                     <VectorMap
                             map={'world_mill'}
