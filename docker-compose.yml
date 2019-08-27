@@ -13,6 +13,7 @@ services:
     build: backend/
     volumes:
       - ./backend/:/code
+      - ./backend/logs:/tmp/
     ports:
       - "8000:8000"
     depends_on:

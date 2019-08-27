@@ -42,7 +42,7 @@ INSTALLED_APPS = [
 ]
 
 CRONJOBS = [
-    ('0 9 * * *', 'app.importer.check_which_movies_needs_update', '>> /tmp/scheduled_job.log'),
+    ('0 9 * * *', 'app.importer.cron_endpoint_for_checking_updateable_movies', '>> /tmp/scheduled_job.log'),
     ('0 10 * * *', 'app.importer.base_import', '>> /tmp/scheduled_job.log')
 ]
 
