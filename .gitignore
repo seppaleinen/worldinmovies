@@ -14,3 +14,4 @@ backend.log
 .DS_Store
 .idea/
 postgres-data/
+backend/logs/
