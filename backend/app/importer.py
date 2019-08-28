@@ -258,6 +258,7 @@ def cron_endpoint_for_checking_updateable_movies():
 
 
 def __log_progress(iterable, message, length=None):
+    datetime_format = "%Y-%m-%d %H:%M:%S"
     count = 1
     percentage = 0
     total_count = length if length else len(iterable)
@@ -265,6 +266,6 @@ def __log_progress(iterable, message, length=None):
         temp_perc = int(100 * count / total_count)
         if percentage != temp_perc:
             percentage = temp_perc
-            print("{message} data handling in progress - {percentage}%".format(message=message, percentage=percentage))
+            print("{time} - {message} data handling in progress - {percentage}%".format(time=datetime.datetime.now().strftime(datetime_format), message=message, percentage=percentage))
         count += 1
         yield i
