@@ -23,7 +23,7 @@ def download_files():
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     yesterday_formatted = yesterday.strftime("%m_%d_%Y")
     daily_export_url = "http://files.tmdb.org/p/exports/movie_ids_%s.json.gz" % yesterday_formatted
-    response = requests.get(daily_export_url, stream=True)
+    response = requests.get(daily_export_url)
 
     if response.status_code == 200:
         print("Downloading file")
