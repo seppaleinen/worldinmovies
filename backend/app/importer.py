@@ -118,6 +118,7 @@ def concurrent_stuff():
                     db_movie = Movie.objects.get(pk=fetched_movie['id'])
                     db_movie.add_fetched_info(fetched_movie)
                     for fetch_alt_title in fetched_movie['alternative_titles']['titles']:
+                        title = fetch_alt_title['title'] if len(fetch_alt_title['title']) < 500 else (fetch_alt_title['title'][:498] + '..')
                         alt_title = AlternativeTitle(movie_id=db_movie.id,
                                                      iso_3166_1=fetch_alt_title['iso_3166_1'],
                                                      title=fetch_alt_title['title'],
