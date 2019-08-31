@@ -42,7 +42,7 @@ var MyMoviesMap = inject("store")(
 
     onRegionClick = (event, code) => {
         const regionName = this.refs.map.getMapObject().getRegionName(code);
-        axios.get(process.env.REACT_APP_BACKEND_URL + "/view/best/" + code.toUpperCase())
+        axios.get(process.env.REACT_APP_BACKEND_URL + "/view/best/" + code.toUpperCase(), {timeout: 5000})
                     .then((response) => {
                       this.props.store.showMovieModal = true;
                       this.props.store.movies = response.data.result;
