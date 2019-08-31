@@ -9,8 +9,11 @@ export default class Store {
   code = '';
   regionName = '';
 
-  toggleShowMovieModal() {
+  toggleShowMovieModal = () => {
     this.showMovieModal = !this.showMovieModal;
+  }
+  closeImportModal = () => {
+    this.showImportModal = false;
   }
 }
 
@@ -21,5 +24,6 @@ decorate(Store, {
   myMovies: observable,
   regionName: observable,
   code: observable,
-  toggleShowMovieModal: action
+  toggleShowMovieModal: action,
+  closeImportModal: action
 });

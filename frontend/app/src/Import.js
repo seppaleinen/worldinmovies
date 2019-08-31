@@ -26,30 +26,29 @@ var Import = inject("store")(
         if(this.props.rerenderImport !== prevProps.rerenderImport) {
           this.setState({rerenderImport: this.props.rerenderImport});
         }
+        if(this.props.store.showImportModal !== prevProps.store.showImportModal) {
+          this.setState({rerenderImport: this.props.rerenderImport});
+        }
       }
 
       componentDidMount() {
-        var modal = document.getElementById("importModal");
+        var modalDs = document.getElementById("importModal");
 
         // Get the <span> element that closes the modal
-        var span = document.getElementById("importModalClose");
+        var span2 = document.getElementById("importModalClose");
         // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
-          console.log("CLICKY");
-          this.props.store.showImportModal = false;
-          this.setState({rerenderImport: Math.random()});
-        }.bind(this);;
+        span2.onclick = () => {
+          this.props.store.closeImportModal();
+        };
 
         // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-          if (event.target === modal) {
+        window.onclick = (event) => {
+          if (event.target === modalDs) {
             console.log("CLICKY OUTSIDE!");
-            this.props.store.showImportModal = false;
-            this.setState({rerenderImport: Math.random()});
+            this.props.store.closeImportModal();
           }
-        }.bind(this);
+        };
       }
-
 
       render() {
         const showModal = this.props.store.showImportModal ? 'block' : 'none';
@@ -57,7 +56,7 @@ var Import = inject("store")(
           case 'FIRST':
             return (
               <div id="importModal" className="import modal modal-content" style={{display: showModal}}>
-                <span id="importModalClose" className='close'>&times;</span>
+                <span id="importModalClose" className='close' onClick={this.props.store.closeImportModal}>&times;</span>
                 <div>Import</div>
                 <div>
                   Choose how you want to import your data

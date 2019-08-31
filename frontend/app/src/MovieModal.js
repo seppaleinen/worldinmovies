@@ -65,21 +65,21 @@ var MovieModal = inject("store")(
         var modal = document.getElementById("myModal");
 
         // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-
+        var span = document.getElementById("closeMovieModalButton");
         // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
+
+        span.onclick = () => {
           this.props.store.showMovieModal = false;
           this.setState({rerender: Math.random()});
-        }.bind(this);;
+        }
 
         // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
+        window.onclick = (event) => {
           if (event.target === modal) {
             this.props.store.showMovieModal = false;
             this.setState({rerender: Math.random()});
           }
-        }.bind(this);
+        };
       }
 
       render() {
@@ -87,7 +87,7 @@ var MovieModal = inject("store")(
         return (
           <div id="myModal" className="modal" style={{display: showModal}}>
             <div className="modal-content">
-              <span className='close'>&times;</span>
+              <span id="closeMovieModalButton" className='close movieModalClose'>&times;</span>
               <div id="modal-text">
                 <section id="containingSection">
                   <div id="rankedMoviesTable"><h2>Top ranked movies from {this.props.store.regionName}</h2>
