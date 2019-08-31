@@ -25,6 +25,9 @@ var MovieModal = inject("store")(
         if(this.props.rerender !== prevProps.rerender) {
           this.setState({rerender: this.props.rerender});
         }
+        if(this.props.store.showMovieModal !== prevProps.store.showMovieModal) {
+          this.setState({rerender: this.props.rerender});
+        }
       }
 
       shouldIRenderMyMovies(){
@@ -69,17 +72,8 @@ var MovieModal = inject("store")(
         // When the user clicks on <span> (x), close the modal
 
         span.onclick = () => {
-          this.props.store.showMovieModal = false;
-          this.setState({rerender: Math.random()});
+          this.props.store.toggleShowMovieModal();
         }
-
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = (event) => {
-          if (event.target === modal) {
-            this.props.store.showMovieModal = false;
-            this.setState({rerender: Math.random()});
-          }
-        };
       }
 
       render() {

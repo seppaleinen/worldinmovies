@@ -35,18 +35,10 @@ var Import = inject("store")(
         var modalDs = document.getElementById("importModal");
 
         // Get the <span> element that closes the modal
-        var span2 = document.getElementById("importModalClose");
+        var span = document.getElementById("importModalClose");
         // When the user clicks on <span> (x), close the modal
-        span2.onclick = () => {
+        span.onclick = () => {
           this.props.store.closeImportModal();
-        };
-
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = (event) => {
-          if (event.target === modalDs) {
-            console.log("CLICKY OUTSIDE!");
-            this.props.store.closeImportModal();
-          }
         };
       }
 
@@ -55,28 +47,34 @@ var Import = inject("store")(
         switch(this.state.view) {
           case 'FIRST':
             return (
-              <div id="importModal" className="import modal modal-content" style={{display: showModal}}>
-                <span id="importModalClose" className='close' onClick={this.props.store.closeImportModal}>&times;</span>
-                <div>Import</div>
-                <div>
-                  Choose how you want to import your data
+              <div id="importModal"  style={{display: showModal}}>
+                <div className="modal-content">
+                  <span id="importModalClose" className='close' onClick={this.props.store.closeImportModal}>&times;</span>
+                  <div>Import</div>
+                  <div>
+                    Choose how you want to import your data
+                  </div>
+                  <img src="https://cdn-images-1.medium.com/max/1500/1*Ve4N38AmTXhv7RrWba8LLw@2x.png" alt="asd"  onClick={this.change_view_to_trakt}/>
+                  <img src="https://m.media-amazon.com/images/G/01/IMDb/BG_rectangle._CB1509060989_SY230_SX307_AL_.png" alt="sda" onClick={this.change_view_to_imdb}/>
                 </div>
-                <img src="https://cdn-images-1.medium.com/max/1500/1*Ve4N38AmTXhv7RrWba8LLw@2x.png" alt="asd"  onClick={this.change_view_to_trakt}/>
-                <img src="https://m.media-amazon.com/images/G/01/IMDb/BG_rectangle._CB1509060989_SY230_SX307_AL_.png" alt="sda" onClick={this.change_view_to_imdb}/>
               </div>
             );
           case 'IMDB':
             return (
-              <div id="importModal" className="import modal" style={{display: showModal}}>
-                <span className='close'>&times;</span>
-                <FileUpload changeDataStateCallback={this.props.changeDataStateCallback}/>
+              <div id="importModal" className="modal-content" style={{display: showModal}}>
+                <div className="modal-content">
+                  <span className='close'>&times;</span>
+                  <FileUpload changeDataStateCallback={this.props.changeDataStateCallback}/>
+                </div>
               </div>
             );
           case 'TRAKT':
             return (
-              <div id="importModal" className="import modal" style={{display: showModal}}>
-                <span className='close'>&times;</span>
-                <div>auth</div>
+              <div id="importModal" className="modal-content" style={{display: showModal}}>
+                <div className="modal-content">
+                  <span className='close'>&times;</span>
+                  <div>auth</div>
+                </div>
               </div>
             );
         }
