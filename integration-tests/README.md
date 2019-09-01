@@ -17,6 +17,8 @@ Cypress is a framework for testing GUI in a easy way.
 
 
 ```bash
+export CYPRESS_URL=http://localhost:3000
+
 # To run cypress GUI Integration tests
 npm run cypress:run
 ```

@@ -2,7 +2,8 @@
 
 context('Actions', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:81')
+    const url = Cypress.env('URL') !== undefined ? Cypress.env('URL') : "http://localhost:3000"
+    cy.visit(url)
   });
 
   it('Title should be world in movies', () => {
