@@ -32,12 +32,8 @@ var Import = inject("store")(
       }
 
       componentDidMount() {
-        var modalDs = document.getElementById("importModal");
-
-        // Get the <span> element that closes the modal
-        var span = document.getElementById("importModalClose");
         // When the user clicks on <span> (x), close the modal
-        span.onclick = () => {
+        document.getElementById("importModalClose").onclick = () => {
           this.props.store.closeImportModal();
         };
       }
