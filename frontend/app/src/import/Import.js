@@ -2,6 +2,7 @@ import React from 'react';
 import './Import.css';
 import { inject, observer } from "mobx-react";
 import FileUpload from './FileUpload';
+import Trakt from './Trakt';
 
 var Import = inject("store")(
   observer(
@@ -52,15 +53,11 @@ var Import = inject("store")(
             );
           case 'IMDB':
             return (
-              <div>
-                <FileUpload changeDataStateCallback={this.props.changeDataStateCallback}/>
-              </div>
+              <FileUpload changeDataStateCallback={this.props.changeDataStateCallback}/>
             );
           case 'TRAKT':
             return (
-              <div>
-                <div>auth</div>
-              </div>
+              <Trakt />
             );
           default:
             return (

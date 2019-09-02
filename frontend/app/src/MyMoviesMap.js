@@ -1,7 +1,7 @@
 import React from 'react';
 import './MyMoviesMap.css';
 import MovieModal from './MovieModal';
-import Import from './Import';
+import Import from './import/Import';
 import { VectorMap } from "react-jvectormap"
 import axios from 'axios';
 import { inject, observer } from "mobx-react";
