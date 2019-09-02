@@ -9,17 +9,16 @@ var Import = inject("store")(
       constructor(props) {
         super(props);
         this.state = {
-          view: "FIRST",
           rerenderImport: Math.random()
         }
       }
 
       change_view_to_imdb = () => {
-        this.setState({view: "IMDB"})
+        this.props.store.importView = 'IMDB';
       }
 
       change_view_to_trakt = () => {
-        this.setState({view: "TRAKT"})
+        this.props.store.importView = "TRAKT";
       }
 
       componentDidUpdate(prevProps) {
@@ -39,11 +38,10 @@ var Import = inject("store")(
       }
 
       changePage = () => {
-        switch(this.state.view) {
+        switch(this.props.store.importView) {
           case 'FIRST':
             return (
               <div>
-                <span id="importModalClose" className='close' onClick={this.props.store.closeImportModal}>&times;</span>
                 <div>Import</div>
                 <div>
                   Choose how you want to import your data
@@ -55,14 +53,12 @@ var Import = inject("store")(
           case 'IMDB':
             return (
               <div>
-                <span className='close'>&times;</span>
                 <FileUpload changeDataStateCallback={this.props.changeDataStateCallback}/>
               </div>
             );
           case 'TRAKT':
             return (
               <div>
-                <span className='close'>&times;</span>
                 <div>auth</div>
               </div>
             );
@@ -80,6 +76,7 @@ var Import = inject("store")(
         return (
           <div id="importModal"  style={{display: showModal}}>
             <div className="modal-content">
+              <span id="importModalClose" className='close' onClick={this.props.store.closeImportModal}>&times;</span>
               {this.changePage()}
             </div>
           </div>
