@@ -43,12 +43,14 @@ var Import = inject("store")(
           case 'FIRST':
             return (
               <div>
-                <div>Import</div>
-                <div>
+                <div className="mainText">
+                  <h2>Import</h2>
                   Choose how you want to import your data
                 </div>
-                <img src="https://cdn-images-1.medium.com/max/1500/1*Ve4N38AmTXhv7RrWba8LLw@2x.png" alt="asd"  onClick={this.change_view_to_trakt}/>
-                <img src="https://m.media-amazon.com/images/G/01/IMDb/BG_rectangle._CB1509060989_SY230_SX307_AL_.png" alt="sda" onClick={this.change_view_to_imdb}/>
+                <div className="images">
+                  <img className="image" src="https://kodi.tv/sites/default/files/addon_assets/script.trakt/icon/icon.png" alt="Trakt" onClick={this.change_view_to_trakt}/>
+                  <img className="image" src="https://m.media-amazon.com/images/G/01/IMDb/BG_rectangle._CB1509060989_SY230_SX307_AL_.png" alt="IMDB" onClick={this.change_view_to_imdb}/>
+                </div>
               </div>
             );
           case 'IMDB':

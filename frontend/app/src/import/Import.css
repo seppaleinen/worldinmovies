@@ -21,3 +21,16 @@
     width: 65%;
     font-family: Helvetica;
 }
+
+.mainText {
+  text-align: center;
+}
+
+.images {
+  display: flex;
+}
+
+.image {
+  flex: 50%;
+  padding: 5px;
+}
