@@ -6,10 +6,6 @@ import { inject, observer } from "mobx-react";
 var FileUpload = inject("store")(
   observer(
     class FileUpload extends React.Component {
-      constructor(props) {
-        super(props);
-      }
-
       onChangeHandler = (event) => {
         document.getElementById("loader").style.display = "block";
         const data = new FormData()

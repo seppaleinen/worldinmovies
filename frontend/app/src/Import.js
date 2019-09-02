@@ -38,42 +38,52 @@ var Import = inject("store")(
         };
       }
 
-      render() {
-        const showModal = this.props.store.showImportModal ? 'block' : 'none';
+      changePage = () => {
         switch(this.state.view) {
           case 'FIRST':
             return (
-              <div id="importModal"  style={{display: showModal}}>
-                <div className="modal-content">
-                  <span id="importModalClose" className='close' onClick={this.props.store.closeImportModal}>&times;</span>
-                  <div>Import</div>
-                  <div>
-                    Choose how you want to import your data
-                  </div>
-                  <img src="https://cdn-images-1.medium.com/max/1500/1*Ve4N38AmTXhv7RrWba8LLw@2x.png" alt="asd"  onClick={this.change_view_to_trakt}/>
-                  <img src="https://m.media-amazon.com/images/G/01/IMDb/BG_rectangle._CB1509060989_SY230_SX307_AL_.png" alt="sda" onClick={this.change_view_to_imdb}/>
+              <div>
+                <span id="importModalClose" className='close' onClick={this.props.store.closeImportModal}>&times;</span>
+                <div>Import</div>
+                <div>
+                  Choose how you want to import your data
                 </div>
+                <img src="https://cdn-images-1.medium.com/max/1500/1*Ve4N38AmTXhv7RrWba8LLw@2x.png" alt="asd"  onClick={this.change_view_to_trakt}/>
+                <img src="https://m.media-amazon.com/images/G/01/IMDb/BG_rectangle._CB1509060989_SY230_SX307_AL_.png" alt="sda" onClick={this.change_view_to_imdb}/>
               </div>
             );
           case 'IMDB':
             return (
-              <div id="importModal" className="modal-content" style={{display: showModal}}>
-                <div className="modal-content">
-                  <span className='close'>&times;</span>
-                  <FileUpload changeDataStateCallback={this.props.changeDataStateCallback}/>
-                </div>
+              <div>
+                <span className='close'>&times;</span>
+                <FileUpload changeDataStateCallback={this.props.changeDataStateCallback}/>
               </div>
             );
           case 'TRAKT':
             return (
-              <div id="importModal" className="modal-content" style={{display: showModal}}>
-                <div className="modal-content">
-                  <span className='close'>&times;</span>
-                  <div>auth</div>
-                </div>
+              <div>
+                <span className='close'>&times;</span>
+                <div>auth</div>
+              </div>
+            );
+          default:
+            return (
+              <div>
+                Something went wrong here...
               </div>
             );
         }
+      }
+
+      render() {
+        const showModal = this.props.store.showImportModal ? 'block' : 'none';
+        return (
+          <div id="importModal"  style={{display: showModal}}>
+            <div className="modal-content">
+              {this.changePage()}
+            </div>
+          </div>
+        )
       }
     }
   )

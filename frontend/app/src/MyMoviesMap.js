@@ -1,6 +1,5 @@
 import React from 'react';
 import './MyMoviesMap.css';
-import FileUpload from './FileUpload';
 import MovieModal from './MovieModal';
 import Import from './Import';
 import { VectorMap } from "react-jvectormap"
