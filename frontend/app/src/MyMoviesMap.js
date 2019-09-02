@@ -69,14 +69,10 @@ var MyMoviesMap = inject("store")(
       var importModal = document.getElementById("importModal");
       var movieModal = document.getElementById("myModal");
       window.onclick = (event) => {
-        console.log(event.target);
-
         if (event.target === importModal) {
-          console.log("2");
           this.props.store.closeImportModal();
         }
         if (event.target === movieModal) {
-          this.props.store.closeImportModal();
           this.props.store.toggleShowMovieModal();
         }
       };
