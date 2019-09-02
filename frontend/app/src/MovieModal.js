@@ -25,6 +25,9 @@ var MovieModal = inject("store")(
         if(this.props.rerender !== prevProps.rerender) {
           this.setState({rerender: this.props.rerender});
         }
+        if(this.props.store.showMovieModal !== prevProps.store.showMovieModal) {
+          this.setState({rerender: this.props.rerender});
+        }
       }
 
       shouldIRenderMyMovies(){
@@ -62,24 +65,10 @@ var MovieModal = inject("store")(
       }
 
       componentDidMount() {
-        var modal = document.getElementById("myModal");
-
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-
         // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
-          this.props.store.showMovieModal = false;
-          this.setState({rerender: Math.random()});
-        }.bind(this);;
-
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-          if (event.target === modal) {
-            this.props.store.showMovieModal = false;
-            this.setState({rerender: Math.random()});
-          }
-        }.bind(this);
+        document.getElementById("closeMovieModalButton").onclick = () => {
+          this.props.store.toggleShowMovieModal();
+        }
       }
 
       render() {
@@ -87,7 +76,7 @@ var MovieModal = inject("store")(
         return (
           <div id="myModal" className="modal" style={{display: showModal}}>
             <div className="modal-content">
-              <span className='close'>&times;</span>
+              <span id="closeMovieModalButton" className='close movieModalClose'>&times;</span>
               <div id="modal-text">
                 <section id="containingSection">
                   <div id="rankedMoviesTable"><h2>Top ranked movies from {this.props.store.regionName}</h2>

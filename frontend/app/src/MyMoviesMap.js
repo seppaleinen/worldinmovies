@@ -1,7 +1,7 @@
 import React from 'react';
 import './MyMoviesMap.css';
-import FileUpload from './FileUpload';
 import MovieModal from './MovieModal';
+import Import from './import/Import';
 import { VectorMap } from "react-jvectormap"
 import axios from 'axios';
 import { inject, observer } from "mobx-react";
@@ -13,7 +13,8 @@ var MyMoviesMap = inject("store")(
         super(props);
         this.state = {
             data: props.data,
-            rerenderModal: Math.random()
+            rerenderModal: Math.random(),
+            rerenderImportModal: Math.random()
         }
     }
 
@@ -40,7 +41,7 @@ var MyMoviesMap = inject("store")(
 
     onRegionClick = (event, code) => {
         const regionName = this.refs.map.getMapObject().getRegionName(code);
-        axios.get(process.env.REACT_APP_BACKEND_URL + "/view/best/" + code.toUpperCase())
+        axios.get(process.env.REACT_APP_BACKEND_URL + "/view/best/" + code.toUpperCase(), {timeout: 5000})
                     .then((response) => {
                       this.props.store.showMovieModal = true;
                       this.props.store.movies = response.data.result;
@@ -60,10 +61,29 @@ var MyMoviesMap = inject("store")(
       })
     }
 
+    show_import_modal = () => {
+      this.props.store.showImportModal = true;
+    }
+
+    componentDidMount() {
+      var importModal = document.getElementById("importModal");
+      var movieModal = document.getElementById("myModal");
+      window.onclick = (event) => {
+        if (event.target === importModal) {
+          this.props.store.closeImportModal();
+        }
+        if (event.target === movieModal) {
+          this.props.store.toggleShowMovieModal();
+        }
+      };
+
+    }
+
     render() {
         return (
             <div className="map-container inner-map-container">
-                <FileUpload changeDataStateCallback={this.changeDataStateCallback}/>
+                <button onClick={this.show_import_modal}>Import</button>
+                <Import changeDataStateCallback={this.changeDataStateCallback} rerenderImport={this.state.rerenderImportModal}/>
                 <div id="mappy">
                     <VectorMap
                             map={'world_mill'}

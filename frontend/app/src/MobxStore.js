@@ -8,16 +8,26 @@ export default class Store {
   code = '';
   regionName = '';
 
-  toggleShowMovieModal() {
+  showImportModal = false;
+  importView = 'FIRST';
+
+  toggleShowMovieModal = () => {
     this.showMovieModal = !this.showMovieModal;
+  }
+  closeImportModal = () => {
+    this.showImportModal = false;
+    this.importView = 'FIRST';
   }
 }
 
 decorate(Store, {
   showMovieModal: observable,
+  showImportModal: observable,
+  importView: observable,
   movies: observable,
   myMovies: observable,
   regionName: observable,
   code: observable,
-  toggleShowMovieModal: action
+  toggleShowMovieModal: action,
+  closeImportModal: action
 });
