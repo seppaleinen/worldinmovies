@@ -121,7 +121,7 @@ def concurrent_stuff():
                         title = fetch_alt_title['title'] if len(fetch_alt_title['title']) < 500 else (fetch_alt_title['title'][:498] + '..')
                         alt_title = AlternativeTitle(movie_id=db_movie.id,
                                                      iso_3166_1=fetch_alt_title['iso_3166_1'],
-                                                     title=fetch_alt_title['title'],
+                                                     title=title,
                                                      type=fetch_alt_title['type'])
                         alt_title.save()
                         db_movie.alternative_titles.add(alt_title)
