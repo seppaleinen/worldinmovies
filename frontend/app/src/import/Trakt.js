@@ -8,7 +8,7 @@ var Trakt = inject("store")(
       render() {
         return (
           <div>
-            <div>auth</div>
+            <div>There's nothing here yet. But hopefully soon!</div>
           </div>
         )
       }
