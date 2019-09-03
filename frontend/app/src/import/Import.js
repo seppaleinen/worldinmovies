@@ -2,7 +2,7 @@ import React from 'react';
 import './Import.css';
 import { inject, observer } from "mobx-react";
 import FileUpload from './FileUpload';
-import Trakt from './Trakt';
+import TraktComponent from './Trakt';
 
 var Import = inject("store")(
   observer(
@@ -59,7 +59,7 @@ var Import = inject("store")(
             );
           case 'TRAKT':
             return (
-              <Trakt />
+              <TraktComponent />
             );
           default:
             return (
