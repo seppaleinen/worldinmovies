@@ -17,23 +17,20 @@ var TraktComponent = inject("store")(
         };
 
         this.trakt = new Trakt(this.options);
-      }
-
-      authy = (url) => {
         interface TokenPayload {
           exp: number;
           other: string;
           stuff: string;
           username: string;
-        }
-
-        console.log("ASDASD" + url);
-        this.auth = new OAuth2PopupFlow<TokenPayload>({
-          authorizationUri: url,
+        };
+/**
+        const auth = new OAuth2PopupFlow<TokenPayload>({
+          authorizationUri: this.trakt.get_url(),
           clientId: this.options.client_id,
           redirectUri: this.options.redirect_uri,
           scope: 'openid profile',
-        });
+        })
+        **/
       }
 
       onCode = (code) => {
@@ -41,34 +38,10 @@ var TraktComponent = inject("store")(
       }
 
       render() {
-        const traktAuthUrl = this.trakt.get_url();
-        console.log(traktAuthUrl);
-        interface TokenPayload {
-          exp: number;
-          other: string;
-          stuff: string;
-          username: string;
-        }
-
-        console.log("ASDASD" + traktAuthUrl);
-        auth = new OAuth2PopupFlow<TokenPayload>({
-          authorizationUri: traktAuthUrl,
-          clientId: this.options.client_id,
-          redirectUri: this.options.redirect_uri,
-          scope: 'openid profile',
-        });
-        auth.tryLoginPopup().then(result => {
-          if (result === 'ALREADY_LOGGED_IN') {
-            // ...
-          } else if (result === 'POPUP_FAILED') {
-            // ...
-          } else if (result === 'SUCCESS') {
-            // ...
-          }
-        });
 
         return (
-          <div>asd</div>
+          <div>asd
+          </div>
         )
       }
     }
