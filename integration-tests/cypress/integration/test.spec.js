@@ -50,6 +50,7 @@ context('Actions', () => {
     **/
   });
 
+  /**
   it('IMDB Ratings import should color code countries', () => {
     cy.get('button:contains("Import")').click({force:true});
     var importModal = cy.get('#importModal')
@@ -66,10 +67,9 @@ context('Actions', () => {
             el[0].files[0] = blob
             el[0].dispatchEvent(new Event('change', {bubbles: true}))
           });
-    cy.get('path[data-code="SE"]').should('be.colored', '#c9dfaf');
-    cy.get('path[data-code="US"]').should('be.colored', '#A8A8A8');
-
+        cy.get('path[data-code="SE"]').should('be.colored', '#c9dfaf');
+        cy.get('path[data-code="US"]').should('be.colored', '#A8A8A8');
+      })
   })
-
-  })
+  **/
 });

@@ -1,3 +1,4 @@
+language: node_js
 env:
   global:
   - DOCKER_COMPOSE_VERSION=1.24.1
@@ -21,11 +22,16 @@ jobs:
     script:
     - docker-compose pull
     - docker-compose build
+    - docker tag worldinmovies_backend $DOCKER_USERNAME/worldinmovies_backend:beta
+    - docker tag worldinmovies_webapp  $DOCKER_USERNAME/worldinmovies_webapp:beta
   - stage: test frontend
     script:
-    - echo "hej";
-    - exit 1
+    - docker-compose up --build -d
+    - sleep 20
+    - CYPRESS_URL=http://localhost:81 npm --prefix integration-tests/ run cypress:run
   - stage: push docker images
     script:
+    - docker tag worldinmovies_backend $DOCKER_USERNAME/worldinmovies_backend:${TRAVIS_COMMIT::8}
     - docker push seppaleinen/worldinmovies_backend
+    - docker tag worldinmovies_webapp  $DOCKER_USERNAME/worldinmovies_webapp:${TRAVIS_COMMIT::8}
     - docker push seppaleinen/worldinmovies_webapp
