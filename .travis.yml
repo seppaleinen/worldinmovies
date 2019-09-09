@@ -22,16 +22,16 @@ jobs:
     script:
     - docker-compose pull
     - docker-compose build
-    - docker tag worldinmovies_backend $DOCKER_USERNAME/worldinmovies_backend:beta
-    - docker tag worldinmovies_webapp  $DOCKER_USERNAME/worldinmovies_webapp:beta
+    - docker tag $DOCKER_USERNAME/worldinmovies_backend $DOCKER_USERNAME/worldinmovies_backend:beta
+    - docker tag $DOCKER_USERNAME/worldinmovies_webapp  $DOCKER_USERNAME/worldinmovies_webapp:beta
   - stage: test frontend
     script:
-    - docker-compose up --build -d
+    - docker-compose -f docker-compose.yml -f docker-compose.beta.yml up -d
     - sleep 20
     - CYPRESS_URL=http://localhost:81 npm --prefix integration-tests/ run cypress:run
   - stage: push docker images
     script:
-    - docker tag worldinmovies_backend $DOCKER_USERNAME/worldinmovies_backend:${TRAVIS_COMMIT::8}
-    - docker push seppaleinen/worldinmovies_backend
-    - docker tag worldinmovies_webapp  $DOCKER_USERNAME/worldinmovies_webapp:${TRAVIS_COMMIT::8}
-    - docker push seppaleinen/worldinmovies_webapp
+    - docker tag  $DOCKER_USERNAME/worldinmovies_backend $DOCKER_USERNAME/worldinmovies_backend:${TRAVIS_COMMIT::8}
+    - docker push $DOCKER_USERNAME/seppaleinen/worldinmovies_backend
+    - docker tag  $DOCKER_USERNAME/worldinmovies_webapp  $DOCKER_USERNAME/worldinmovies_webapp:${TRAVIS_COMMIT::8}
+    - docker push $DOCKER_USERNAME/seppaleinen/worldinmovies_webapp
