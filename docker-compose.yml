@@ -9,7 +9,7 @@ services:
     ports:
       - "5433:5432"
   backend:
-    image: worldinmovies_backend
+    image: seppaleinen/worldinmovies_backend
     build: backend/
     ports:
       - "8000:8000"
@@ -20,7 +20,7 @@ services:
       - TMDB_API=${TMDB_API}
       - SENTRY_URL=${SENTRY_URL}
   webapp:
-    image: worldinmovies_webapp
+    image: seppaleinen/worldinmovies_webapp
     build: frontend/app/
     ports:
       - "81:80"
