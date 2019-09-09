@@ -1,9 +1,8 @@
 FROM python:3-alpine
 
 RUN \
- apk add --no-cache postgresql-libs && \
- apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev && \
- apk add tzdata
+ apk add --no-cache postgresql-libs tzdata && \
+ apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev
 
 ENV ENVIRONMENT DOCKER
 ENV PYTHONUNBUFFERED 1
@@ -11,9 +10,7 @@ ENV TZ Europe/Stockholm
 
 ADD ./requirements.txt .
 
-RUN pip install --upgrade pip && \
-    pip install --upgrade setuptools && \
-    pip install -r requirements.txt && \
+RUN pip install  --no-cache-dir -r requirements.txt && \
     apk --purge del .build-deps
 
 ADD . /app

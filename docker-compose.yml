@@ -11,8 +11,6 @@ services:
   backend:
     image: worldinmovies_backend
     build: backend/
-    volumes:
-      - ./backend/:/code
     ports:
       - "8000:8000"
     depends_on:
