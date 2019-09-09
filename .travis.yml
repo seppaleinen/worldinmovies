@@ -28,6 +28,7 @@ jobs:
     script:
     - docker-compose -f docker-compose.yml -f docker-compose.beta.yml up -d
     - sleep 20
+    - npm --prefix integration-tests install
     - CYPRESS_URL=http://localhost:81 npm --prefix integration-tests/ run cypress:run
   - stage: push docker images
     script:
