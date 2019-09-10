@@ -22,13 +22,16 @@ before_install:
 jobs:
   include:
   - stage: build docker images
+    name: building backend docker image
     script:
-    - docker-compose pull
-    - docker-compose build
+    - docker-compose pull backend && docker-compose build backend
     - docker tag  $DOCKER_USERNAME/worldinmovies_backend $DOCKER_USERNAME/worldinmovies_backend:beta
     - docker push $DOCKER_USERNAME/worldinmovies_backend
+  - script:
+    - docker-compose pull webapp && docker-compose build webapp
     - docker tag  $DOCKER_USERNAME/worldinmovies_webapp  $DOCKER_USERNAME/worldinmovies_webapp:beta
     - docker push $DOCKER_USERNAME/worldinmovies_webapp
+    name: building webapp docker image
   - stage: test frontend
     script:
     - docker-compose -f docker-compose.yml -f docker-compose.beta.yml pull
