@@ -25,8 +25,10 @@ jobs:
     script:
     - docker-compose pull
     - docker-compose build
-    - docker tag $DOCKER_USERNAME/worldinmovies_backend $DOCKER_USERNAME/worldinmovies_backend:beta
-    - docker tag $DOCKER_USERNAME/worldinmovies_webapp  $DOCKER_USERNAME/worldinmovies_webapp:beta
+    - docker tag  $DOCKER_USERNAME/worldinmovies_backend $DOCKER_USERNAME/worldinmovies_backend:beta
+    - docker push $DOCKER_USERNAME/worldinmovies_backend
+    - docker tag  $DOCKER_USERNAME/worldinmovies_webapp  $DOCKER_USERNAME/worldinmovies_webapp:beta
+    - docker push $DOCKER_USERNAME/worldinmovies_webapp
   - stage: test frontend
     script:
     - docker-compose -f docker-compose.yml -f docker-compose.beta.yml up -d
