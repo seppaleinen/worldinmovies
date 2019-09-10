@@ -6,6 +6,7 @@ sentry-sdk>=0.10.2
 simplejson
 django-cors-headers
 django-crontab
+fuzzywuzzy[speedup]
 
 # For tests
 responses>=0.10.6

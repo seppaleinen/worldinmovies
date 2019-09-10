@@ -14,7 +14,7 @@ var MovieModal = inject("store")(
           data.map(item =>
               <tr key={item['imdb_id']}>
                 <td></td>
-                <td><a href={"https://www.imdb.com/title/" + item['imdb_id']}  target="_blank" rel="noopener noreferrer">{item['original_title']}</a></td>
+                <td><a href={"https://www.imdb.com/title/" + item['imdb_id']}  target="_blank" rel="noopener noreferrer">{item['original_title']}{item['en_title']}</a></td>
                 <td>{item['vote_average']}</td>
               </tr>
           )
