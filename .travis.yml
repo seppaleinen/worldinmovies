@@ -37,7 +37,7 @@ jobs:
     script:
     - docker tag  $DOCKER_USERNAME/worldinmovies_backend:beta $DOCKER_USERNAME/worldinmovies_backend:${TRAVIS_COMMIT::8}
     - docker tag  $DOCKER_USERNAME/worldinmovies_backend:beta $DOCKER_USERNAME/worldinmovies_backend:latest
-    - docker push $DOCKER_USERNAME/seppaleinen/worldinmovies_backend
+    - docker push $DOCKER_USERNAME/worldinmovies_backend
     - docker tag  $DOCKER_USERNAME/worldinmovies_webapp:beta  $DOCKER_USERNAME/worldinmovies_webapp:${TRAVIS_COMMIT::8}
     - docker tag  $DOCKER_USERNAME/worldinmovies_webapp:beta  $DOCKER_USERNAME/worldinmovies_webapp:latest
-    - docker push $DOCKER_USERNAME/seppaleinen/worldinmovies_webapp
+    - docker push $DOCKER_USERNAME/worldinmovies_webapp
