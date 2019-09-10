@@ -31,13 +31,6 @@ var Import = inject("store")(
         }
       }
 
-      componentDidMount() {
-        // When the user clicks on <span> (x), close the modal
-        document.getElementById("importModalClose").onclick = () => {
-          this.props.store.closeImportModal();
-        };
-      }
-
       changePage = () => {
         switch(this.props.store.importView) {
           case 'FIRST':
