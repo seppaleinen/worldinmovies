@@ -175,12 +175,12 @@ LOGGING = {
     },
     'handlers': {
         'gunicorn': {
-            'level': 'INFO',
+            'level': 'WARN',
             'class': 'logging.StreamHandler',
             'formatter': 'standard'
         },
         'console': {
-            'level': 'INFO',
+            'level': 'WARN',
             'class': 'logging.StreamHandler',
             'formatter': 'standard'
         },

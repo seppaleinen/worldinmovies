@@ -1,6 +1,6 @@
 import datetime, os, responses, json
 
-from django.test import TestCase
+from django.test import TransactionTestCase
 from django.db import transaction
 from app.models import Movie, Genre, SpokenLanguage, ProductionCountries
 
@@ -8,7 +8,7 @@ from app.models import Movie, Genre, SpokenLanguage, ProductionCountries
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-class SuperClass(TestCase):
+class SuperClass(TransactionTestCase):
     def setUp(self):
         self._environ = dict(os.environ)
         os.environ['TMDB_API'] = 'test'
@@ -21,8 +21,6 @@ class SuperClass(TestCase):
     def tearDown(self):
         os.environ.clear()
         os.environ.update(self._environ)
-        ProductionCountries.objects.all().delete()
-        SpokenLanguage.objects.all().delete()
 
 
 # Create your tests here.
@@ -438,10 +436,9 @@ class ViewBestFromCountry(SuperClass):
 class ImportImdbData(SuperClass):
     @responses.activate
     def test_import_imdb_data(self):
-        movie = Movie(id=19995, original_title='Avatar', popularity=36.213, fetched=True, imdb_id='tt0000001')
-        movie.save()
+        Movie(id=19995, original_title='Avatar', popularity=36.213, fetched=True, imdb_id='tt0000001').save()
         Movie(id=1, original_title='1', popularity=36.213, fetched=True, imdb_id='').save()
-        Movie(id=1, original_title='1', popularity=36.213, fetched=True, imdb_id=None)
+        Movie(id=1, original_title='1', popularity=36.213, fetched=True, imdb_id=None).save()
 
         url = "https://datasets.imdbws.com/title.ratings.tsv.gz"
         with open("testdata/mini_ratings.tsv.gz", 'rb') as img1:
@@ -479,10 +476,8 @@ class ImportImdbData(SuperClass):
 class CheckTMDBForChanges(SuperClass):
     @responses.activate
     def test_1(self):
-        movie = Movie(id=1, original_title='Avatar', popularity=36.213, fetched=True, imdb_id='tt0000001')
-        movie.save()
-        movie = Movie(id=2, original_title='Avatar', popularity=36.213, fetched=True, imdb_id='tt0000001')
-        movie.save()
+        Movie(id=1, original_title='Avatar', popularity=36.213, fetched=True, imdb_id='tt0000001').save()
+        Movie(id=2, original_title='Avatar', popularity=36.213, fetched=True, imdb_id='tt0000001').save()
 
         url = "https://api.themoviedb.org/3/movie/changes?api_key=test&start_date=2019-01-01&end_date=2019-01-02&page=1"
         body = '{"results": [{"id": 1,"adult": false},{"id": 2,"adult": false},{"id": 3,"adult": true}],"page": 1,"total_pages": 1,"total_results": 1}'
@@ -495,3 +490,25 @@ class CheckTMDBForChanges(SuperClass):
         self.assertEqual(responses.calls[0].request.url, url)
         self.assertEqual(False, Movie.objects.get(pk=1).fetched)
         self.assertEqual(False, Movie.objects.get(pk=2).fetched)
+
+
+class ImportIMDBTitles(SuperClass):
+    @responses.activate
+    def test(self):
+        movie = Movie(id=1, original_title='orig_title', popularity=123.0, fetched=True, imdb_id='tt0000001')
+        movie.save()
+        url = "https://datasets.imdbws.com/title.akas.tsv.gz"
+        with open("testdata/mini_titles.tsv.gz", 'rb') as img1:
+            responses.add(responses.GET,
+                          url,
+                          body=img1.read(), status=200,
+                          content_type='binary/octet-stream',
+                          stream=True
+                          )
+
+        response = self.client.get('/import/imdb/titles')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, url)
+        alt_titles = Movie.objects.get(pk=1).alternative_titles.all()
+        self.assertEqual(3, len(alt_titles))

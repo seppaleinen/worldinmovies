@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.db import connection
 from app.models import Movie, Genre
 from app.importer import download_files, concurrent_stuff, import_genres, import_countries, import_languages, \
-    base_import, import_imdb_ratings, check_which_movies_needs_update
+    base_import, import_imdb_ratings, check_which_movies_needs_update, import_imdb_alt_titles
 from django.views.decorators.csrf import csrf_exempt
 from fuzzywuzzy import fuzz
 
@@ -184,6 +184,10 @@ def fetch_languages(request):
 
 def fetch_imdb_ratings(request):
     return HttpResponse(import_imdb_ratings())
+
+
+def fetch_imdb_titles(request):
+    return HttpResponse(import_imdb_alt_titles())
 
 
 def check_tmdb_for_changes(request):

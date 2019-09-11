@@ -214,10 +214,6 @@ def import_imdb_ratings():
             tconst = row[0]
             if tconst in all_imdb_ids:
                 try:
-                    # map rows into map<tconst, {'vote_average','vote_count}
-                    # create sublists up to 100
-                    # objects.filter(imdb_id__in=list_of_tconst
-                    # Entry.objects.bulk_update(objects, batch_size=50)
                     movie = Movie.objects.get(imdb_id=tconst)
                     movie.imdb_vote_average = row[1]
                     movie.imdb_vote_count = row[2]
@@ -225,11 +221,44 @@ def import_imdb_ratings():
                     counter = counter + 1
                 except Exception:
                     pass
-            if counter % 100 == 0:
-                print("Persisted: %s imdb ratings" % counter)
         return "Imported: %s" % counter
     else:
         return "Response: %s, %s" % (response.status_code, response.content)
+
+
+def import_imdb_alt_titles():
+    """titleId ordering title region language types attributes isOriginalTitle
+    columns of interest: titleId, title, region
+    """
+    print("Dowloading title.akas.tsv.gz")
+    url = 'https://datasets.imdbws.com/title.akas.tsv.gz'
+    response = requests.get(url)
+    with open('title.akas.tsv.gz', 'wb') as f:
+        f.write(response.content)
+    if response.status_code == 200:
+        try:
+            contents = __unzip_file('title.akas.tsv.gz')
+            reader = csv.reader(contents, delimiter='\t')
+            for row in __log_progress(list(reader), "IMDB Titles"):
+                tconst = row[0]
+                print("TCONST: " + tconst)
+                try:
+                    movie = Movie.objects.get(imdb_id=tconst)
+                    title=row[2]
+                    if row[3] is not '\\N' and not any(x['title'] == title for x in movie.alternative_titles.all()):
+                        alt_title = AlternativeTitle(movie_id=movie.id,
+                                             iso_3166_1=row[3],
+                                             title=title,
+                                             type='IMDB')
+                        alt_title.save()
+                        movie.alternative_titles.add(alt_title)
+
+                except Exception as e:
+                    pass
+        except Exception as x:
+            print(x)
+        return 'Imported titles'
+    return "Something went wrong %s" % response.content
 
 
 def check_which_movies_needs_update(start_date, end_date):
