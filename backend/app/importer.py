@@ -1,12 +1,13 @@
 import datetime, \
     requests, \
     json, \
-    progressbar, \
+    sys, \
     gzip, \
     concurrent.futures, \
     os, \
     time, \
     csv
+from django.db import transaction
 from app.models import Movie, SpokenLanguage, AlternativeTitle, ProductionCountries, Genre
 
 
@@ -219,7 +220,7 @@ def import_imdb_ratings():
                     movie.imdb_vote_count = row[2]
                     movie.save()
                     counter = counter + 1
-                except Exception:
+                except Movie.DoesNotExist:
                     pass
         return "Imported: %s" % counter
     else:
@@ -236,27 +237,27 @@ def import_imdb_alt_titles():
     with open('title.akas.tsv.gz', 'wb') as f:
         f.write(response.content)
     if response.status_code == 200:
-        try:
-            contents = __unzip_file('title.akas.tsv.gz')
-            reader = csv.reader(contents, delimiter='\t')
-            for row in __log_progress(list(reader), "IMDB Titles"):
-                tconst = row[0]
-                print("TCONST: " + tconst)
-                try:
-                    movie = Movie.objects.get(imdb_id=tconst)
-                    title=row[2]
-                    if row[3] is not '\\N' and not any(x['title'] == title for x in movie.alternative_titles.all()):
-                        alt_title = AlternativeTitle(movie_id=movie.id,
-                                             iso_3166_1=row[3],
-                                             title=title,
-                                             type='IMDB')
+        contents = __unzip_file('title.akas.tsv.gz')
+        count = len(contents)
+        csv.field_size_limit(sys.maxsize)
+        reader = csv.reader(contents, delimiter='\t', quoting=csv.QUOTE_NONE)
+        print("Processing IMDB Titles")
+        for row in __log_progress(reader, "IMDB Titles", count):
+            tconst = row[0]
+            try:
+                movie = Movie.objects.get(imdb_id=tconst)
+                title=row[2]
+                if row[3] != r'\N' and not movie.alternative_titles.filter(title=title).exists():
+                    alt_title = AlternativeTitle(movie_id=movie.id,
+                                        iso_3166_1=row[3],
+                                        title=title,
+                                        type='IMDB')
+                    with transaction.atomic():
                         alt_title.save()
                         movie.alternative_titles.add(alt_title)
 
-                except Exception as e:
-                    pass
-        except Exception as x:
-            print(x)
+            except Movie.DoesNotExist:
+                pass
         return 'Imported titles'
     return "Something went wrong %s" % response.content
 

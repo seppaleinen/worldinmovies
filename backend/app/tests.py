@@ -1,8 +1,8 @@
-import datetime, os, responses, json
+import datetime, os, responses, json, io, gzip
 
 from django.test import TransactionTestCase
 from django.db import transaction
-from app.models import Movie, Genre, SpokenLanguage, ProductionCountries
+from app.models import Movie, Genre, SpokenLanguage, ProductionCountries, AlternativeTitle
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,6 +22,12 @@ class SuperClass(TransactionTestCase):
         os.environ.clear()
         os.environ.update(self._environ)
 
+
+def __gzip_string(string):
+    out = io.StringIO()
+    with gzip.GzipFile(fileobj=out, mode="w") as f:
+        f.write(string)
+    return out.getvalue()
 
 # Create your tests here.
 class ImportTests(SuperClass):
@@ -494,17 +500,23 @@ class CheckTMDBForChanges(SuperClass):
 
 class ImportIMDBTitles(SuperClass):
     @responses.activate
-    def test(self):
+    def test_normal(self):
         movie = Movie(id=1, original_title='orig_title', popularity=123.0, fetched=True, imdb_id='tt0000001')
         movie.save()
         url = "https://datasets.imdbws.com/title.akas.tsv.gz"
-        with open("testdata/mini_titles.tsv.gz", 'rb') as img1:
-            responses.add(responses.GET,
-                          url,
-                          body=img1.read(), status=200,
-                          content_type='binary/octet-stream',
-                          stream=True
-                          )
+        string = "titleId	ordering	title	region	language	types	attributes	isOriginalTitle\n"
+        string += "tt0000001	1	Carmencita - spanyol tánc	HU	\\N	imdbDisplay	\\N	0\n"
+        string += "tt0000001	2	Καρμενσίτα	GR	\\N	\\N	\\N	0\n"
+        string += "tt0000001	3	Карменсита	RU	\\N	\\N	\\N	0"
+
+        out = gzip.compress(bytes(string, 'utf-8'))
+
+        responses.add(responses.GET,
+                      url,
+                      body=out, status=200,
+                      content_type='binary/octet-stream',
+                      stream=True
+                      )
 
         response = self.client.get('/import/imdb/titles')
         self.assertEqual(response.status_code, 200)
@@ -512,3 +524,31 @@ class ImportIMDBTitles(SuperClass):
         self.assertEqual(responses.calls[0].request.url, url)
         alt_titles = Movie.objects.get(pk=1).alternative_titles.all()
         self.assertEqual(3, len(alt_titles))
+
+
+    @responses.activate
+    def test_(self):
+        movie = Movie(id=1, original_title='orig_title', popularity=123.0, fetched=True, imdb_id='tt0000001')
+        movie.save()
+        url = "https://datasets.imdbws.com/title.akas.tsv.gz"
+
+        string = "titleId	ordering	title	region	language	types	attributes	isOriginalTitle\n"
+        string += "tt0000001	1	Carmencita - spanyol tánc	\\N	\\N	imdbDisplay	\\N	0\n"
+        string += "tt0000001	2	Καρμενσίτα	GR	\\N	\\N	\\N	0\n"
+        string += "tt0000001	3	Карменсита	RU	\\N	\\N	\\N	0"
+
+        out = gzip.compress(bytes(string, 'utf-8'))
+
+        responses.add(responses.GET,
+                    url,
+                    body=out, status=200,
+                    content_type='binary/octet-stream',
+                    stream=True
+                    )
+
+        response = self.client.get('/import/imdb/titles')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, url)
+        alt_titles = Movie.objects.get(pk=1).alternative_titles.all()
+        self.assertEqual(2, len(alt_titles))
