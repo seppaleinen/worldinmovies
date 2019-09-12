@@ -493,7 +493,7 @@ class CheckTMDBForChanges(SuperClass):
     @responses.activate
     def test_1(self):
         Movie(id=1, original_title='Avatar', popularity=36.213, fetched=True, imdb_id='tt0000001').save()
-        Movie(id=2, original_title='Avatar', popularity=36.213, fetched=True, imdb_id='tt0000001').save()
+        Movie(id=2, original_title='Avatar', popularity=36.213, fetched=True, imdb_id='tt0000002').save()
 
         url = "https://api.themoviedb.org/3/movie/changes?api_key=test&start_date=2019-01-01&end_date=2019-01-02&page=1"
         body = '{"results": [{"id": 1,"adult": false},{"id": 2,"adult": false},{"id": 3,"adult": true}],"page": 1,"total_pages": 1,"total_results": 1}'
