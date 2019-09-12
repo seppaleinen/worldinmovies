@@ -4,7 +4,6 @@ from django.test import TransactionTestCase
 from django.db import transaction
 from app.models import Movie, Genre, SpokenLanguage, ProductionCountries, AlternativeTitle
 
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -28,6 +27,7 @@ def __gzip_string(string):
     with gzip.GzipFile(fileobj=out, mode="w") as f:
         f.write(string)
     return out.getvalue()
+
 
 # Create your tests here.
 class ImportTests(SuperClass):
@@ -345,20 +345,20 @@ class ViewData(SuperClass):
 class MapImdbRatingsToWorldinMovies(SuperClass):
     def test_convert_imdb_ratings(self):
         flies = Movie(id=1,
-              original_title="Lord of the Flies",
-              popularity=0.0,
-              fetched=True,
-              imdb_id='tt0100054',
-              vote_average=0)
+                      original_title="Lord of the Flies",
+                      popularity=0.0,
+                      fetched=True,
+                      imdb_id='tt0100054',
+                      vote_average=0)
         flies.save()
         flies.production_countries.add(ProductionCountries.objects.get(iso_3166_1='US'))
 
         misery = Movie(id=2,
-              original_title="Misery",
-              popularity=0.0,
-              fetched=True,
-              imdb_id='tt0100157',
-              vote_average=0)
+                       original_title="Misery",
+                       popularity=0.0,
+                       fetched=True,
+                       imdb_id='tt0100157',
+                       vote_average=0)
         misery.save()
         misery.production_countries.add(ProductionCountries.objects.get(iso_3166_1='AU'))
 
@@ -414,28 +414,38 @@ class ViewBestFromCountry(SuperClass):
         response = self.client.get('/view/best/US')
         json_response = response.content.decode('utf-8')
         self.assertEqual(response.status_code, 200)
-        #self.assertJSONEqual(json_response[0], {"imdb_id": "imdb_id19", "original_title": "title19", "release_date": "2019-01-19", "poster_path": "/path19", "vote_average": 19})
-        #self.assertJSONEqual(json_response[1], {"imdb_id": "imdb_id18", "original_title": "title18", "release_date": "2019-01-18", "poster_path": "/path18", "vote_average": 18})
-        #self.assertJSONEqual(json_response[2], {"imdb_id": "imdb_id17", "original_title": "title17", "release_date": "2019-01-17", "poster_path": "/path17", "vote_average": 17})
-        #self.assertJSONEqual(json_response[3], {"imdb_id": "imdb_id16", "original_title": "title16", "release_date": "2019-01-16", "poster_path": "/path16", "vote_average": 16})
-        #self.assertJSONEqual(json_response[4], {"imdb_id": "imdb_id15", "original_title": "title15", "release_date": "2019-01-15", "poster_path": "/path15", "vote_average": 15})
-        #self.assertJSONEqual(json_response[5], {"imdb_id": "imdb_id14", "original_title": "title14", "release_date": "2019-01-14", "poster_path": "/path14", "vote_average": 14})
-        #self.assertJSONEqual(json_response[6], {"imdb_id": "imdb_id13", "original_title": "title13", "release_date": "2019-01-13", "poster_path": "/path13", "vote_average": 13})
-        #self.assertJSONEqual(json_response[7], {"imdb_id": "imdb_id12", "original_title": "title12", "release_date": "2019-01-12", "poster_path": "/path12", "vote_average": 12})
-        #self.assertJSONEqual(json_response[8], {"imdb_id": "imdb_id11", "original_title": "title11", "release_date": "2019-01-11", "poster_path": "/path11", "vote_average": 11})
-        #self.assertJSONEqual(json_response[9], {"imdb_id": "imdb_id10", "original_title": "title10", "release_date": "2019-01-10", "poster_path": "/path10", "vote_average": 10})
+        # self.assertJSONEqual(json_response[0], {"imdb_id": "imdb_id19", "original_title": "title19", "release_date": "2019-01-19", "poster_path": "/path19", "vote_average": 19})
+        # self.assertJSONEqual(json_response[1], {"imdb_id": "imdb_id18", "original_title": "title18", "release_date": "2019-01-18", "poster_path": "/path18", "vote_average": 18})
+        # self.assertJSONEqual(json_response[2], {"imdb_id": "imdb_id17", "original_title": "title17", "release_date": "2019-01-17", "poster_path": "/path17", "vote_average": 17})
+        # self.assertJSONEqual(json_response[3], {"imdb_id": "imdb_id16", "original_title": "title16", "release_date": "2019-01-16", "poster_path": "/path16", "vote_average": 16})
+        # self.assertJSONEqual(json_response[4], {"imdb_id": "imdb_id15", "original_title": "title15", "release_date": "2019-01-15", "poster_path": "/path15", "vote_average": 15})
+        # self.assertJSONEqual(json_response[5], {"imdb_id": "imdb_id14", "original_title": "title14", "release_date": "2019-01-14", "poster_path": "/path14", "vote_average": 14})
+        # self.assertJSONEqual(json_response[6], {"imdb_id": "imdb_id13", "original_title": "title13", "release_date": "2019-01-13", "poster_path": "/path13", "vote_average": 13})
+        # self.assertJSONEqual(json_response[7], {"imdb_id": "imdb_id12", "original_title": "title12", "release_date": "2019-01-12", "poster_path": "/path12", "vote_average": 12})
+        # self.assertJSONEqual(json_response[8], {"imdb_id": "imdb_id11", "original_title": "title11", "release_date": "2019-01-11", "poster_path": "/path11", "vote_average": 11})
+        # self.assertJSONEqual(json_response[9], {"imdb_id": "imdb_id10", "original_title": "title10", "release_date": "2019-01-10", "poster_path": "/path10", "vote_average": 10})
         self.assertJSONEqual(json_response,
                              [
-                                 {"imdb_id": "imdb_id19", "original_title": "titlö19", "release_date": "2019-01-19", "poster_path": "/path19", "vote_average": 19.1, "vote_count": 20},
-                                 {"imdb_id": "imdb_id18", "original_title": "titlö18", "release_date": "2019-01-18", "poster_path": "/path18", "vote_average": 18.1, "vote_count": 20},
-                                 {"imdb_id": "imdb_id17", "original_title": "titlö17", "release_date": "2019-01-17", "poster_path": "/path17", "vote_average": 17.1, "vote_count": 20},
-                                 {"imdb_id": "imdb_id16", "original_title": "titlö16", "release_date": "2019-01-16", "poster_path": "/path16", "vote_average": 16.1, "vote_count": 20},
-                                 {"imdb_id": "imdb_id15", "original_title": "titlö15", "release_date": "2019-01-15", "poster_path": "/path15", "vote_average": 15.1, "vote_count": 20},
-                                 {"imdb_id": "imdb_id14", "original_title": "titlö14", "release_date": "2019-01-14", "poster_path": "/path14", "vote_average": 14.1, "vote_count": 20},
-                                 {"imdb_id": "imdb_id13", "original_title": "titlö13", "release_date": "2019-01-13", "poster_path": "/path13", "vote_average": 13.1, "vote_count": 20},
-                                 {"imdb_id": "imdb_id12", "original_title": "titlö12", "release_date": "2019-01-12", "poster_path": "/path12", "vote_average": 12.1, "vote_count": 20},
-                                 {"imdb_id": "imdb_id11", "original_title": "titlö11", "release_date": "2019-01-11", "poster_path": "/path11", "vote_average": 11.1, "vote_count": 20},
-                                 {"imdb_id": "imdb_id10", "original_title": "titlö10", "release_date": "2019-01-10", "poster_path": "/path10", "vote_average": 10.1, "vote_count": 20}
+                                 {"imdb_id": "imdb_id19", "original_title": "titlö19", "release_date": "2019-01-19",
+                                  "poster_path": "/path19", "vote_average": 19.1, "vote_count": 20},
+                                 {"imdb_id": "imdb_id18", "original_title": "titlö18", "release_date": "2019-01-18",
+                                  "poster_path": "/path18", "vote_average": 18.1, "vote_count": 20},
+                                 {"imdb_id": "imdb_id17", "original_title": "titlö17", "release_date": "2019-01-17",
+                                  "poster_path": "/path17", "vote_average": 17.1, "vote_count": 20},
+                                 {"imdb_id": "imdb_id16", "original_title": "titlö16", "release_date": "2019-01-16",
+                                  "poster_path": "/path16", "vote_average": 16.1, "vote_count": 20},
+                                 {"imdb_id": "imdb_id15", "original_title": "titlö15", "release_date": "2019-01-15",
+                                  "poster_path": "/path15", "vote_average": 15.1, "vote_count": 20},
+                                 {"imdb_id": "imdb_id14", "original_title": "titlö14", "release_date": "2019-01-14",
+                                  "poster_path": "/path14", "vote_average": 14.1, "vote_count": 20},
+                                 {"imdb_id": "imdb_id13", "original_title": "titlö13", "release_date": "2019-01-13",
+                                  "poster_path": "/path13", "vote_average": 13.1, "vote_count": 20},
+                                 {"imdb_id": "imdb_id12", "original_title": "titlö12", "release_date": "2019-01-12",
+                                  "poster_path": "/path12", "vote_average": 12.1, "vote_count": 20},
+                                 {"imdb_id": "imdb_id11", "original_title": "titlö11", "release_date": "2019-01-11",
+                                  "poster_path": "/path11", "vote_average": 11.1, "vote_count": 20},
+                                 {"imdb_id": "imdb_id10", "original_title": "titlö10", "release_date": "2019-01-10",
+                                  "poster_path": "/path10", "vote_average": 10.1, "vote_count": 20}
                              ])
 
 
@@ -525,9 +535,8 @@ class ImportIMDBTitles(SuperClass):
         alt_titles = Movie.objects.get(pk=1).alternative_titles.all()
         self.assertEqual(3, len(alt_titles))
 
-
     @responses.activate
-    def test_(self):
+    def test_filter_on_empty_region(self):
         movie = Movie(id=1, original_title='orig_title', popularity=123.0, fetched=True, imdb_id='tt0000001')
         movie.save()
         url = "https://datasets.imdbws.com/title.akas.tsv.gz"
@@ -540,11 +549,11 @@ class ImportIMDBTitles(SuperClass):
         out = gzip.compress(bytes(string, 'utf-8'))
 
         responses.add(responses.GET,
-                    url,
-                    body=out, status=200,
-                    content_type='binary/octet-stream',
-                    stream=True
-                    )
+                      url,
+                      body=out, status=200,
+                      content_type='binary/octet-stream',
+                      stream=True
+                      )
 
         response = self.client.get('/import/imdb/titles')
         self.assertEqual(response.status_code, 200)
@@ -552,3 +561,37 @@ class ImportIMDBTitles(SuperClass):
         self.assertEqual(responses.calls[0].request.url, url)
         alt_titles = Movie.objects.get(pk=1).alternative_titles.all()
         self.assertEqual(2, len(alt_titles))
+
+    @responses.activate
+    def test_running_multiple_times_should_only_create_uniques(self):
+        movie = Movie(id=1, original_title='orig_title', popularity=123.0, fetched=True, imdb_id='tt0000001')
+        movie.save()
+        url = "https://datasets.imdbws.com/title.akas.tsv.gz"
+
+        string = "titleId	ordering	title	region	language	types	attributes	isOriginalTitle\n"
+        string += "tt0000001	2	Καρμενσίτα	GR	\\N	\\N	\\N	0\n"
+        string += "tt0000001	3	Карменсита	RU	\\N	\\N	\\N	0"
+
+        out = gzip.compress(bytes(string, 'utf-8'))
+
+        responses.add(responses.GET, url, body=out, status=200, content_type='binary/octet-stream')
+
+        self.client.get('/import/imdb/titles')
+
+        string = "titleId	ordering	title	region	language	types	attributes	isOriginalTitle\n"
+        string += "tt0000001	2	Καρμενσίτα	GR	\\N	\\N	\\N	0\n"
+        string += "tt0000001	3	Карменсита	RU	\\N	\\N	\\N	0\n"
+        string += "tt0000001	4	Carmencita	SE	\\N	\\N	\\N	0"
+
+        out = gzip.compress(bytes(string, 'utf-8'))
+
+        responses.replace(responses.GET, url, body=out, status=200, content_type='binary/octet-stream')
+
+        response = self.client.get('/import/imdb/titles')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(responses.calls), 2)
+        self.assertEqual(responses.calls[0].request.url, url)
+        alt_titles = Movie.objects.get(pk=1).alternative_titles.all()
+        self.assertEqual(3, len(alt_titles))
+        self.assertEqual(3, AlternativeTitle.objects.count())

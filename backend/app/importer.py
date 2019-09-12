@@ -242,8 +242,10 @@ def import_imdb_alt_titles():
         csv.field_size_limit(sys.maxsize)
         reader = csv.reader(contents, delimiter='\t', quoting=csv.QUOTE_NONE)
         print("Processing IMDB Titles")
+        next(reader) # Skip header
         for row in __log_progress(reader, "IMDB Titles", count):
             tconst = row[0]
+            print(row[2])
             try:
                 movie = Movie.objects.get(imdb_id=tconst)
                 title=row[2]
