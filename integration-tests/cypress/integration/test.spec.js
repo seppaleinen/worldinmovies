@@ -18,7 +18,7 @@ context('Actions', () => {
 
   it('US Country should have content', () => {
     cy.get('path[data-code="US"]').click({ force: true });
-    var modal = cy.get('#myModal')
+    var modal = cy.get('#myModal', { timeout: 10000 })
         .should('be.visible')
         .should('contain.text', 'Top ranked movies from United States');
 
