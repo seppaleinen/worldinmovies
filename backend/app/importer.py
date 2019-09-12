@@ -243,9 +243,9 @@ def import_imdb_alt_titles():
         reader = csv.reader(contents, delimiter='\t', quoting=csv.QUOTE_NONE)
         print("Processing IMDB Titles")
         next(reader) # Skip header
-        for row in __log_progress(reader, "IMDB Titles", count):
+        alt_titles = []
+        for row in __log_progress(reader, "Processing IMDB Titles", count):
             tconst = row[0]
-            print(row[2])
             try:
                 movie = Movie.objects.get(imdb_id=tconst)
                 title=row[2]
@@ -254,12 +254,13 @@ def import_imdb_alt_titles():
                                         iso_3166_1=row[3],
                                         title=title,
                                         type='IMDB')
-                    with transaction.atomic():
-                        alt_title.save()
-                        movie.alternative_titles.add(alt_title)
-
+                    alt_titles.append(alt_title)
             except Movie.DoesNotExist:
                 pass
+        print("Persisting IMDB Titles")
+        for alt_titles_chunk in __chunks(alt_titles, 50):
+            AlternativeTitle.objects.bulk_create(alt_titles_chunk)
+
         return 'Imported titles'
     return "Something went wrong %s" % response.content
 
