@@ -19,6 +19,10 @@ before_install:
 - sudo mv docker-compose /usr/local/bin
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - npm install npm@latest -g
+matrix:
+  fast_finish: true
+  allow_failures:
+  - env: ALLOW_FAILURE=TRUE
 jobs:
   include:
   - stage: build docker images
@@ -33,6 +37,8 @@ jobs:
     - docker push $DOCKER_USERNAME/worldinmovies_webapp
     name: building webapp docker image
   - stage: test frontend
+    env:
+    - ALLOW_FAILURE=TRUE
     script:
     - docker-compose -f docker-compose.yml -f docker-compose.beta.yml pull
     - docker-compose -f docker-compose.yml -f docker-compose.beta.yml up -d
