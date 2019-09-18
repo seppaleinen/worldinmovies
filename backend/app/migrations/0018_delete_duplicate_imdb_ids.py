@@ -15,22 +15,23 @@ def delete_duplicate_imdb_ids(apps, schema_editor):
         """)
         movie_ids = str([item[0] for item in cursor.fetchall()]).strip('[]')
 
-    print("Movie ids: %s" % movie_ids)
-    print("Deleting production countries related to duplicated imdbs")
-    with connection.cursor() as cursor:
-        cursor.execute("delete from app_productioncountries_movies where movie_id in (%s)" % movie_ids)
-    print("Deleting spoken languages related to duplicated imdbs")
-    with connection.cursor() as cursor:
-        cursor.execute("delete from app_spokenlanguage_movies where movie_id in (%s)" % movie_ids)
-    print("Deleting alternative titles related to duplicated imdbs")
-    with connection.cursor() as cursor:
-        cursor.execute("delete from app_alternativetitle where movie_id in (%s)" % movie_ids)
-    print("Deleting genres related to duplicated imdbs")
-    with connection.cursor() as cursor:
-        cursor.execute("delete from app_genre_movies where movie_id in (%s)" % movie_ids)
-    print("Deleting movies related to duplicated imdbs")
-    with connection.cursor() as cursor:
-        cursor.execute("delete from app_movie where id in (%s)" % movie_ids)
+    if len(movie_ids) > 0:
+        print("Movie ids: %s" % movie_ids)
+        print("Deleting production countries related to duplicated imdbs")
+        with connection.cursor() as cursor:
+            cursor.execute("delete from app_productioncountries_movies where movie_id in (%s)" % movie_ids)
+        print("Deleting spoken languages related to duplicated imdbs")
+        with connection.cursor() as cursor:
+            cursor.execute("delete from app_spokenlanguage_movies where movie_id in (%s)" % movie_ids)
+        print("Deleting alternative titles related to duplicated imdbs")
+        with connection.cursor() as cursor:
+            cursor.execute("delete from app_alternativetitle where movie_id in (%s)" % movie_ids)
+        print("Deleting genres related to duplicated imdbs")
+        with connection.cursor() as cursor:
+            cursor.execute("delete from app_genre_movies where movie_id in (%s)" % movie_ids)
+        print("Deleting movies related to duplicated imdbs")
+        with connection.cursor() as cursor:
+            cursor.execute("delete from app_movie where id in (%s)" % movie_ids)
 
 
 class Migration(migrations.Migration):
