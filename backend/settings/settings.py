@@ -112,6 +112,7 @@ elif environment == 'DOCKER':
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'postgres',
             'USER': 'postgres',
+            'PASSWORD': 'postgres',
             'HOST': 'db',
             'PORT': 5432,
             'CONN_MAX_AGE': 500,

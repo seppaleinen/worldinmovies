@@ -1,13 +1,15 @@
-version: '3'
+version: '2.3'
 
 services:
   db:
-    image: postgres:10.5-alpine
+    image: postgres:11-alpine
     volumes:
       - pgdata:/var/lib/postgresql
       - ./postgres-data:/tmp/
     ports:
       - "5433:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
   backend:
     image: seppaleinen/worldinmovies_backend
     build: backend/

@@ -13,14 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
-from django.urls import path
+from django.urls import path, re_path
 from django.contrib import admin
 
 from app import views
 
 urlpatterns = [
-    url(r'^admin/',                         admin.site.urls),
+    re_path(r'^admin/',                         admin.site.urls),
     # Imports a daily file with the data of what movies are available to download
     path('import/tmdb/daily',               views.download_file),
     # Starts to fetch info from tmdb with the keys from daily
@@ -34,8 +33,8 @@ urlpatterns = [
     path('import/imdb/titles',              views.fetch_imdb_titles),
     path('import/tmdb/changes',             views.check_tmdb_for_changes),
     path('stream_response_test',            views.stream_response_test),
-    url(r'^status$',                        views.import_status, name='import_status'),
-    url(r'^ratings$',                       views.ratings, name='ratings'),
+    re_path(r'^status$',                        views.import_status, name='import_status'),
+    re_path(r'^ratings$',                       views.ratings, name='ratings'),
     path('view/best',                       views.get_best_movies_from_all_countries),
     path('view/best/<str:country_code>',    views.get_best_movies_from_country),
     path('', views.index, name='index')

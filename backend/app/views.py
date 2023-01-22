@@ -127,7 +127,7 @@ def ratings(request):
     if request.method == 'POST':
         if 'file' in request.FILES:
             file = request.FILES['file']
-            csv_as_dicts = csv.DictReader(file.read().decode('cp1252').splitlines())
+            csv_as_dicts = csv.DictReader(file.read().decode('utf8').splitlines())
             # Const,Your Rating,Date Rated,Title,URL,Title Type,IMDb Rating,Runtime (mins),Year,Genres,Num Votes,Release Date,Directors
             result = {'found': {}, 'not_found': []}
             for i in csv_as_dicts:
