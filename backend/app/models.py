@@ -7,7 +7,7 @@ class Movie(models.Model):
     popularity = models.DecimalField(decimal_places=3, max_digits=10)
     fetched = models.BooleanField(default=False)
     budget = models.BigIntegerField(null=True, blank=True)
-    imdb_id = models.CharField(max_length=30, null=True, db_index=True, unique=True)
+    imdb_id = models.CharField(max_length=30, null=True, db_index=True, unique=False)
     original_language = models.CharField(max_length=30, null=True, blank=True)
     overview = models.TextField(null=True, blank=True)
     poster_path = models.CharField(max_length=40, null=True, blank=True)
@@ -27,7 +27,7 @@ class Movie(models.Model):
         self.fetched = True
         self.raw_response = fetched_movie
         self.budget = fetched_movie['budget']
-        self.imdb_id = fetched_movie['imdb_id']
+        self.imdb_id = fetched_movie['imdb_id'].strip() if fetched_movie['imdb_id'].strip() else None
         self.original_language = fetched_movie['original_language']
         self.overview = fetched_movie['overview']
         self.poster_path = fetched_movie['poster_path']
