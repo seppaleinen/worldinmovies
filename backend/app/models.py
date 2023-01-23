@@ -52,7 +52,7 @@ class Genre(models.Model):
 
 class AlternativeTitle(models.Model):
     movie = models.ForeignKey(Movie, related_name='alternative_titles', on_delete=models.CASCADE, db_index=True)
-    iso_3166_1 = models.CharField(max_length=20)
+    iso_3166_1 = models.CharField(max_length=50)
     title = models.CharField(max_length=500)
     type = models.CharField(max_length=500, blank=True, null=True)
 

@@ -7,6 +7,8 @@ import datetime, \
     os, \
     time, \
     csv
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from django.db import transaction
 from app.models import Movie, SpokenLanguage, AlternativeTitle, ProductionCountries, Genre
 
@@ -79,7 +81,13 @@ def __fetch_movie_with_id(id, index):
           "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(movie_id=id,
                                                                                                     api_key=api_key)
     try:
-        response = requests.get(url, timeout=10)
+        session = requests.Session()
+        retry = Retry(connect=3, backoff_factor=2)
+        adapter = HTTPAdapter(max_retries=retry)
+        session.mount('http://', adapter)
+        session.mount('https://', adapter)
+
+        response = session.get(url, timeout=10)
     except requests.exceptions.Timeout:
         print("Timed out on id: %s... trying again in 10 seconds" % id)
         time.sleep(10)
@@ -107,6 +115,7 @@ def __fetch_movie_with_id(id, index):
 def concurrent_stuff():
     movie_ids = Movie.objects.filter(fetched__exact=False).values_list('id', flat=True)
     length = len(movie_ids)
+    print("Starting import of %s unfetched movies")
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         future_to_url = (executor.submit(__fetch_movie_with_id, movie_id, index) for index, movie_id in enumerate(movie_ids))
         #bar = progressbar.ProgressBar(max_value=length, redirect_stdout=True, prefix='Fetching data from TMDB').start()
@@ -131,7 +140,7 @@ def concurrent_stuff():
                     for fetch_prod_country in fetched_movie['production_countries']:
                         db_movie.production_countries.add(ProductionCountries.objects.get(iso_3166_1=fetch_prod_country['iso_3166_1']))
                     db_movie.save()
-                i+=1
+                i += 1
             except Exception as exc:
                 print("Exception: %s" % exc)
                 return "Failed with exception: %s" % exc

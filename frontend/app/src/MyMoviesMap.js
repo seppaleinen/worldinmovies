@@ -2,15 +2,17 @@ import React from 'react';
 import './MyMoviesMap.css';
 import MovieModal from './MovieModal';
 import Import from './import/Import';
-import { VectorMap } from "react-jvectormap"
+import { VectorMap } from "@react-jvectormap/core"
 import axios from 'axios';
 import { inject, observer } from "mobx-react";
+import { worldMill } from "@react-jvectormap/world";
 
 var MyMoviesMap = inject("store")(
   observer(
   class MyMoviesMap extends React.Component {
     constructor(props) {
         super(props);
+        this.myRef = React.createRef();
         this.state = {
             data: props.data,
             rerenderModal: Math.random(),
@@ -25,7 +27,7 @@ var MyMoviesMap = inject("store")(
     generateColors = () => {
         var colors = {}, key;
 
-        for (key in this.refs.map.getMapObject().regions) {
+        for (key in this.myRef.current.getMapObject().regions) {
             var found = key in this.state.data.found;
             var color = (found ? 'seen' /* light green */ : 'unseen' /* gray */);
             colors[key] = color;
@@ -35,12 +37,12 @@ var MyMoviesMap = inject("store")(
 
     componentDidUpdate(prevProps, prevState) {
         if(this.state.data !== prevState.data) {
-            this.refs.map.getMapObject().series.regions[0].setValues(this.generateColors());
+            this.myRef.current.getMapObject().series.regions[0].setValues(this.generateColors());
         }
     }
 
     onRegionClick = (event, code) => {
-        const regionName = this.refs.map.getMapObject().getRegionName(code);
+        const regionName = this.myRef.current.getMapObject().getRegionName(code);
         axios.get(process.env.REACT_APP_BACKEND_URL + "/view/best/" + code.toUpperCase(), {timeout: 5000})
                     .then((response) => {
                       this.props.store.showMovieModal = true;
@@ -79,16 +81,16 @@ var MyMoviesMap = inject("store")(
 
     }
 
-    render() {
+    render(ref) {
         return (
             <div className="map-container inner-map-container">
                 <button onClick={this.show_import_modal}>Import</button>
                 <Import changeDataStateCallback={this.changeDataStateCallback} rerenderImport={this.state.rerenderImportModal}/>
                 <div id="mappy">
                     <VectorMap
-                            map={'world_mill'}
+                            map={worldMill}
                             backgroundColor="#a5bfdd"
-                            ref="map"
+                            mapRef={this.myRef}
                             containerStyle={{
                                 width: '100%',
                                 height: '100%'
