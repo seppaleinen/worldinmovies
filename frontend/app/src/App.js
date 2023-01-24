@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-import Welcome from './Welcome';
 import MyMoviesMap from './MyMoviesMap';
 
 class Header extends React.Component {
@@ -22,7 +21,6 @@ class Header extends React.Component {
           </ul>
         </nav>
 
-        <Welcome/>
         <MyMoviesMap data={this.state.data}/>
       </div>
     )

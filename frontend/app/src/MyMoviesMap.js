@@ -103,8 +103,8 @@ var MyMoviesMap = inject("store")(
                               }]
                             }}
                             regionStyle={{
-                              hover: {fill: '#c9dfaf'},
-                              initial: {fill: '#c9dfaf'}
+                              hover: {fill: '#A8A8A8'},
+                              initial: {fill: '#A8A8A8'}
                             }}
                             zoomOnScroll={false}
                             onRegionClick={this.onRegionClick}
