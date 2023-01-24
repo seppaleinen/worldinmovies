@@ -27,7 +27,7 @@ class Movie(models.Model):
         self.fetched = True
         self.raw_response = fetched_movie
         self.budget = fetched_movie['budget']
-        self.imdb_id = fetched_movie['imdb_id'].strip() if fetched_movie['imdb_id'].strip() else None
+        self.imdb_id = fetched_movie['imdb_id'].strip() if fetched_movie['imdb_id'] and fetched_movie['imdb_id'].strip() else None
         self.original_language = fetched_movie['original_language']
         self.overview = fetched_movie['overview']
         self.poster_path = fetched_movie['poster_path']

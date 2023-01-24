@@ -167,7 +167,7 @@ def base_fetch(request):
 
 
 def fetch_movie(request):
-    return HttpResponse(concurrent_stuff())
+    return StreamingHttpResponse(concurrent_stuff())
 
 
 def fetch_genres(request):

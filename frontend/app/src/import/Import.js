@@ -41,7 +41,7 @@ var Import = inject("store")(
                   Choose how you want to import your data
                 </div>
                 <div className="images">
-                  <img className="image" src="https://trakt.tv/assets/logos/white-bg@2x-626e9680c03d0542b3e26c3305f58050d2178e5d4222fac7831d83cf37fef42b.png" alt="Trakt" onClick={this.change_view_to_trakt}/>
+                  <img className="image" src="/static/trakt-wide-red-black.png" alt="Trakt" onClick={this.change_view_to_trakt}/>
                   <img className="image" src="https://m.media-amazon.com/images/G/01/IMDb/BG_rectangle._CB1509060989_SY230_SX307_AL_.png" alt="IMDB" onClick={this.change_view_to_imdb}/>
                 </div>
               </div>

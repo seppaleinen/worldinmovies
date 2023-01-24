@@ -88,8 +88,9 @@ def __fetch_movie_with_id(id, index):
         session.mount('https://', adapter)
 
         response = session.get(url, timeout=10)
-    except requests.exceptions.Timeout:
+    except requests.exceptions.Timeout as exc:
         print("Timed out on id: %s... trying again in 10 seconds" % id)
+        print(exc)
         time.sleep(10)
         return __fetch_movie_with_id(id, index)
     except requests.exceptions.ConnectionError as exc:
@@ -105,7 +106,8 @@ def __fetch_movie_with_id(id, index):
         time.sleep(retryAfter)
         return __fetch_movie_with_id(id, index)
     elif response.status_code == 404:
-        print("Ignoring movie with id: %s as it's not in tmdb anymore - but will be attempted to fetch next time" % id)
+        Movie.objects.get(pk=id).delete()
+        print("Deleting movie with id: %s as it's not in tmdb anymore" % id)
         return None
     else:
         print("What is going on?: id:%s, status:%s, response: w%s" % (id, response.status_code, response.content))
@@ -115,7 +117,7 @@ def __fetch_movie_with_id(id, index):
 def concurrent_stuff():
     movie_ids = Movie.objects.filter(fetched__exact=False).values_list('id', flat=True)
     length = len(movie_ids)
-    print("Starting import of %s unfetched movies")
+    print("Starting import of %s unfetched movies" % length)
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         future_to_url = (executor.submit(__fetch_movie_with_id, movie_id, index) for index, movie_id in enumerate(movie_ids))
         #bar = progressbar.ProgressBar(max_value=length, redirect_stdout=True, prefix='Fetching data from TMDB').start()
@@ -140,10 +142,11 @@ def concurrent_stuff():
                     for fetch_prod_country in fetched_movie['production_countries']:
                         db_movie.production_countries.add(ProductionCountries.objects.get(iso_3166_1=fetch_prod_country['iso_3166_1']))
                     db_movie.save()
+                    yield "Fetched: %s / %s\n" % (i, length)
                 i += 1
             except Exception as exc:
                 print("Exception: %s" % exc)
-                return "Failed with exception: %s" % exc
+                yield "Exception: %s\n" % exc
     return "Fetched and saved: %s movies" % length
 
 

@@ -33,4 +33,6 @@
 .image {
   flex: 50%;
   padding: 5px;
+    height: 100px;
+    width: 200px;
 }
