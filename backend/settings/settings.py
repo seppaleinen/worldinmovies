@@ -60,7 +60,8 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = True
 # CORS_ORIGIN_WHITELIST = ('http://localhost', 'https://localhost', 'http://localhost:81')
-
+#ALLOWED_HOSTS=['http://localhost:3000', 'http://localhost:81', 'http://webapp:81', 'http://webapp:3000', 'http://localhost:8000', 'localhost:8000']
+ALLOWED_HOSTS=['localhost','webapp','backend']
 ROOT_URLCONF = 'settings.urls'
 
 TEMPLATES = [

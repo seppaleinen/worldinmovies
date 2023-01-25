@@ -9,7 +9,6 @@ import datetime, \
     csv
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from django.db import transaction
 from app.models import Movie, SpokenLanguage, AlternativeTitle, ProductionCountries, Genre
 
 
@@ -142,12 +141,12 @@ def concurrent_stuff():
                     for fetch_prod_country in fetched_movie['production_countries']:
                         db_movie.production_countries.add(ProductionCountries.objects.get(iso_3166_1=fetch_prod_country['iso_3166_1']))
                     db_movie.save()
-                    yield "Fetched: %s / %s\n" % (i, length)
+                    yield json.dumps({"fetched": i, "total": length}) + ","
                 i += 1
             except Exception as exc:
                 print("Exception: %s" % exc)
-                yield "Exception: %s\n" % exc
-    return "Fetched and saved: %s movies" % length
+                yield json.dumps({"exception": exc}) + ","
+    print("Fetched and saved: %s movies" % length)
 
 
 def import_genres():
@@ -186,13 +185,16 @@ def import_languages():
     response = requests.get(url, stream=True)
     if response.status_code == 200:
         languages_from_json = json.loads(response.content)
+        length = len(languages_from_json)
+        i = 0
         for language in __log_progress(languages_from_json, "TMDB Languages"):
+            i += 1
+            yield json.dumps({"fetched": i, "total": length}) + ","
             spoken_lang = SpokenLanguage.objects.all().filter(iso_639_1=language['iso_639_1']).exists()
             if not spoken_lang:
                 SpokenLanguage(iso_639_1=language['iso_639_1'], name=language['english_name']).save()
-        return "Imported: %s languages" % len(languages_from_json)
     else:
-        return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
+        yield json.dumps({"exception": response.status_code, "message": response.content}) + ","
 
 
 def __chunks(__list, n):

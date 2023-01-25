@@ -2,10 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import Admin from './admin/Admin';
 import { Provider } from "mobx-react";
 import Store from "./MobxStore";
 import * as serviceWorker from './serviceWorker';
 import * as Sentry from '@sentry/browser';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const sentryUrl = process.env.REACT_APP_SENTRY_URL;
 if(sentryUrl !== undefined && sentryUrl.length !== 0) {
@@ -18,7 +20,16 @@ const stores  = {
 
 const Main = () =>
   <Provider {...stores}>
-    <App />
+      <BrowserRouter>
+          <Routes>
+              <Route path="/">
+                  <Route index element={<App />}/>
+              </Route>
+              <Route path="/admin">
+                  <Route index element={<Admin />}/>
+              </Route>
+          </Routes>
+      </BrowserRouter>
   </Provider>
 
 ReactDOM.render(<Main />, document.getElementById('root'));

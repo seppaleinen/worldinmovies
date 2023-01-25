@@ -17,14 +17,16 @@ def index(request):
         return HttpResponse("No movies fetched yet")
 
 
-def stream_response_generator():
-    for x in range(1, 3):
-        yield "%s<br/>" % x  # Returns a chunk of the response to the browser
-        time.sleep(1)
-
-
 def stream_response_test(request):
-    return StreamingHttpResponse(stream_response_generator())
+    def stream_response_generator():
+        for x in range(1, 25):
+            yield simplejson.dumps({"i": x})  + ","# Returns a chunk of the response to the browser
+            time.sleep(0.1)
+    strea = StreamingHttpResponse(stream_response_generator(), status=200, content_type='text/event-stream')
+    #strea["Access-control-Allow-Headers"] = "*"
+    #strea["Connection"] = "keep-alive"
+    return strea
+
 
 
 def import_status(request):
@@ -38,11 +40,7 @@ def import_status(request):
         fetched = result[0]
         total = result[1]
         percent = result[2]
-        if total == 0:
-            return HttpResponse("Daily file export have not been imported yet. No movies to be fetched")
-        else:
-            return HttpResponse("There are {fetched} fetched movies out of {amount}, which is about {percent}%"
-                                .format(fetched=fetched, amount=total, percent=percent))
+        return HttpResponse(simplejson.dumps({"fetched": fetched, "total": total, "percentage_done": percent}), content_type='application/json')
 
 
 def get_best_movies_from_all_countries(request):
@@ -167,7 +165,7 @@ def base_fetch(request):
 
 
 def fetch_movie(request):
-    return StreamingHttpResponse(concurrent_stuff())
+    return StreamingHttpResponse(concurrent_stuff(), content_type='text/event-stream')
 
 
 def fetch_genres(request):
@@ -179,7 +177,7 @@ def fetch_countries(request):
 
 
 def fetch_languages(request):
-    return HttpResponse(import_languages())
+    return StreamingHttpResponse(import_languages(), content_type='text/event-stream')
 
 
 def fetch_imdb_ratings(request):
