@@ -19,7 +19,7 @@ from django.contrib import admin
 from app import views
 
 urlpatterns = [
-    re_path(r'^admin/',                         admin.site.urls),
+    re_path(r'^admin/',                     admin.site.urls),
     # Imports a daily file with the data of what movies are available to download
     path('import/tmdb/daily',               views.download_file),
     # Starts to fetch info from tmdb with the keys from daily
@@ -32,9 +32,9 @@ urlpatterns = [
     path('import/tmdb/changes',             views.check_tmdb_for_changes),
     path('import/imdb/ratings',             views.fetch_imdb_ratings),
     path('import/imdb/titles',              views.fetch_imdb_titles),
-    path('stream',              views.stream_response_test),
+    path('stream',                          views.stream_response_test),
+    path('ratings',                         views.ratings, name='ratings'),
     re_path(r'^status$',                    views.import_status, name='import_status'),
     path('view/best',                       views.get_best_movies_from_all_countries),
-    path('view/best/<str:country_code>',    views.get_best_movies_from_country),
-    path('', views.index, name='index')
+    path('view/best/<str:country_code>',    views.get_best_movies_from_country)
 ]

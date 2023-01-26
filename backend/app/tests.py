@@ -31,18 +31,6 @@ def __gzip_string(string):
 
 # Create your tests here.
 class ImportTests(SuperClass):
-    def test_main_page_without_movies(self):
-        response = self.client.get('/')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'No movies fetched yet')
-
-    def test_main_page_with_movies(self):
-        Movie(id=2, original_title="title1", popularity=36.213, fetched=False).save()
-
-        response = self.client.get('/')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'Amount of movies in DB: 1, first is: 2')
-
     @responses.activate
     def test_daily_file_import(self):
         yesterday = datetime.date.today() - datetime.timedelta(days=1)
@@ -58,7 +46,7 @@ class ImportTests(SuperClass):
 
         response = self.client.get('/import/tmdb/daily')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content.decode(), 'Imported: 3 new movies, and deleted: 0')
+        self.assertEqual(response.getvalue(), b'{"message": "Downloading http://files.tmdb.org/p/exports/movie_ids_01_25_2023.json.gz"}\n{"message": "0 movies will be persisted"}\n')
 
     @responses.activate
     def test_daily_file_import_delete(self):
@@ -78,7 +66,7 @@ class ImportTests(SuperClass):
 
         response = self.client.get('/import/tmdb/daily')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content.decode('utf-8'), 'Imported: 2 new movies, and deleted: 1')
+        self.assertEqual(response.getvalue(), b'{"message": "Downloading http://files.tmdb.org/p/exports/movie_ids_01_25_2023.json.gz"}\n{"message": "0 movies will be persisted"}\n{"message": "Deleted 1 movies out of 1"}\n')
         self.assertFalse(Movie.objects.filter(pk=604).exists())
 
     @responses.activate
@@ -104,7 +92,7 @@ class ImportTests(SuperClass):
 
         response = self.client.get('/import/tmdb/data')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'Fetched and saved: 3 movies')
+        self.assertEqual(response.getvalue(), b'{"fetched": 0, "total": 3}\n{"fetched": 1, "total": 3}\n{"fetched": 2, "total": 3}\n')
 
     @responses.activate
     def test_fetch_of_failing_movie_avatar(self):
@@ -126,7 +114,7 @@ class ImportTests(SuperClass):
 
         response = self.client.get('/import/tmdb/data')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'Fetched and saved: 1 movies')
+        self.assertEqual(response.getvalue(), b'{"fetched": 0, "total": 1}\n')
 
     @responses.activate
     def test_fetch_id_thats_removed_from_tmdb(self):
@@ -147,9 +135,10 @@ class ImportTests(SuperClass):
                       )
 
         response = self.client.get('/import/tmdb/data')
+        content = response.getvalue().decode('utf8')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'Fetched and saved: 1 movies')
-        self.assertFalse(Movie.objects.filter(pk=123)[0].fetched)
+        self.assertTrue('{"deleted": true}\n' in content)
+        self.assertFalse(Movie.objects.filter(pk=123))
 
     @responses.activate
     def test_fetch_only_movies_marked_as_fetched_false(self):
@@ -172,10 +161,11 @@ class ImportTests(SuperClass):
                           )
 
         response = self.client.get('/import/tmdb/data')
+        content = response.getvalue()
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'Fetched and saved: 1 movies')
+        self.assertEqual(content, b'{"fetched": 0, "total": 1}\n')
         self.assertTrue(Movie.objects.get(pk=to_be_fetched.id).fetched)
 
 
@@ -187,7 +177,7 @@ class StatusTests(SuperClass):
 
         response = self.client.get('/status')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'There are 0 fetched movies out of 3, which is about 0%')
+        self.assertEqual(response.content, b'{"fetched": 0, "total": 3, "percentage_done": 0}')
 
     def test_status_1_fetched_out_of_3(self):
         Movie(id=1, original_title="title1", popularity=36.213, fetched=True).save()
@@ -196,7 +186,7 @@ class StatusTests(SuperClass):
 
         response = self.client.get('/status')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'There are 1 fetched movies out of 3, which is about 33%')
+        self.assertEqual(response.content, b'{"fetched": 1, "total": 3, "percentage_done": 33}')
 
     def test_status_3_fetched_out_of_3(self):
         Movie(id=1, original_title="title1", popularity=36.213, fetched=True).save()
@@ -205,12 +195,12 @@ class StatusTests(SuperClass):
 
         response = self.client.get('/status')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'There are 3 fetched movies out of 3, which is about 100%')
+        self.assertEqual(response.content, b'{"fetched": 3, "total": 3, "percentage_done": 100}')
 
     def test_status_0_fetched_out_of_0(self):
         response = self.client.get('/status')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'Daily file export have not been imported yet. No movies to be fetched')
+        self.assertEqual(response.content, b'{"fetched": 0, "total": 0, "percentage_done": 0}')
 
 
 class FetchBaseData(SuperClass):
@@ -226,10 +216,12 @@ class FetchBaseData(SuperClass):
                           )
 
         response = self.client.get('/import/tmdb/countries')
+        content = response.getvalue()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
-        self.assertEqual(response.content, b'Imported: 247 countries')
+        self.assertTrue('{"fetched": 1, "total": 247}' in content.decode('utf8'))
+        self.assertTrue('{"fetched": 247, "total": 247}' in content.decode('utf8'))
         self.assertEqual(ProductionCountries.objects.count(), 247)
 
     @responses.activate
@@ -244,10 +236,13 @@ class FetchBaseData(SuperClass):
                           )
 
         response = self.client.get('/import/tmdb/languages')
+        content = response.getvalue()
+        self.maxDiff = None
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
-        self.assertEqual(response.content, b'Imported: 187 languages')
+        self.assertTrue('{"fetched": 2, "total": 187}' in content.decode('utf8'))
+        self.assertTrue('{"fetched": 187, "total": 187}' in content.decode('utf8'))
         self.assertEqual(SpokenLanguage.objects.count(), 187)
 
     @responses.activate
@@ -262,10 +257,12 @@ class FetchBaseData(SuperClass):
                           )
 
         response = self.client.get('/import/tmdb/genres')
+        content = response.getvalue()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
-        self.assertEqual(response.content, b'Imported: 19 genres')
+        self.assertTrue('{"fetched": 1, "total": 19}' in content.decode('utf8'))
+        self.assertTrue('{"fetched": 19, "total": 19}' in content.decode('utf8'))
         self.assertEqual(Genre.objects.count(), 19)
 
     @responses.activate
@@ -306,17 +303,21 @@ class FetchBaseData(SuperClass):
                           )
 
         response = self.client.get('/import/base')
+        content = response.getvalue().decode('utf8')
+        self.maxDiff = None
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(responses.calls), 4)
         self.assertEqual(responses.calls[0].request.url, daily_url)
         self.assertEqual(responses.calls[1].request.url, genres_url)
         self.assertEqual(responses.calls[2].request.url, countries_url)
         self.assertEqual(responses.calls[3].request.url, languages_url)
-        self.assertContains(response, '"daily_response":"Imported: 3 new movies, and deleted: 0"')
-        self.assertContains(response, '"genres_response":"Imported: 19 genres"')
-        self.assertContains(response, '"countries_response":"Imported: 247 countries"')
-        self.assertContains(response, '"languages_response":"Imported: 187 languages"')
-        self.assertEqual(Movie.objects.count(), 3)
+        self.assertTrue('{"message": "Downloading http://files.tmdb.org/p/exports/movie_ids_01_25_2023.json.gz"}', content)
+        self.assertTrue('{"message": "0 movies will be persisted"}', content)
+        self.assertTrue('{"fetched": 1, "total": 19}', content)
+        self.assertTrue('{"fetched": 1, "total": 247}', content)
+        self.assertTrue('{"fetched": 1, "total": 187}', content)
+        self.assertTrue('{"message": "Done"}', content)
+        self.assertEqual(Movie.objects.count(), 0)
         self.assertEqual(ProductionCountries.objects.count(), 247)
         self.assertEqual(SpokenLanguage.objects.count(), 187)
         self.assertEqual(Genre.objects.count(), 19)
@@ -466,10 +467,11 @@ class ImportImdbData(SuperClass):
                           )
 
         response = self.client.get('/import/imdb/ratings')
+        content = response.getvalue()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
-        self.assertEqual(response.content.decode('utf-8'), 'Imported: 1')
+        self.assertEqual(content.decode('utf-8'), '{"message": "Downloading file: https://datasets.imdbws.com/title.ratings.tsv.gz"}\n{"fetched": 1, "total": 1}\n')
 
     @responses.activate
     def test_import_imdb_data_no_match(self):
@@ -483,10 +485,11 @@ class ImportImdbData(SuperClass):
                           )
 
         response = self.client.get('/import/imdb/ratings')
+        content = response.getvalue()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
-        self.assertEqual(response.content.decode('utf-8'), 'Imported: 0')
+        self.assertEqual(content.decode('utf-8'), '{"message": "Downloading file: https://datasets.imdbws.com/title.ratings.tsv.gz"}\n')
 
 
 class CheckTMDBForChanges(SuperClass):
@@ -501,7 +504,7 @@ class CheckTMDBForChanges(SuperClass):
 
         response = self.client.get('/import/tmdb/changes?start_date=2019-01-01&end_date=2019-01-02')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual("2 movies are set to be updated", response.content.decode('utf-8'))
+        self.assertEqual('{"movie_id": 1}\n{"movie_id": 2}\n', response.getvalue().decode('utf-8'))
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
         self.assertEqual(False, Movie.objects.get(pk=1).fetched)
@@ -529,6 +532,7 @@ class ImportIMDBTitles(SuperClass):
                       )
 
         response = self.client.get('/import/imdb/titles')
+        content = response.getvalue()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
@@ -556,6 +560,7 @@ class ImportIMDBTitles(SuperClass):
                       )
 
         response = self.client.get('/import/imdb/titles')
+        content = response.getvalue()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
@@ -589,8 +594,9 @@ class ImportIMDBTitles(SuperClass):
 
         response = self.client.get('/import/imdb/titles')
 
+        content = response.getvalue()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(responses.calls), 2)
+        self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, url)
         alt_titles = Movie.objects.get(pk=1).alternative_titles.all()
         self.assertEqual(3, len(alt_titles))

@@ -10,15 +10,13 @@ import datetime, \
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from app.models import Movie, SpokenLanguage, AlternativeTitle, ProductionCountries, Genre
+from itertools import chain
 
 
 def base_import():
-    daily = download_files()
-    genres = import_genres()
-    countries = import_countries()
-    languages = import_languages()
-    return '"daily_response":"{daily_response}","genres_response":"{genres_response}", "countries_response":"{countries_response}","languages_response":"{languages_response}"'\
-        .format(daily_response=daily, genres_response=genres, countries_response=countries, languages_response=languages)
+    def done():
+        yield json.dumps({"message": "Done"})
+    return chain(download_files(), import_genres(), import_countries(), import_languages(), done())
 
 
 def download_files():
@@ -29,6 +27,7 @@ def download_files():
 
     if response.status_code == 200:
         print("Downloading file")
+        yield json.dumps({"message": "Downloading %s" % daily_export_url}) + "\n"
         with open('movies.json.gz', 'wb') as f:
             f.write(response.content)
 
@@ -44,25 +43,32 @@ def download_files():
                     id = data['id']
                     tmdb_movie_ids.add(id)
                     if not Movie.objects.filter(pk=id).exists():
+                        a += 1
                         movies_to_add.append(Movie(id=id, original_title=data['original_title'], popularity=data['popularity'], fetched=False))
             except Exception as e:
                 print("This line fucked up: %s, because of %s" % (i, e))
+        a = len(movies_to_add)
+        yield json.dumps({"message": "%s movies will be persisted" % a}) + "\n"
         all_unfetched_movie_ids = Movie.objects.filter(fetched=False).all().values_list('id', flat=True)
         movie_ids_to_delete = (set(all_unfetched_movie_ids).difference(tmdb_movie_ids))
-        print("ASD: %s" % movie_ids_to_delete)
+        b = 0
         try:
             print('Persisting stuff - Having this until progressbar actually shows in docker-compose')
             for chunk in __chunks(movies_to_add, 100):
+                b += len(chunk)
                 Movie.objects.bulk_create(chunk)
+                yield json.dumps({"message": "Persisted %s movies out of %s" % (b, a)}) + "\n"
             print("Deleting unfetched movies not in tmdb anymore")
+            c = 0
             for movie_to_delete in movie_ids_to_delete:
                 Movie.objects.get(pk=movie_to_delete).delete()
-            return "Imported: %s new movies, and deleted: %s" % (len(movies_to_add), len(movie_ids_to_delete))
+                c += 1
+                yield json.dumps({"message": "Deleted %s movies out of %s" % (c, len(movie_ids_to_delete))}) + "\n"
         except Exception as e:
             print("Error: %s" % e)
-            return "Exception: %s" % e
+            yield json.dumps({"exception": e}) + "\n"
     else:
-        return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
+        yield json.dumps({"exception": response.status_code, "message": response.content}) + "\n"
 
 
 def __unzip_file(file_name):
@@ -141,11 +147,13 @@ def concurrent_stuff():
                     for fetch_prod_country in fetched_movie['production_countries']:
                         db_movie.production_countries.add(ProductionCountries.objects.get(iso_3166_1=fetch_prod_country['iso_3166_1']))
                     db_movie.save()
-                    yield json.dumps({"fetched": i, "total": length}) + ","
+                    yield json.dumps({"fetched": i, "total": length}) + "\n"
+                else:
+                    yield json.dumps({"deleted": True}) + "\n"
                 i += 1
             except Exception as exc:
                 print("Exception: %s" % exc)
-                yield json.dumps({"exception": exc}) + ","
+                yield json.dumps({"exception": exc}) + "\n"
     print("Fetched and saved: %s movies" % length)
 
 
@@ -156,11 +164,14 @@ def import_genres():
     response = requests.get(url, stream=True)
     if response.status_code == 200:
         genres_from_json = json.loads(response.content)['genres']
+        length = len(genres_from_json)
+        i = 0
         for genre in __log_progress(genres_from_json, "TMDB Genres"):
             Genre(id=genre['id'], name=genre['name']).save()
-        return "Imported: %s genres" % len(genres_from_json)
+            i += 1
+            yield json.dumps({"fetched": i, "total": length}) + "\n"
     else:
-        return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
+        yield json.dumps({"exception": response.status_code, "message": response.content}) + "\n"
 
 
 def import_countries():
@@ -170,12 +181,15 @@ def import_countries():
     response = requests.get(url, stream=True)
     if response.status_code == 200:
         countries_from_json = json.loads(response.content)
+        length = len(countries_from_json)
+        i = 0
         for country in __log_progress(countries_from_json, "TMDB Countries"):
             if not ProductionCountries.objects.all().filter(iso_3166_1=country['iso_3166_1']).exists():
                 ProductionCountries.objects.update_or_create(iso_3166_1=country['iso_3166_1'], name=country['english_name'])
-        return "Imported: %s countries" % len(countries_from_json)
+            i += 1
+            yield json.dumps({"fetched": i, "total": length}) + "\n"
     else:
-        return "Request failed with status: %s, and message: %s" % (response.status_code, response.content)
+        yield json.dumps({"exception": response.status_code, "message": response.content}) + "\n"
 
 
 def import_languages():
@@ -189,12 +203,12 @@ def import_languages():
         i = 0
         for language in __log_progress(languages_from_json, "TMDB Languages"):
             i += 1
-            yield json.dumps({"fetched": i, "total": length}) + ","
+            yield json.dumps({"fetched": i, "total": length}) + "\n"
             spoken_lang = SpokenLanguage.objects.all().filter(iso_639_1=language['iso_639_1']).exists()
             if not spoken_lang:
                 SpokenLanguage(iso_639_1=language['iso_639_1'], name=language['english_name']).save()
     else:
-        yield json.dumps({"exception": response.status_code, "message": response.content}) + ","
+        yield json.dumps({"exception": response.status_code, "message": response.content}) + "\n"
 
 
 def __chunks(__list, n):
@@ -211,6 +225,7 @@ def import_imdb_ratings():
     """
     url = 'https://datasets.imdbws.com/title.ratings.tsv.gz'
     response = requests.get(url)
+    yield json.dumps({"message": "Downloading file: %s" % url}) + "\n"
     with open('title.ratings.tsv.gz', 'wb') as f:
         f.write(response.content)
     if response.status_code == 200:
@@ -224,6 +239,7 @@ def import_imdb_ratings():
             .all()\
             .values_list('imdb_id', flat=True)
 
+        imdb_ids_length = len(all_imdb_ids)
         # Multithread this maybe?
         for row in __log_progress(list(reader), "IMDB Ratings"):
             tconst = row[0]
@@ -233,12 +249,12 @@ def import_imdb_ratings():
                     movie.imdb_vote_average = row[1]
                     movie.imdb_vote_count = row[2]
                     movie.save()
-                    counter = counter + 1
+                    counter += 1
+                    yield json.dumps({"fetched": counter, "total": imdb_ids_length}) + "\n"
                 except Movie.DoesNotExist:
                     pass
-        return "Imported: %s" % counter
     else:
-        return "Response: %s, %s" % (response.status_code, response.content)
+        yield json.dumps({"exception": response.status_code, "message": response.content}) + "\n"
 
 
 def import_imdb_alt_titles():
@@ -247,6 +263,7 @@ def import_imdb_alt_titles():
     """
     print("Dowloading title.akas.tsv.gz")
     url = 'https://datasets.imdbws.com/title.akas.tsv.gz'
+    yield json.dumps({"message": "Downloading file: %s" % url}) + "\n"
     response = requests.get(url)
     with open('title.akas.tsv.gz', 'wb') as f:
         f.write(response.content)
@@ -254,29 +271,41 @@ def import_imdb_alt_titles():
         contents = __unzip_file('title.akas.tsv.gz')
         count = len(contents)
         csv.field_size_limit(sys.maxsize)
+        all_imdb_ids = Movie.objects.filter(fetched=True) \
+            .exclude(imdb_id__isnull=True) \
+            .exclude(imdb_id__exact='') \
+            .all() \
+            .values_list('imdb_id', flat=True)
+
         reader = csv.reader(contents, delimiter='\t', quoting=csv.QUOTE_NONE)
         print("Processing IMDB Titles")
         next(reader) # Skip header
         alt_titles = []
+        counter = 0
         for row in __log_progress(reader, "Processing IMDB Titles", count):
             tconst = row[0]
-            try:
-                movie = Movie.objects.get(imdb_id=tconst)
-                title=row[2]
-                if row[3] != r'\N' and not movie.alternative_titles.filter(title=title).exists():
-                    alt_title = AlternativeTitle(movie_id=movie.id,
-                                        iso_3166_1=row[3],
-                                        title=title,
-                                        type='IMDB')
-                    alt_titles.append(alt_title)
-            except Movie.DoesNotExist:
-                pass
+            if tconst in all_imdb_ids:
+                try:
+                    movie = Movie.objects.get(imdb_id=tconst)
+                    title = row[2]
+                    if row[3] != r'\N' and not movie.alternative_titles.filter(title=title).exists():
+                        alt_title = AlternativeTitle(movie_id=movie.id,
+                                                     iso_3166_1=row[3],
+                                                     title=title,
+                                                     type='IMDB')
+                        alt_titles.append(alt_title)
+                        yield json.dumps({"message": "created %s alternative titles" % counter}) + "\n"
+                except Movie.DoesNotExist:
+                    pass
         print("Persisting IMDB Titles")
+        i = 0
+        alt_titles_len = len(alt_titles)
         for alt_titles_chunk in __chunks(alt_titles, 50):
             AlternativeTitle.objects.bulk_create(alt_titles_chunk)
-
-        return 'Imported titles'
-    return "Something went wrong %s" % response.content
+            i += len(alt_titles_chunk)
+            yield json.dumps({"message": "Persisted %s out of %s titles" % (i, alt_titles_len)}) + "\n"
+    else:
+        yield json.dumps({"exception": response.status_code, "message": response.content}) + "\n"
 
 
 def check_which_movies_needs_update(start_date, end_date):
@@ -291,12 +320,10 @@ def check_which_movies_needs_update(start_date, end_date):
     response = requests.get(url, stream=True)
     if response.status_code == 200:
         data = json.loads(response.content)
-        count = 0
         for movie in __log_progress(data['results'], "TMDB Changes"):
             if not movie['adult']:
-                count += 1
                 Movie.objects.filter(pk=movie['id']).update(fetched=False)
-        return count
+                yield json.dumps({"movie_id": movie['id']}) + "\n"
 
 
 def cron_endpoint_for_checking_updateable_movies():

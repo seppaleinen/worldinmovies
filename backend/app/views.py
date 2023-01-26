@@ -9,24 +9,12 @@ from django.views.decorators.csrf import csrf_exempt
 from fuzzywuzzy import fuzz
 
 
-def index(request):
-    movies_count = Movie.objects.count()
-    if movies_count > 0:
-        return HttpResponse("Amount of movies in DB: %s, first is: %s" % (movies_count, Movie.objects.first().id))
-    else:
-        return HttpResponse("No movies fetched yet")
-
-
 def stream_response_test(request):
     def stream_response_generator():
-        for x in range(1, 10000):
-            yield simplejson.dumps({"i": x}) + ","# Returns a chunk of the response to the browser
+        for x in range(1, 5000):
+            yield simplejson.dumps({"i": x}) + "\n"# Returns a chunk of the response to the browser
             time.sleep(0.001)
-    strea = StreamingHttpResponse(stream_response_generator(), status=200, content_type='text/event-stream')
-    #strea["Access-control-Allow-Headers"] = "*"
-    #strea["Connection"] = "keep-alive"
-    return strea
-
+    return StreamingHttpResponse(stream_response_generator())
 
 
 def import_status(request):
@@ -37,9 +25,9 @@ def import_status(request):
                                 sum(case when fetched is True then 1 else 0 end) * 100 / count(*) as percentage 
                                 from app_movie""")
         result = cursor.fetchone()
-        fetched = result[0]
+        fetched = result[0] if result[0] else 0
         total = result[1]
-        percent = result[2]
+        percent = result[2] if result[2] else 0
         return HttpResponse(simplejson.dumps({"fetched": fetched, "total": total, "percentage_done": percent}), content_type='application/json')
 
 
@@ -157,40 +145,39 @@ def ratings(request):
 
 
 def download_file(request):
-    return HttpResponse(download_files())
+    return StreamingHttpResponse(download_files())
 
 
 def base_fetch(request):
-    return HttpResponse(base_import())
+    return StreamingHttpResponse(base_import())
 
 
 def fetch_movie(request):
-    return StreamingHttpResponse(concurrent_stuff(), content_type='text/event-stream')
+    return StreamingHttpResponse(concurrent_stuff())
 
 
 def fetch_genres(request):
-    return HttpResponse(import_genres())
+    return StreamingHttpResponse(import_genres())
 
 
 def fetch_countries(request):
-    return HttpResponse(import_countries())
+    return StreamingHttpResponse(import_countries())
 
 
 def fetch_languages(request):
-    return StreamingHttpResponse(import_languages(), content_type='text/event-stream')
+    return StreamingHttpResponse(import_languages())
 
 
 def fetch_imdb_ratings(request):
-    return HttpResponse(import_imdb_ratings())
+    return StreamingHttpResponse(import_imdb_ratings())
 
 
 def fetch_imdb_titles(request):
-    return HttpResponse(import_imdb_alt_titles())
+    return StreamingHttpResponse(import_imdb_alt_titles())
 
 
 def check_tmdb_for_changes(request):
     start_date = request.GET.get('start_date',
                                  (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
     end_date = request.GET.get('end_date', datetime.date.today().strftime("%Y-%m-%d"))
-    amount_to_be_updated = check_which_movies_needs_update(start_date, end_date)
-    return HttpResponse("%s movies are set to be updated" % amount_to_be_updated)
+    return StreamingHttpResponse(check_which_movies_needs_update(start_date, end_date))

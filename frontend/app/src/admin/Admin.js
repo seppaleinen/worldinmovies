@@ -3,6 +3,7 @@ import './Admin.css';
 import axios from "axios";
 import {fromFetch} from "rxjs/fetch";
 import {concatMap} from "rxjs/operators";
+import ndjsonStream from "can-ndjson-stream";
 
 /**
  *     # Imports a daily file with the data of what movies are available to download
@@ -33,26 +34,21 @@ const Admin = (props: any) => {
     }, []);
 
     const startLanguageImport = (path) => {
-        const sub$ = fromFetch(process.env.REACT_APP_BACKEND_URL + path,
-            {
-                selector: response => {
-                    return response.text();
-                }
+        fetch(process.env.REACT_APP_BACKEND_URL + path)
+            .then((response) => ndjsonStream( response.body ))
+            .then((stream) => {
+                const reader = stream.getReader();
+                let read;
+                reader.read().then( read = ( result ) => {
+                    if ( result.done ) {
+                        return;
+                    }
+
+                    setBaseImport(prevState => [...prevState.slice(-9), result.value])
+                    reader.read().then( read );
+
+                } );
             })
-            .pipe(
-                concatMap(data => JSON.parse("[" + data.toString().slice(0, -1) + "]"))
-            )
-            .subscribe({
-                next: value => {
-                    // Add latest response and remove all but previous 9 entries
-                    setBaseImport(prevState => [...prevState.slice(-9), value]);
-                },
-                complete: () => {
-                    console.log("Done");
-                },
-                error: err => console.error("Error: " + err)
-            });
-        return () => sub$.unsubscribe();
     }
 
     return (
@@ -67,11 +63,21 @@ const Admin = (props: any) => {
 
             <span>Fetched {status.fetched} out of {status.total} movies which is {status.percentage_done}%</span><br/>
 
-            <button onClick={() => startLanguageImport('/import/tmdb/languages')}>Start Language Import</button>
+            <button onClick={() => startLanguageImport('/import/base')}>Import TMDB Base</button>
             <br/>
-            <button onClick={() => startLanguageImport('/stream')}>Stream test</button>
+            <button onClick={() => startLanguageImport('/import/tmdb/data')}>Import TMDB Data</button>
             <br/>
-            <button onClick={() => startLanguageImport('/import/tmdb/data')}>Start Data Import</button>
+            <button onClick={() => startLanguageImport('/import/tmdb/languages')}>Import TMDB Languages</button>
+            <br/>
+            <button onClick={() => startLanguageImport('/import/tmdb/genres')}>Import TMDB Genres</button>
+            <br/>
+            <button onClick={() => startLanguageImport('/import/tmdb/countries')}>Import TMDB Countries</button>
+            <br/>
+            <button onClick={() => startLanguageImport('/import/tmdb/changes')}>Import TMDB Changes</button>
+            <br/>
+            <button onClick={() => startLanguageImport('/import/imdb/ratings')}>Import IMDB Ratings</button>
+            <br/>
+            <button onClick={() => startLanguageImport('/import/imdb/titles')}>Import IMDB Titles</button>
             <br/>
             <div id="container">
                 <div id="content">
