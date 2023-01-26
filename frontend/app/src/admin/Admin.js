@@ -1,8 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import './Admin.css';
 import axios from "axios";
-import {fromFetch} from "rxjs/fetch";
-import {concatMap} from "rxjs/operators";
 import ndjsonStream from "can-ndjson-stream";
 
 /**
