@@ -51,6 +51,7 @@ class Genre(models.Model):
 
 
 class AlternativeTitle(models.Model):
+    id = models.AutoField(primary_key=True)
     movie = models.ForeignKey(Movie, related_name='alternative_titles', on_delete=models.CASCADE, db_index=True)
     iso_3166_1 = models.CharField(max_length=50)
     title = models.CharField(max_length=500)
@@ -61,6 +62,7 @@ class AlternativeTitle(models.Model):
 
 
 class SpokenLanguage(models.Model):
+    id = models.AutoField(primary_key=True)
     movies = models.ManyToManyField(Movie, related_name='spoken_languages')
     iso_639_1 = models.CharField(max_length=4, unique=True)
     name = models.CharField(max_length=50)
@@ -70,6 +72,7 @@ class SpokenLanguage(models.Model):
 
 
 class ProductionCountries(models.Model):
+    id = models.AutoField(primary_key=True)
     movies = models.ManyToManyField(Movie, related_name='production_countries')
     iso_3166_1 = models.CharField(max_length=4, unique=True)
     name = models.CharField(max_length=50)
