@@ -1,6 +1,7 @@
 import multiprocessing
 
-bind = "0.0.0.0:8000"
+#bind = "0.0.0.0:8000"
+bind = 'unix:/run/gunicorn.sock'
 workers = multiprocessing.cpu_count() * 2 + 1
 timeout = "9000000"
 #check_config = True

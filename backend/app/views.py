@@ -19,9 +19,9 @@ def index(request):
 
 def stream_response_test(request):
     def stream_response_generator():
-        for x in range(1, 25):
-            yield simplejson.dumps({"i": x})  + ","# Returns a chunk of the response to the browser
-            time.sleep(0.1)
+        for x in range(1, 10000):
+            yield simplejson.dumps({"i": x}) + ","# Returns a chunk of the response to the browser
+            time.sleep(0.001)
     strea = StreamingHttpResponse(stream_response_generator(), status=200, content_type='text/event-stream')
     #strea["Access-control-Allow-Headers"] = "*"
     #strea["Connection"] = "keep-alive"

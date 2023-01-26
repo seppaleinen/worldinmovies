@@ -20,7 +20,6 @@ COPY --from=builder /app/nginx/sites-enabled/ /etc/nginx/sites-enabled
 COPY --from=builder /app/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /app/build/ /var/www/app/
 
-RUN find -type f -name "favicon.ico" 2>/dev/null
 # Test configs
 RUN /usr/sbin/nginx -t
 CMD ["/usr/sbin/nginx"]

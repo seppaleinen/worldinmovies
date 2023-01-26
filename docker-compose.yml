@@ -10,17 +10,32 @@ services:
       - "5433:5432"
     environment:
       - POSTGRES_PASSWORD=postgres
+
   backend:
     image: seppaleinen/worldinmovies_backend
     build: backend/
-    ports:
-      - "8000:8000"
+    expose:
+      - 8000
     depends_on:
       - db
-    restart: always
+    restart: on-failure
     environment:
       - TMDB_API=${TMDB_API}
       - SENTRY_URL=${SENTRY_URL}
+    volumes:
+      - gunicornsocket:/run/
+
+  backend_proxy:
+    image: seppaleinen/worldinmovies_backend_proxy
+    build: backend/nginx/
+    ports:
+      - "82:80"
+    depends_on:
+      - backend
+    restart: on-failure
+    volumes:
+      - gunicornsocket:/run/
+
   webapp:
     image: seppaleinen/worldinmovies_webapp
     build: frontend/app/
@@ -29,5 +44,7 @@ services:
     environment:
       - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
       - REACT_APP_SENTRY_URL=${SENTRY_URL_FRONTEND}
+
 volumes:
   pgdata:
+  gunicornsocket:
