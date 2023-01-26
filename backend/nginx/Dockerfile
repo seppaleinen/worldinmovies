@@ -4,5 +4,4 @@ COPY ./nginx.conf /etc/nginx/nginx.conf
 
 # Test configs
 RUN /usr/sbin/nginx -t
-# CMD ["/usr/sbin/nginx"]
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/usr/sbin/nginx"]
