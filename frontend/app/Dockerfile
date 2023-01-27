@@ -15,6 +15,8 @@ RUN npm run build
 
 
 FROM nginx:alpine
+
+ENV TZ=Europe/Stockholm
 RUN addgroup -g 1000 -S www-data ; adduser -u 1000 -D -S -G www-data www-data
 COPY --from=builder /app/nginx/sites-enabled/ /etc/nginx/sites-enabled
 COPY --from=builder /app/nginx/nginx.conf /etc/nginx/nginx.conf
