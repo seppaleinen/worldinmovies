@@ -24,8 +24,6 @@ SECRET_KEY = '!xr(&l&-)*&!$kfj_&!ku#@%z8+ox4kb$y(k$nh8ur8b5wjshj'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -65,7 +63,7 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = True
 # CORS_ORIGIN_WHITELIST = ('http://localhost', 'https://localhost', 'http://localhost:81')
 # ALLOWED_HOSTS=['http://localhost:3000', 'http://localhost:81', 'http://webapp:81', 'http://webapp:3000', 'http://localhost:8000', 'localhost:8000']
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'localhost', 'webapp', 'backend']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'localhost', 'webapp', 'backend', 'worldinmovies.duckdns.org', '192.168.1.137']
 ROOT_URLCONF = 'settings.urls'
 
 TEMPLATES = [
