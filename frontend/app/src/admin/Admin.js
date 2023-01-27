@@ -24,7 +24,7 @@ const Admin = (props: any) => {
 
     useEffect(() => {
         async function getStatus() {
-            let response = await axios.get(process.env.REACT_APP_BACKEND_URL + '/status', {timeout: 5000});
+            let response = await axios.get('/backend/status', {timeout: 5000});
             setStatus(response.data);
         }
 
@@ -32,7 +32,7 @@ const Admin = (props: any) => {
     }, []);
 
     const startLanguageImport = (path) => {
-        fetch(process.env.REACT_APP_BACKEND_URL + path)
+        fetch("/backend" + path)
             .then((response) => ndjsonStream( response.body ))
             .then((stream) => {
                 const reader = stream.getReader();

@@ -25,24 +25,17 @@ services:
     volumes:
       - gunicornsocket:/run/
 
-  backend_proxy:
-    image: seppaleinen/worldinmovies_backend_proxy
-    build: backend/nginx/
-    ports:
-      - "82:80"
-    depends_on:
-      - backend
-    restart: on-failure
-    volumes:
-      - gunicornsocket:/run/
-
   webapp:
     image: seppaleinen/worldinmovies_webapp
     build: frontend/app/
+    depends_on:
+      - backend
     ports:
       - "81:80"
+    volumes:
+      - gunicornsocket:/run/
     environment:
-      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL:-http://localhost:82}
+      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL:-http://localhost:81}
       - REACT_APP_SENTRY_URL=${SENTRY_URL_FRONTEND}
 
 volumes:

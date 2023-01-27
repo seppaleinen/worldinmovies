@@ -10,7 +10,7 @@ var FileUpload = inject("store")(
         document.getElementById("earth").style.display = "block";
         const data = new FormData()
         data.append('file', event.target.files[0])
-        axios.post(process.env.REACT_APP_BACKEND_URL + "/ratings", data, {})
+        axios.post( "/backend/ratings", data, {})
           .then(res => { // then print response status
             this.props.changeDataStateCallback(res.data);
             this.props.store.myMovies = res.data.found;
