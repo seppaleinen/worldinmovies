@@ -22,7 +22,7 @@ ENV PYTHONUNBUFFERED 1
 ENV TZ Europe/Stockholm
 
 COPY --from=builder /install /usr/local
-RUN apk --no-cache add libpq
+RUN apk --no-cache add libpq curl
 
 ADD . /app
 
