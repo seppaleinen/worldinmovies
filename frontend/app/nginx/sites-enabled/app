@@ -1,6 +1,6 @@
 upstream backend {
   # for UNIX domain socket setups
-  server unix:/run/gunicorn.sock fail_timeout=0;
+  server unix:/run/gunicorn.sock max_fails=3 fail_timeout=30s;
 }
 
 server {
