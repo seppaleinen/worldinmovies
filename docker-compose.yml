@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   db:
@@ -14,7 +14,6 @@ services:
   backend:
     image: seppaleinen/worldinmovies_backend
     build: backend/
-    platform: linux/arm64/v8
     expose:
       - 8000
     depends_on:
@@ -29,7 +28,6 @@ services:
   webapp:
     image: seppaleinen/worldinmovies_webapp
     build: frontend/app/
-    platform: linux/arm64/v8
     depends_on:
       - backend
     ports:
