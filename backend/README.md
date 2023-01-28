@@ -74,4 +74,5 @@ gunicorn --config=gunicorn.config.py settings.wsgi
 # Lint project
 pylint --load-plugins pylint_django app/ settings/
 
+pg_restore -U postgres -f /worldinmovies.db.pgsql
 ```
