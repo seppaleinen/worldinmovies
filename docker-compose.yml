@@ -54,7 +54,7 @@ services:
       - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL:-http://localhost:81}
       - REACT_APP_SENTRY_URL=${SENTRY_URL_FRONTEND}
     healthcheck:
-      test: ['CMD', 'nc', '-vz', '-w1', 'localhost', '80']
+      test: ['CMD', 'nc', '-vz', '-w1', 'localhost', '443']
       interval: 10s
       timeout: 5s
       retries: 3
