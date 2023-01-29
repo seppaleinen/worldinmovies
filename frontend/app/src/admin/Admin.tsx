@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import './Admin.css';
 import axios from "axios";
+// @ts-ignore
 import ndjsonStream from "can-ndjson-stream";
 
 /**
@@ -18,7 +19,7 @@ import ndjsonStream from "can-ndjson-stream";
  *     path('import/imdb/titles',              views.fetch_imdb_titles),
  *     re_path(r'^status$',                    views.import_status, name='import_status'),
  */
-const Admin = (props: any) => {
+const Admin = () => {
     const [status, setStatus] = useState({"fetched": 0, "total": 0, "percentage_done": 0});
     const [baseImport, setBaseImport] = useState([]);
 
@@ -31,13 +32,13 @@ const Admin = (props: any) => {
         getStatus();
     }, []);
 
-    const startLanguageImport = (path) => {
+    const startLanguageImport = (path: string) => {
         fetch("/backend" + path)
             .then((response) => ndjsonStream( response.body ))
             .then((stream) => {
                 const reader = stream.getReader();
-                let read;
-                reader.read().then( read = ( result ) => {
+                let read: any;
+                reader.read().then( read = ( result: any ) => {
                     if ( result.done ) {
                         return;
                     }

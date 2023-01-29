@@ -18,6 +18,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 # install and cache app dependencies
 COPY package.json /app/
+COPY tsconfig.json /app/
 RUN npm install --silent --production
 
 ADD public/ /app/public/

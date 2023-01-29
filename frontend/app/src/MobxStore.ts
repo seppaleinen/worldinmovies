@@ -1,14 +1,15 @@
-import {action, makeAutoObservable} from "mobx"
+import {makeAutoObservable} from "mobx"
 import {makePersistable, startPersisting, isHydrated, clearPersistedStore} from 'mobx-persist-store';
+import {Movie, MyMovie, StoreType} from "./Types";
 
-export default class Store {
+export default class Store implements StoreType {
     showMovieModal = false;
-    movies = [];
-    myMovies = [];
+    movies: Movie[] = [];
+    myMovies: Record<string, MyMovie[]> = {};
     code = '';
     regionName = '';
 
-    showImportModal = false;
+    showImportModal: boolean = false;
     importView = 'FIRST';
 
     toggleShowMovieModal = () => {
