@@ -1,33 +1,44 @@
-import { observable, action, decorate } from "mobx"
-
+import {action, makeAutoObservable} from "mobx"
+import {makePersistable, startPersisting, isHydrated, clearPersistedStore} from 'mobx-persist-store';
 
 export default class Store {
-  showMovieModal = false;
-  movies = [];
-  myMovies = [];
-  code = '';
-  regionName = '';
+    showMovieModal = false;
+    movies = [];
+    myMovies = [];
+    code = '';
+    regionName = '';
 
-  showImportModal = false;
-  importView = 'FIRST';
+    showImportModal = false;
+    importView = 'FIRST';
 
-  toggleShowMovieModal = () => {
-    this.showMovieModal = !this.showMovieModal;
-  }
-  closeImportModal = () => {
-    this.showImportModal = false;
-    this.importView = 'FIRST';
-  }
+    toggleShowMovieModal = () => {
+        this.showMovieModal = !this.showMovieModal;
+    }
+
+    closeImportModal = () => {
+        this.showImportModal = false;
+        this.importView = 'FIRST';
+    }
+
+    constructor() {
+        makeAutoObservable(this);
+        makePersistable(this, {
+            name: 'MovieStore',
+            properties: ['movies', "myMovies"],
+            storage: window.localStorage
+        });
+    }
+
+    startStore() {
+        startPersisting(this);
+    }
+
+    async clearStoredData() {
+        await clearPersistedStore(this);
+    }
+
+    get isHydrated() {
+        return isHydrated(this);
+    }
 }
 
-decorate(Store, {
-  showMovieModal: observable,
-  showImportModal: observable,
-  importView: observable,
-  movies: observable,
-  myMovies: observable,
-  regionName: observable,
-  code: observable,
-  toggleShowMovieModal: action,
-  closeImportModal: action
-});

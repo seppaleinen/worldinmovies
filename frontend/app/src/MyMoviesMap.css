@@ -5,6 +5,7 @@
   display: grid;
   grid-template-areas:
   'import'
+  'import'
   'map'
   'map';
 }

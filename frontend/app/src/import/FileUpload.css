@@ -40,7 +40,7 @@
     background-color: rgba(0,0,0); /* Black w/ opacity */
     width: 300px;
     height: 300px;
-    background: url(https://web.archive.org/web/20150807125159if_/http://www.noirextreme.com/digital/Earth-Color4096.jpg);
+    background: url(/public/Earth-Color4096.jpeg);
     border-radius: 50%;
     background-size: 610px;
     box-shadow: inset 8px 36px 80px 36px rgb(0, 0, 0), inset -6px 0 12px 4px rgba(255, 255, 255, 0.3);

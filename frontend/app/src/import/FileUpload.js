@@ -14,6 +14,7 @@ var FileUpload = inject("store")(
           .then(res => { // then print response status
             this.props.changeDataStateCallback(res.data);
             this.props.store.myMovies = res.data.found;
+            this.props.store.startStore();
           })
           .finally(() => {
             document.getElementById("earth").style.display = "none";
