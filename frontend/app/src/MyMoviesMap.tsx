@@ -16,7 +16,8 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
     state: MyMovieMapState = {
         data: {found: {}, not_found: []},
         rerenderModal: 0,
-        rerenderImportModal: 0};
+        rerenderImportModal: 0
+    };
 
     constructor(props: Props) {
         super(props);
@@ -52,10 +53,12 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
         const regionName = this.myRef.current.getMapObject().getRegionName(code);
         axios.get("/backend/view/best/" + code.toUpperCase(), {timeout: 5000})
             .then((response: AxiosResponse) => {
-                this.props.store.showMovieModal = true;
-                this.props.store.movies = response.data.result;
-                this.props.store.code = code;
-                this.props.store.regionName = regionName;
+                if (this.props.store !== undefined) {
+                    this.props.store.showMovieModal = true;
+                    this.props.store.movies = response.data.result;
+                    this.props.store.code = code;
+                    this.props.store.regionName = regionName;
+                }
                 this.setState({rerenderModal: Math.random()});
             })
             .catch(function (error: any) {
@@ -79,11 +82,13 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
         var importModal = document.getElementById("importModal");
         var movieModal = document.getElementById("myModal");
         window.onclick = (event) => {
-            if (event.target === importModal) {
-                this.props.store.closeImportModal();
-            }
-            if (event.target === movieModal) {
-                this.props.store.toggleShowMovieModal();
+            if (this.props.store !== undefined) {
+                if (event.target === importModal) {
+                    this.props.store.closeImportModal();
+                }
+                if (event.target === movieModal) {
+                    this.props.store.toggleShowMovieModal();
+                }
             }
         };
 
