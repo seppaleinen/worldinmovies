@@ -6,7 +6,7 @@ FROM certbot/certbot as certbot
 #    cat /localhost.crt /localhost.key > /localhost.crt \
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:4096 -sha256 -keyout /localhost.key -out /localhost.crt \
     -subj "/C=SE/ST=QC/O=Company,INC./CN=localhost"
-    #openssl dhparam -out /dhparam.pem 2048
+    #openssl dhparam -out /dhparam.pem 4096
 
 FROM node:19-alpine AS builder
 
@@ -33,10 +33,10 @@ ENV TZ=Europe/Stockholm
 RUN addgroup -g 1000 -S www-data ; adduser -u 1000 -D -S -G www-data www-data
 # Get selfsigned certificate as fallback
 
-COPY ./nginx/nginx-selfsigned.crt     /etc/nginx/server.crt
-COPY ./nginx/nginx-selfsigned.key     /etc/nginx/server.key
-COPY ./nginx/dhparams.pem             /etc/nginx/ssl-dhparams.pem
-COPY ./nginx/ssl-params.conf          /etc/nginx/ssl-params.conf
+COPY --from=certbot /localhost.crt  /etc/nginx/server.crt
+COPY --from=certbot /localhost.key  /etc/nginx/server.key
+COPY ./nginx/dhparams.pem    /etc/nginx/ssl-dhparams.pem
+COPY ./nginx/ssl-params.conf        /etc/nginx/ssl-params.conf
 
 COPY ./nginx/sites-enabled/ /etc/nginx/sites-enabled
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
