@@ -29,13 +29,13 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
     }
 
     generateColors = () => {
-        var colors: Record<string, string> = {}, key;
+        let colors: Record<string, string> = {}, key;
 
         // @ts-ignore
         for (key in this.myRef.current.getMapObject().regions) {
             // @ts-ignore
-            var found = key in this.state.data.found;
-            var color = (found ? 'seen' /* light green */ : 'unseen' /* gray */);
+            const found = key in this.state.data.found;
+            const color = (found ? 'seen' /* light green */ : 'unseen' /* gray */);
             colors[key] = color;
         }
         return colors;
@@ -53,12 +53,10 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
         const regionName = this.myRef.current.getMapObject().getRegionName(code);
         axios.get("/backend/view/best/" + code.toUpperCase(), {timeout: 5000})
             .then((response: AxiosResponse) => {
-                if (this.props.store !== undefined) {
-                    this.props.store.showMovieModal = true;
-                    this.props.store.movies = response.data.result;
-                    this.props.store.code = code;
-                    this.props.store.regionName = regionName;
-                }
+                this.props.store!.showMovieModal = true;
+                this.props.store!.movies = response.data.result;
+                this.props.store!.code = code;
+                this.props.store!.regionName = regionName;
                 this.setState({rerenderModal: Math.random()});
             })
             .catch(function (error: any) {
@@ -74,21 +72,18 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
     }
 
     show_import_modal = () => {
-        // @ts-ignore
-        this.props.store.showImportModal = true;
+        this.props.store!.showImportModal = true;
     }
 
     componentDidMount() {
-        var importModal = document.getElementById("importModal");
-        var movieModal = document.getElementById("myModal");
+        const importModal = document.getElementById("importModal");
+        const movieModal = document.getElementById("myModal");
         window.onclick = (event) => {
-            if (this.props.store !== undefined) {
-                if (event.target === importModal) {
-                    this.props.store.closeImportModal();
-                }
-                if (event.target === movieModal) {
-                    this.props.store.toggleShowMovieModal();
-                }
+            if (event.target === importModal) {
+                this.props.store!.closeImportModal();
+            }
+            if (event.target === movieModal) {
+                this.props.store!.toggleShowMovieModal();
             }
         };
 
@@ -126,7 +121,7 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
                         className="map"
                     />
 
-                    <MovieModal store={this.props.store}/**rerender={this.state.rerenderModal}**//>
+                    <MovieModal /** TODO rerender={this.state.rerenderModal}**//>
                 </div>
             </div>
         );

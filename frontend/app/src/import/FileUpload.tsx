@@ -6,25 +6,25 @@ import {StoreType} from "../Types";
 
 export interface FileUploadProps {
     changeDataStateCallback: any;
-    store: StoreType;
+    store?: StoreType;
 }
 
 @inject('store')
 @observer
 class FileUpload extends React.Component<FileUploadProps, {}> {
     onChangeHandler = (event: any) => {
-        document.getElementById("earth").style.display = "block";
+        document.getElementById("earth")!.style.display = "block";
         const data = new FormData()
         data.append('file', event.target.files[0])
         axios.post("/backend/ratings", data, {})
             .then(res => { // then print response status
                 this.props.changeDataStateCallback(res.data);
-                this.props.store.myMovies = res.data.found;
-                this.props.store.startStore();
+                this.props.store!.myMovies = res.data.found;
+                this.props.store!.startStore();
             })
             .finally(() => {
-                document.getElementById("earth").style.display = "none";
-                this.props.store.closeImportModal();
+                document.getElementById("earth")!.style.display = "none";
+                this.props.store!.closeImportModal();
             });
     }
 

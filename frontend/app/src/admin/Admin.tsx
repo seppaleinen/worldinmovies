@@ -3,6 +3,7 @@ import './Admin.css';
 import axios from "axios";
 // @ts-ignore
 import ndjsonStream from "can-ndjson-stream";
+import {Header} from "../Header";
 
 /**
  *     # Imports a daily file with the data of what movies are available to download
@@ -21,7 +22,7 @@ import ndjsonStream from "can-ndjson-stream";
  */
 const Admin = () => {
     const [status, setStatus] = useState({"fetched": 0, "total": 0, "percentage_done": 0});
-    const [baseImport, setBaseImport] = useState([]);
+    const [baseImport, setBaseImport] = useState<string[]>([]);
 
     useEffect(() => {
         async function getStatus() {
@@ -34,8 +35,8 @@ const Admin = () => {
 
     const startLanguageImport = (path: string) => {
         fetch("/backend" + path)
-            .then((response) => ndjsonStream( response.body ))
-            .then((stream) => {
+            .then((response: Response) => ndjsonStream( response.body ))
+            .then((stream: ReadableStream<Object>) => {
                 const reader = stream.getReader();
                 let read: any;
                 reader.read().then( read = ( result: any ) => {
@@ -52,13 +53,7 @@ const Admin = () => {
 
     return (
         <div>
-            <nav>
-                <ul>
-                    <li>
-                        <a href="/">Home</a>
-                    </li>
-                </ul>
-            </nav>
+            <Header/>
 
             <span>Fetched {status.fetched} out of {status.total} movies which is {status.percentage_done}%</span><br/>
 

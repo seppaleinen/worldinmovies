@@ -11,7 +11,7 @@
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
-    "strict": false,
+    "strict": true,
     "moduleResolution":"node",
     "experimentalDecorators": true
   }

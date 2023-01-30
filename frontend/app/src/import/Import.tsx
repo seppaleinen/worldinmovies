@@ -26,24 +26,24 @@ class Import extends React.Component<ImportProps, ImportState> {
     }
 
     change_view_to_imdb = () => {
-        this.props.store.importView = 'IMDB';
+        this.props.store!.importView = 'IMDB';
     }
 
     change_view_to_trakt = () => {
-        this.props.store.importView = "TRAKT";
+        this.props.store!.importView = "TRAKT";
     }
 
     componentDidUpdate(prevProps: ImportProps) {
         if (this.props.rerenderImport !== prevProps.rerenderImport) {
             this.setState({rerenderImport: this.props.rerenderImport});
         }
-        if (this.props.store.showImportModal !== prevProps.store.showImportModal) {
+        if (this.props.store!.showImportModal !== prevProps.store!.showImportModal) {
             this.setState({rerenderImport: this.props.rerenderImport});
         }
     }
 
     changePage = () => {
-        switch (this.props.store.importView) {
+        switch (this.props.store!.importView) {
             case 'FIRST':
                 return (
                     <div>
@@ -61,7 +61,7 @@ class Import extends React.Component<ImportProps, ImportState> {
                 );
             case 'IMDB':
                 return (
-                    <FileUpload changeDataStateCallback={this.props.changeDataStateCallback} store={this.props.store}/>
+                    <FileUpload changeDataStateCallback={this.props.changeDataStateCallback} />
                 );
             case 'TRAKT':
                 return (
@@ -77,12 +77,12 @@ class Import extends React.Component<ImportProps, ImportState> {
     }
 
     render() {
-        const showModal = this.props.store?.showImportModal ? 'block' : 'none';
+        const showModal = this.props.store!.showImportModal ? 'block' : 'none';
         return (
             <div id="importModal" style={{display: showModal}}>
                 <div className="modal-content">
                     <span id="importModalClose" className='close'
-                          onClick={this.props.store.closeImportModal}>&times;</span>
+                          onClick={this.props.store!.closeImportModal}>&times;</span>
                     {this.changePage()}
                 </div>
             </div>

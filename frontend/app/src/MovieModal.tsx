@@ -26,22 +26,22 @@ class MovieModal extends React.Component<Props, MovieModalState> {
         )
     }
 
-    componentDidUpdate(prevProps: any, prevState: any) {
+    componentDidUpdate(prevProps: Props, prevState: MovieModalState) {
         if (this.state.rerender !== prevState.rerender) {
             this.setState({rerender: this.state.rerender});
         }
-        if (this.props.store.showMovieModal !== prevProps.store.showMovieModal) {
+        if (this.props.store!.showMovieModal !== prevProps.store!.showMovieModal) {
             this.setState({rerender: this.state.rerender});
         }
     }
 
     shouldIRenderMyMovies() {
-        // @ts-ignore
-        return this.props.store.myMovies !== undefined && this.props.store.myMovies.length !== 0 && this.props.store.code in this.props.store.myMovies;
+        const store = this.props.store!;
+        return store.myMovies !== undefined && Object.keys(store.myMovies).length !== 0 && store.code in store.myMovies;
     }
 
     renderMyMovies(data: Record<string, MyMovie[]>) {
-        let rows = data[this.props.store.code].slice()
+        let rows = data[this.props.store!.code].slice()
             .sort((a: MyMovie, b: MyMovie) => (a.personal_rating > b.personal_rating) ? -1 : 1)
             .slice(0, 10)
             .map((item: MyMovie) => (
@@ -54,7 +54,7 @@ class MovieModal extends React.Component<Props, MovieModalState> {
             ));
 
         return (
-            <div id="myMoviesTable"><h2>Your top ranked movies from {this.props.store.regionName}</h2>
+            <div id="myMoviesTable"><h2>Your top ranked movies from {this.props.store!.regionName}</h2>
                 <table className="modal-table">
                     <thead>
                     <tr>
@@ -73,20 +73,20 @@ class MovieModal extends React.Component<Props, MovieModalState> {
 
     componentDidMount() {
         // When the user clicks on <span> (x), close the modal
-        document.getElementById("closeMovieModalButton").onclick = () => {
-            this.props.store.toggleShowMovieModal();
+        document.getElementById("closeMovieModalButton")!.onclick = () => {
+            this.props.store!.toggleShowMovieModal();
         }
     }
 
     render() {
-        const showModal = this.props.store.showMovieModal ? 'block' : 'none';
+        const showModal = this.props.store!.showMovieModal ? 'block' : 'none';
         return (
             <div id="myModal" className="modal" style={{display: showModal}}>
                 <div className="modal-content">
                     <span id="closeMovieModalButton" className='close movieModalClose'>&times;</span>
                     <div id="modal-text">
                         <section id="containingSection">
-                            <div id="rankedMoviesTable"><h2>Top ranked movies from {this.props.store.regionName}</h2>
+                            <div id="rankedMoviesTable"><h2>Top ranked movies from {this.props.store!.regionName}</h2>
                                 <table className="modal-table">
                                     <thead>
                                     <tr>
@@ -96,11 +96,11 @@ class MovieModal extends React.Component<Props, MovieModalState> {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {this.renderTopMovies(this.props.store.movies)}
+                                    {this.renderTopMovies(this.props.store!.movies)}
                                     </tbody>
                                 </table>
                             </div>
-                            {this.shouldIRenderMyMovies() && this.renderMyMovies(this.props.store.myMovies)}
+                            {this.shouldIRenderMyMovies() && this.renderMyMovies(this.props.store!.myMovies)}
                         </section>
                     </div>
                 </div>
