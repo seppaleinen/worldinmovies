@@ -1,6 +1,7 @@
 {
   "include": [
-    "./src/*"
+    "./src/*",
+    "node_modules/cypress/types/cypress-global-vars.d.ts"
   ],
   "compilerOptions": {
     "lib": [
@@ -13,6 +14,7 @@
     "noImplicitAny": true,
     "strict": true,
     "moduleResolution":"node",
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "baseUrl": "."
   }
 }

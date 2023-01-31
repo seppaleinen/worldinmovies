@@ -1,4 +1,4 @@
-import React, {ReactEventHandler} from 'react';
+import React from 'react';
 import axios, {AxiosResponse} from 'axios';
 import './FileUpload.css';
 import {inject, observer} from "mobx-react";

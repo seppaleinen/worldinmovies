@@ -16,16 +16,25 @@ I've decided against using java, as it's too resource consuming for the basic se
 
 ## TODO
 
-* Traefik
-* Travis
-* Create new image, showing overall architecture
+* Traefik?
+* Graph Database
+* Maybe one DB for getting all the data from TMDB, then a cron-job or something
+    to process the data into graph-db, or like a pre-sorted list of
+    "best movies of every country" so that we don't have to terrorize postgres so much
+* Better page layout (welcome, world, country, user, import)
+* CSS grid instead of tables and muck
+* Check if possible to use graph-db to create aggravated queries like
+  Movies from france, from the 90's, with the actor "Gerard Depardieux"
+* Paginate "best of each country" list
+* Github action for creating docker images
+* Fixing jest tests
+* Fixing letsencrypt cert in "prod"
+* Using websockets for the import responses (so that the result will 
+  be visible even after restarted browser)
+* Estimate how many users can view page before timeouts
 
 ## Performance Metrics
 
-Check why backend takes so much memory.
-  - Seems to be related to gunicorn spawning multiple processes.
-    When setting gunicorn workers to 1, mem usage goes down to 40MB
-    But haven't actually loadtested anything yet, this is only when just started, as is.
 
 ```docker stats worldinmovies_webapp_1 worldinmovies_backend_1 worldinmovies_db_1 ```
 
