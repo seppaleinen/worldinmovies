@@ -6,26 +6,27 @@ import {VectorMap} from "@react-jvectormap/core"
 import axios, {AxiosResponse} from 'axios';
 import {inject, observer} from "mobx-react";
 import {worldMill} from "@react-jvectormap/world";
-import {MyMovieMapState, Props} from "./Types";
+import {MyMovie, MyMovieMapState, Props} from "./Types";
 import {IMapObject} from "@react-jvectormap/core/dist/types";
 
-@inject('store')
+@inject('movieStore', 'stateStore')
 @observer
 class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
     myRef = React.createRef<MutableRefObject<IMapObject> & null>();
-    state: MyMovieMapState = {
-        data: {found: {}, not_found: []},
-        rerenderModal: 0,
-        rerenderImportModal: 0
-    };
 
     constructor(props: Props) {
         super(props);
         this.state = {
-            data: props.data,
+            myMovies: {},
             rerenderModal: Math.random(),
             rerenderImportModal: Math.random()
-        }
+        };
+        props.movieStore!.hydrateStore().then(() => {
+            this.setState({
+                myMovies: props.movieStore!.myMovies
+            })
+            this.generateColors();
+        });
     }
 
     generateColors = () => {
@@ -34,7 +35,7 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
         // @ts-ignore
         for (key in this.myRef.current.getMapObject().regions) {
             // @ts-ignore
-            const found = key in this.state.data.found;
+            const found = key in this.state.myMovies;
             const color = (found ? 'seen' /* light green */ : 'unseen' /* gray */);
             colors[key] = color;
         }
@@ -42,7 +43,7 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
     };
 
     componentDidUpdate(prevProps: Props, prevState: MyMovieMapState) {
-        if (this.state.data !== prevState.data) {
+        if (this.state.myMovies !== prevState.myMovies) {
             // @ts-ignore
             this.myRef.current.getMapObject().series.regions[0].setValues(this.generateColors());
         }
@@ -53,10 +54,12 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
         const regionName = this.myRef.current.getMapObject().getRegionName(code);
         axios.get("/backend/view/best/" + code.toUpperCase(), {timeout: 5000})
             .then((response: AxiosResponse) => {
-                this.props.store!.showMovieModal = true;
-                this.props.store!.movies = response.data.result;
-                this.props.store!.code = code;
-                this.props.store!.regionName = regionName;
+                let movieStore = this.props.movieStore;
+                let stateStore = this.props.stateStore;
+                stateStore!.showMovieModal = true;
+                movieStore!.movies = response.data.result;
+                stateStore!.code = code;
+                stateStore!.regionName = regionName;
                 this.setState({rerenderModal: Math.random()});
             })
             .catch(function (error: any) {
@@ -65,28 +68,29 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
 
     };
 
-    changeDataStateCallback = (data: any) => {
+    changeDataStateCallback = (data: Record<string, MyMovie[]>) => {
         this.setState({
-            data: data
+            myMovies: data
         })
     }
 
     show_import_modal = () => {
-        this.props.store!.showImportModal = true;
+        this.props.stateStore!.showImportModal = true;
     }
 
     componentDidMount() {
         const importModal = document.getElementById("importModal");
         const movieModal = document.getElementById("myModal");
         window.onclick = (event) => {
+            let stateStore = this.props.stateStore!;
             if (event.target === importModal) {
-                this.props.store!.closeImportModal();
+                stateStore.closeImportModal();
             }
             if (event.target === movieModal) {
-                this.props.store!.toggleShowMovieModal();
+                stateStore.toggleShowMovieModal();
             }
         };
-
+        this.generateColors();
     }
 
     render() {
@@ -94,8 +98,7 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
             <div className="map-container inner-map-container">
                 <button onClick={this.show_import_modal}>Import</button>
                 <Import changeDataStateCallback={this.changeDataStateCallback}
-                        rerenderImport={this.state.rerenderImportModal}
-                        store={this.props.store}/>
+                        rerenderImport={this.state.rerenderImportModal}/>
                 <div id="mappy">
                     <VectorMap
                         map={worldMill}

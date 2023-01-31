@@ -2,7 +2,7 @@ import React from 'react';
 import './Import.css';
 import {inject, observer} from "mobx-react";
 
-@inject('store')
+@inject('movieStore')
 @observer
 class Trakt extends React.Component {
     render() {

@@ -1,7 +1,8 @@
-import Store from "./MobxStore";
+import {StoreType} from "./stores/MovieStore";
+import {StateStoreType} from "./stores/StateStore";
 
 export interface MyMovieMapState {
-    data?: Ratings;
+    myMovies?: Record<string, MyMovie[]>;
     rerenderModal: number;
     rerenderImportModal: number;
 }
@@ -29,9 +30,9 @@ export interface MyMovie {
     rating: string;
 }
 
-export interface Ratings {
-    found?: Record<string, MyMovie[]>;
-    not_found?: NotFound[];
+export interface RatingsResponse {
+    found: Record<string, MyMovie[]>;
+    not_found: NotFound[];
 }
 
 export interface NotFound {
@@ -41,25 +42,12 @@ export interface NotFound {
 }
 
 export interface Props {
-    store?: StoreType;
-    data?: {};
+    movieStore?: StoreType;
+    stateStore?: StateStoreType;
+    data?: MyMovie[];
 }
 
 export interface MovieModalState {
     rerender?: number;
 }
 
-export interface StoreType {
-    showMovieModal: boolean;
-    movies: Movie[];
-    myMovies: Record<string, MyMovie[]>;
-    code: string;
-    regionName: string;
-
-    showImportModal: boolean;
-    importView: string;
-
-    closeImportModal: any;
-    startStore: any;
-    toggleShowMovieModal: any;
-}

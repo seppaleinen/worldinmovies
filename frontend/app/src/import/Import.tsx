@@ -3,19 +3,22 @@ import './Import.css';
 import {inject, observer} from "mobx-react";
 import FileUpload from './FileUpload';
 import Trakt from './Trakt';
-import {StoreType} from "../Types";
+import {StoreType} from "../stores/MovieStore";
+import {StateStoreType} from "../stores/StateStore";
+import {MyMovie} from "../Types";
 
 export interface ImportProps {
     rerenderImport: number;
-    store?: StoreType;
-    changeDataStateCallback: any;
+    movieStore?: StoreType;
+    stateStore?: StateStoreType;
+    changeDataStateCallback: (data: Record<string, MyMovie[]>) => void;
 }
 
 export interface ImportState {
     rerenderImport: number;
 }
 
-@inject('store')
+@inject('movieStore', 'stateStore')
 @observer
 class Import extends React.Component<ImportProps, ImportState> {
     constructor(props: ImportProps) {
@@ -26,24 +29,24 @@ class Import extends React.Component<ImportProps, ImportState> {
     }
 
     change_view_to_imdb = () => {
-        this.props.store!.importView = 'IMDB';
+        this.props.stateStore!.importView = 'IMDB';
     }
 
     change_view_to_trakt = () => {
-        this.props.store!.importView = "TRAKT";
+        this.props.stateStore!.importView = "TRAKT";
     }
 
     componentDidUpdate(prevProps: ImportProps) {
         if (this.props.rerenderImport !== prevProps.rerenderImport) {
             this.setState({rerenderImport: this.props.rerenderImport});
         }
-        if (this.props.store!.showImportModal !== prevProps.store!.showImportModal) {
+        if (this.props.stateStore!.showImportModal !== prevProps.stateStore!.showImportModal) {
             this.setState({rerenderImport: this.props.rerenderImport});
         }
     }
 
     changePage = () => {
-        switch (this.props.store!.importView) {
+        switch (this.props.stateStore!.importView) {
             case 'FIRST':
                 return (
                     <div>
@@ -77,12 +80,12 @@ class Import extends React.Component<ImportProps, ImportState> {
     }
 
     render() {
-        const showModal = this.props.store!.showImportModal ? 'block' : 'none';
+        const showModal = this.props.stateStore!.showImportModal ? 'block' : 'none';
         return (
             <div id="importModal" style={{display: showModal}}>
                 <div className="modal-content">
                     <span id="importModalClose" className='close'
-                          onClick={this.props.store!.closeImportModal}>&times;</span>
+                          onClick={this.props.stateStore!.closeImportModal}>&times;</span>
                     {this.changePage()}
                 </div>
             </div>

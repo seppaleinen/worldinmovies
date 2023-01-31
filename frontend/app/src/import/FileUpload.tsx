@@ -1,15 +1,18 @@
-import React from 'react';
-import axios from 'axios';
+import React, {ReactEventHandler} from 'react';
+import axios, {AxiosResponse} from 'axios';
 import './FileUpload.css';
 import {inject, observer} from "mobx-react";
-import {StoreType} from "../Types";
+import {StoreType} from "../stores/MovieStore";
+import {StateStoreType} from "../stores/StateStore";
+import {MyMovie, RatingsResponse} from "../Types";
 
 export interface FileUploadProps {
-    changeDataStateCallback: any;
-    store?: StoreType;
+    changeDataStateCallback: (data: Record<string, MyMovie[]>) => void;
+    movieStore?: StoreType;
+    stateStore?: StateStoreType
 }
 
-@inject('store')
+@inject('movieStore', 'stateStore')
 @observer
 class FileUpload extends React.Component<FileUploadProps, {}> {
     onChangeHandler = (event: any) => {
@@ -17,14 +20,13 @@ class FileUpload extends React.Component<FileUploadProps, {}> {
         const data = new FormData()
         data.append('file', event.target.files[0])
         axios.post("/backend/ratings", data, {})
-            .then(res => { // then print response status
-                this.props.changeDataStateCallback(res.data);
-                this.props.store!.myMovies = res.data.found;
-                this.props.store!.startStore();
+            .then((res: AxiosResponse<RatingsResponse>) => { // then print response status
+                this.props.changeDataStateCallback(res.data.found);
+                this.props.movieStore!.myMovies = res.data.found;
             })
             .finally(() => {
                 document.getElementById("earth")!.style.display = "none";
-                this.props.store!.closeImportModal();
+                this.props.stateStore!.closeImportModal();
             });
     }
 
