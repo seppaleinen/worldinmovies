@@ -19,10 +19,13 @@ class FileUpload extends React.Component<FileUploadProps, {}> {
         document.getElementById("earth")!.style.display = "block";
         const data = new FormData()
         data.append('file', event.target.files[0])
-        axios.post("/backend/ratings", data, {})
-            .then((res: AxiosResponse<RatingsResponse>) => { // then print response status
-                this.props.changeDataStateCallback(res.data.found);
+        axios.post("/backend/ratings", data)
+            .then((res: AxiosResponse<RatingsResponse>) => {
                 this.props.movieStore!.myMovies = res.data.found;
+                this.props.changeDataStateCallback(res.data.found);
+            })
+            .catch(function (error: any) {
+                console.log(error);
             })
             .finally(() => {
                 document.getElementById("earth")!.style.display = "none";

@@ -1,29 +1,28 @@
 import React from 'react';
 import {inject, observer} from "mobx-react";
-import {MovieModalState, MyMovie, Props} from "./Types";
+import {Movie, MovieModalState, MyMovie, Props} from "./Types";
 
 @inject('movieStore', 'stateStore')
 @observer
 class MovieModal extends React.Component<Props, MovieModalState> {
-    state: MovieModalState = {};
-
     constructor(props: Props) {
         super(props);
         this.state = {rerender: Math.random()};
     }
 
-
-    renderTopMovies(data: any) {
+    renderTopMovies(data: Movie[]) {
         return (
-            data.map((item: any) =>
-                <tr key={item['imdb_id']}>
-                    <td></td>
-                    <td><a href={"https://www.imdb.com/title/" + item['imdb_id']} target="_blank"
-                           rel="noopener noreferrer">{item['original_title']}{item['en_title']}</a></td>
-                    <td>{item['vote_average']}</td>
-                </tr>
-            )
-        )
+            data.slice()
+                .sort((a: Movie, b: Movie) => (a.vote_average > b.vote_average) ? -1 : 1)
+                .map((item: Movie) =>
+                    <tr key={item.imdb_id}>
+                        <td></td>
+                        <td><a href={"https://www.imdb.com/title/" + item.imdb_id} target="_blank"
+                               rel="noopener noreferrer">{item.original_title}{item.en_title}</a></td>
+                        <td>{item.vote_average}</td>
+                    </tr>
+                )
+        );
     }
 
     componentDidUpdate(prevProps: Props, prevState: MovieModalState) {
@@ -87,7 +86,8 @@ class MovieModal extends React.Component<Props, MovieModalState> {
                     <span id="closeMovieModalButton" className='close movieModalClose'>&times;</span>
                     <div id="modal-text">
                         <section id="containingSection">
-                            <div id="rankedMoviesTable"><h2>Top ranked movies from {this.props.stateStore!.regionName}</h2>
+                            <div id="rankedMoviesTable"><h2>Top ranked movies
+                                from {this.props.stateStore!.regionName}</h2>
                                 <table className="modal-table">
                                     <thead>
                                     <tr>

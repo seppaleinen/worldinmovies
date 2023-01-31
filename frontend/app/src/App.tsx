@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import MyMoviesMap from './MyMoviesMap';
-import {Header} from "./Header";
+import Header from "./Header";
 
 const App = () => {
     return (

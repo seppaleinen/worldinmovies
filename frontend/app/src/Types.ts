@@ -7,10 +7,6 @@ export interface MyMovieMapState {
     rerenderImportModal: number;
 }
 
-export interface Data {
-
-}
-
 export interface Movie {
     imdb_id: string;
     original_title: string;

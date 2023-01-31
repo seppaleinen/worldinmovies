@@ -29,11 +29,15 @@ class Import extends React.Component<ImportProps, ImportState> {
     }
 
     change_view_to_imdb = () => {
-        this.props.stateStore!.importView = 'IMDB';
+        this.changeView("IMDB");
     }
 
     change_view_to_trakt = () => {
-        this.props.stateStore!.importView = "TRAKT";
+        this.changeView("TRAKT");
+    }
+
+    changeView = (view: string) => {
+        this.props.stateStore!.setImportView(view);
     }
 
     componentDidUpdate(prevProps: ImportProps) {

@@ -34,10 +34,8 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
 
         // @ts-ignore
         for (key in this.myRef.current.getMapObject().regions) {
-            // @ts-ignore
-            const found = key in this.state.myMovies;
-            const color = (found ? 'seen' /* light green */ : 'unseen' /* gray */);
-            colors[key] = color;
+            const found = this.state.myMovies !== undefined && key in this.state.myMovies;
+            colors[key] = (found ? 'seen' /* light green */ : 'unseen' /* gray */);
         }
         return colors;
     };
@@ -75,7 +73,7 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
     }
 
     show_import_modal = () => {
-        this.props.stateStore!.showImportModal = true;
+        this.props.stateStore!.setShowImportModal(true);
     }
 
     componentDidMount() {

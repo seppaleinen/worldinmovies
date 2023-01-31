@@ -3,7 +3,7 @@ import './Admin.css';
 import axios from "axios";
 // @ts-ignore
 import ndjsonStream from "can-ndjson-stream";
-import {Header} from "../Header";
+import Header from "../Header";
 
 /**
  *     # Imports a daily file with the data of what movies are available to download
@@ -36,17 +36,16 @@ const Admin = () => {
     const startLanguageImport = (path: string) => {
         fetch("/backend" + path)
             .then((response: Response) => ndjsonStream( response.body ))
-            .then((stream: ReadableStream<Object>) => {
+            .then((stream: ReadableStream<string>) => {
                 const reader = stream.getReader();
                 let read: any;
-                reader.read().then( read = ( result: any ) => {
+                reader.read().then( read = ( result: ReadableStreamReadResult<string> ) => {
                     if ( result.done ) {
                         return;
                     }
 
                     setBaseImport(prevState => [...prevState.slice(-9), result.value])
                     reader.read().then( read );
-
                 } );
             })
     }
@@ -76,7 +75,7 @@ const Admin = () => {
             <div id="container">
                 <div id="content">
                     Log
-                    {baseImport.map((object, i) => <p key={i}>{JSON.stringify(object)}</p>)}
+                    {baseImport.map((line, index) => <p key={index}>{JSON.stringify(line)}</p>)}
                 </div>
             </div>
         </div>

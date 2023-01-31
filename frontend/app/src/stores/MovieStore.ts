@@ -1,11 +1,11 @@
-import {makeAutoObservable} from "mobx"
-import {makePersistable, startPersisting, isHydrated, clearPersistedStore, hydrateStore} from 'mobx-persist-store';
+import {action, makeAutoObservable} from "mobx"
+import {makePersistable, startPersisting, hydrateStore} from 'mobx-persist-store';
 import {Movie, MyMovie} from "../Types";
 
 export interface StoreType {
     movies: Movie[];
     myMovies: Record<string, MyMovie[]>;
-    startStore: any;
+    startStore: () => void;
     hydrateStore: () => Promise<void>;
 }
 export default class MovieStore implements StoreType {
@@ -21,14 +21,12 @@ export default class MovieStore implements StoreType {
         });
     }
 
+    @action
     startStore() {
         startPersisting(this);
     }
 
-    async clearStoredData() {
-        await clearPersistedStore(this);
-    }
-
+    @action
     async hydrateStore() {
         await hydrateStore(this);
     }

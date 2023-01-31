@@ -1,6 +1,5 @@
 import {makeAutoObservable} from "mobx"
 
-
 export interface StateStoreType {
     showMovieModal: boolean;
     code: string;
@@ -8,16 +7,17 @@ export interface StateStoreType {
 
     showImportModal: boolean;
     importView: string;
-    closeImportModal: any;
-    toggleShowMovieModal: any;
+    closeImportModal: () => void;
+    toggleShowMovieModal: () => void;
+    setShowImportModal: (bool: boolean) => void;
+    setImportView: (view: string) => void;
 }
 
 export default class StateStore implements StateStoreType {
-    showMovieModal = false;
     code = '';
     regionName = '';
-
-    showImportModal: boolean = false;
+    showMovieModal = false;
+    showImportModal = false;
     importView = 'FIRST';
 
     toggleShowMovieModal = () => {
@@ -27,6 +27,14 @@ export default class StateStore implements StateStoreType {
     closeImportModal = () => {
         this.showImportModal = false;
         this.importView = 'FIRST';
+    }
+
+    setShowImportModal = (bool: boolean) => {
+        this.showImportModal = bool;
+    }
+
+    setImportView = (view: string) => {
+        this.importView = view;
     }
 
     constructor() {
