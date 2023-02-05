@@ -48,7 +48,6 @@ services:
       - "443:443"
     volumes:
       - gunicornsocket:/run/
-      - certs:/etc/letsencrypt
     environment:
       - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL:-http://localhost:81}
       - REACT_APP_SENTRY_URL=${SENTRY_URL_FRONTEND}
