@@ -10,6 +10,7 @@
     ],
     "target": "ES2019",
     "jsx": "react",
+    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
     "strict": true,

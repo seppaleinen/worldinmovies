@@ -8,6 +8,7 @@ import {inject, observer} from "mobx-react";
 import {worldMill} from "@react-jvectormap/world";
 import {MyMovie, MyMovieMapState, Props} from "./Types";
 import {IMapObject} from "@react-jvectormap/core/dist/types";
+import customWorldMapJson from './customworldmap.json';
 
 @inject('movieStore', 'stateStore')
 @observer
@@ -99,7 +100,7 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
                         rerenderImport={this.state.rerenderImportModal}/>
                 <div id="mappy">
                     <VectorMap
-                        map={worldMill}
+                        map={customWorldMapJson}
                         backgroundColor="#a5bfdd"
                         mapRef={this.myRef}
                         style={{
