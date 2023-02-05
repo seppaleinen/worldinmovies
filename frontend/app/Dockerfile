@@ -1,18 +1,21 @@
 FROM certbot/certbot as certbot
 
 # Try to get real cert
-COPY nginx/fakefile \
+COPY nginx/certs/live/worldinmovies.duckdns.org/fakefile \
     nginx/certs/live/worldinmovies.duckdns.org/fullchain.pe? \
     nginx/certs/live/worldinmovies.duckdns.org/privkey.pe? \
     /
+RUN echo hej
+RUN ls -lh /*.pem
 
 # If no certs copied generate new local cert
-RUN if [ ! -f /fullchain.pem ] && [ ! -f /privkey.pem ];\
+RUN if [ ! -e /fullchain.pem ];\
     then \
-          ls -lh / && \
+          ls -lh /* && echo "Generating self-signed certs" / && \
           openssl genrsa -out /privkey.pem 2048 && \
           openssl req -new -nodes -sha256 -key /privkey.pem -out server.csr -subj "/C=SE/ST=QC/O=Company,INC./CN=localhost" && \
-          openssl x509 -req -trustout -days 365 -in server.csr -signkey /privkey.pem -out /fullchain.pem; \
+          openssl x509 -req -trustout -days 365 -in server.csr -signkey /privkey.pem -out /fullchain.pem && \
+          exit 1; \
     fi;\
     openssl dhparam -out /dhparam.pem 2048
 
