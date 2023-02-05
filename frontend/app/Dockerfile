@@ -1,18 +1,9 @@
 FROM certbot/certbot as certbot
 
-# Try to get real cert
-COPY nginx/certs/live/worldinmovies.duckdns.org/fakefile \
-    nginx/certs/live/worldinmovies.duckdns.org/fullchain.pe? \
-    nginx/certs/live/worldinmovies.duckdns.org/privkey.pe? \
-    /
-
-# If no certs copied generate new local cert
-RUN if [ ! -e /fullchain.pem ];\
-    then \
-          openssl genrsa -out /privkey.pem 2048 && \
-          openssl req -new -nodes -sha256 -key /privkey.pem -out server.csr -subj "/C=SE/ST=QC/O=Company,INC./CN=localhost" && \
-          openssl x509 -req -trustout -days 365 -in server.csr -signkey /privkey.pem -out /fullchain.pem; \
-    fi;\
+# Generate fall back self signed key
+RUN openssl genrsa -out /privkey.pem 2048 && \
+    openssl req -new -nodes -sha256 -key /privkey.pem -out server.csr -subj "/C=SE/ST=QC/O=Company,INC./CN=localhost" && \
+    openssl x509 -req -trustout -days 365 -in server.csr -signkey /privkey.pem -out /fullchain.pem && \
     openssl dhparam -out /dhparam.pem 2048
 
 FROM node:19-alpine AS builder
@@ -44,6 +35,12 @@ RUN mkdir -p /etc/letsencrypt/live/worldinmovies.duckdns.org
 COPY --from=certbot /fullchain.pem  /etc/letsencrypt/live/worldinmovies.duckdns.org/fullchain.pem
 COPY --from=certbot /privkey.pem    /etc/letsencrypt/live/worldinmovies.duckdns.org/privkey.pem
 COPY --from=certbot /dhparam.pem    /etc/nginx/ssl-dhparams.pem
+
+# Replace self-signed certs with real ones if existing
+COPY nginx/certs/live/worldinmovies.duckdns.org/fakefile \
+    nginx/certs/live/worldinmovies.duckdns.org/fullchain.pe? \
+    nginx/certs/live/worldinmovies.duckdns.org/privkey.pe? \
+    /etc/letsencrypt/live/worldinmovies.duckdns.org/
 
 COPY --from=builder /app/build/     /var/www/app/
 
