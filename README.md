@@ -16,7 +16,6 @@ I've decided against using java, as it's too resource consuming for the basic se
 
 ## TODO
 
-* Traefik?
 * Graph Database
 * Maybe one DB for getting all the data from TMDB, then a cron-job or something
     to process the data into graph-db, or like a pre-sorted list of
@@ -28,7 +27,6 @@ I've decided against using java, as it's too resource consuming for the basic se
 * Paginate "best of each country" list
 * Github action for creating docker images
 * Fixing jest tests
-* Fixing letsencrypt cert in "prod"
 * Using websockets for the import responses (so that the result will 
   be visible even after restarted browser)
 * Estimate how many users can view page before timeouts

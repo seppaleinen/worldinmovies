@@ -25,7 +25,7 @@ ADD src/ /app/src/
 RUN npm run build
 
 
-FROM nginx:alpine as prod
+FROM georgjung/nginx-brotli:alpine as prod
 
 ENV TZ=Europe/Stockholm
 RUN addgroup -g 1000 -S www-data ; adduser -u 1000 -D -S -G www-data www-data
