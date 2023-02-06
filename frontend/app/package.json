@@ -28,7 +28,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && react-compress",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "cypress:open": "cypress open",
@@ -54,6 +54,7 @@
     "@cucumber/cucumber": "^8.10.0",
     "chai": "^4.3.7",
     "cypress": "^12.4.1",
-    "jest": "^29.4.0"
+    "jest": "^29.4.0",
+    "react-compress": "^3.6.4"
   }
 }
