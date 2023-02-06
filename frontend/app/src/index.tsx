@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import Admin from './admin/Admin';
@@ -9,6 +8,7 @@ import * as Sentry from '@sentry/browser';
 import {BrowserRouter, Routes, Route} from "react-router-dom";
 import MovieStore from "./stores/MovieStore";
 import StateStore from "./stores/StateStore";
+import {createRoot} from "react-dom/client";
 
 const sentryUrl = process.env.REACT_APP_SENTRY_URL;
 if (sentryUrl !== undefined && sentryUrl.length !== 0) {
@@ -34,7 +34,8 @@ const Main = () =>
         </BrowserRouter>
     </Provider>
 
-ReactDOM.render(<Main/>, document.getElementById('root'));
+const root = createRoot(document.getElementById('root') as Element);
+root.render(<Main/>);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

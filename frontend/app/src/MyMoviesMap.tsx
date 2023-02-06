@@ -5,7 +5,6 @@ import Import from './import/Import';
 import {VectorMap} from "@react-jvectormap/core"
 import axios, {AxiosResponse} from 'axios';
 import {inject, observer} from "mobx-react";
-import {worldMill} from "@react-jvectormap/world";
 import {MyMovie, MyMovieMapState, Props} from "./Types";
 import {IMapObject} from "@react-jvectormap/core/dist/types";
 import customWorldMapJson from './customworldmap.json';

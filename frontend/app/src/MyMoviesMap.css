@@ -10,6 +10,11 @@
   'map';
 }
 
+.jvectormap-region {
+    stroke: #a5bfdd;
+    stroke-width: 1;
+}
+
 #mappy {
     grid-area: map;
     width: 100%;
