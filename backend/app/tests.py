@@ -1,4 +1,4 @@
-import datetime, os, responses, json, io, gzip
+import datetime, os, responses, io, gzip
 
 from django.test import TransactionTestCase
 from django.db import transaction
@@ -9,6 +9,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class SuperClass(TransactionTestCase):
     def setUp(self):
+        self.maxDiff = None
         self._environ = dict(os.environ)
         os.environ['TMDB_API'] = 'test'
         SpokenLanguage(iso_639_1='en', name='English').save()
@@ -33,6 +34,7 @@ def __gzip_string(string):
 class ImportTests(SuperClass):
     @responses.activate
     def test_daily_file_import(self):
+        self.maxDiff = 99999999
         yesterday = datetime.date.today() - datetime.timedelta(days=1)
         yesterday_formatted = yesterday.strftime("%m_%d_%Y")
         daily_export_url = "http://files.tmdb.org/p/exports/movie_ids_%s.json.gz" % yesterday_formatted
@@ -46,7 +48,8 @@ class ImportTests(SuperClass):
 
         response = self.client.get('/import/tmdb/daily')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.getvalue(), b'{"message": "Downloading http://files.tmdb.org/p/exports/movie_ids_01_25_2023.json.gz"}\n{"message": "0 movies will be persisted"}\n')
+        expected_response = b'{"message": "Downloading ' + daily_export_url.encode('utf-8') + b'"}\n{"message": "0 movies will be persisted"}\n'
+        self.assertEqual(response.getvalue(), expected_response)
 
     @responses.activate
     def test_daily_file_import_delete(self):
@@ -66,7 +69,8 @@ class ImportTests(SuperClass):
 
         response = self.client.get('/import/tmdb/daily')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.getvalue(), b'{"message": "Downloading http://files.tmdb.org/p/exports/movie_ids_01_25_2023.json.gz"}\n{"message": "0 movies will be persisted"}\n{"message": "Deleted 1 movies out of 1"}\n')
+        expected_response = b'{"message": "Downloading ' + daily_export_url.encode('utf-8') + b'"}\n{"message": "0 movies will be persisted"}\n{"message": "Deleted 1 movies out of 1"}\n'
+        self.assertEqual(response.getvalue(), expected_response)
         self.assertFalse(Movie.objects.filter(pk=604).exists())
 
     @responses.activate
