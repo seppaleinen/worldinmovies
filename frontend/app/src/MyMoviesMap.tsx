@@ -1,5 +1,5 @@
 import React, {MutableRefObject} from 'react';
-import './MyMoviesMap.css';
+import './MyMoviesMap.scss';
 import MovieModal from './MovieModal';
 import Import from './import/Import';
 import {VectorMap} from "@react-jvectormap/core"

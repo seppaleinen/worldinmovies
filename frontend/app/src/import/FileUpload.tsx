@@ -1,6 +1,6 @@
 import React from 'react';
 import axios, {AxiosResponse} from 'axios';
-import './FileUpload.css';
+import './FileUpload.scss';
 import {inject, observer} from "mobx-react";
 import {StoreType} from "../stores/MovieStore";
 import {StateStoreType} from "../stores/StateStore";

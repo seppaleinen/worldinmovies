@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import './Admin.css';
+import './Admin.scss';
 import axios from "axios";
 // @ts-ignore
 import ndjsonStream from "can-ndjson-stream";

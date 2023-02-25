@@ -1,5 +1,5 @@
 import React from 'react';
-import './index.css';
+import './index.scss';
 import App from './App';
 import Admin from './admin/Admin';
 import {Provider} from "mobx-react";

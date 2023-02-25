@@ -1,5 +1,5 @@
 import React from 'react';
-import './Import.css';
+import './Import.scss';
 import {inject, observer} from "mobx-react";
 import FileUpload from './FileUpload';
 import Trakt from './Trakt';
