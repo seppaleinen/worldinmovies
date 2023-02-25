@@ -48,8 +48,9 @@ Basically will be handling
 * DB Migration Guide
   1. ```bash docker exec -ti worldinmovies_db_1 pg_dump -U postgres postgres --clean --file=/tmp/dbexport.pgsql ```
   2. Move postgres-data/dbexport.pgsql to machine where it should be imported
-  3. ```bash docker exec -ti worldinmovies_db_1 psql -U postgres --file=/tmp/dbexport.pgsql ```
-
+  3. `docker cp worldinmovies.db.pgsql worldinmovies_db_1:/`
+  4. `docker exec -ti worldinmovies_db_1 /bin/sh`
+  5. `psql -d postgres -U postgres -f worldinmovies.db.pgsql`
 
 
 ### Requirements

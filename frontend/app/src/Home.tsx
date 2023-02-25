@@ -1,9 +1,9 @@
 import React from 'react';
-import './App.scss';
-import MyMoviesMap from './MyMoviesMap';
+import './Home.scss';
+import MyMoviesMap from './movies/MyMoviesMap';
 import Header from "./Header";
 
-const App = () => {
+const Home = () => {
     return (
         <div>
             <Header/>
@@ -13,4 +13,4 @@ const App = () => {
     )
 }
 
-export default App;
+export default Home;

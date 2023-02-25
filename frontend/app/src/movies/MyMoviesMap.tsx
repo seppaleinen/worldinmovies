@@ -1,11 +1,11 @@
 import React, {MutableRefObject} from 'react';
 import './MyMoviesMap.scss';
 import MovieModal from './MovieModal';
-import Import from './import/Import';
+import Import from '../import/Import';
 import {VectorMap} from "@react-jvectormap/core"
 import axios, {AxiosResponse} from 'axios';
 import {inject, observer} from "mobx-react";
-import {MyMovie, MyMovieMapState, Props} from "./Types";
+import {MyMovie, MyMovieMapState, Props} from "../Types";
 import {IMapObject} from "@react-jvectormap/core/dist/types";
 import customWorldMapJson from './customworldmap.json';
 
