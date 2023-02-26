@@ -1,20 +1,18 @@
 import React from 'react';
 import axios, {AxiosResponse} from 'axios';
-import './FileUpload.scss';
+import './ImdbImport.scss';
 import {inject, observer} from "mobx-react";
 import {StoreType} from "../stores/MovieStore";
-import {StateStoreType} from "../stores/StateStore";
-import {MyMovie, RatingsResponse} from "../Types";
+import {RatingsResponse} from "../Types";
 
 export interface FileUploadProps {
-    changeDataStateCallback: (data: Record<string, MyMovie[]>) => void;
     movieStore?: StoreType;
-    stateStore?: StateStoreType
+    redirectToPage: (page: string) => void;
 }
 
-@inject('movieStore', 'stateStore')
+@inject('movieStore')
 @observer
-class FileUpload extends React.Component<FileUploadProps, {}> {
+class ImdbImport extends React.Component<FileUploadProps, {}> {
     onChangeHandler = (event: any) => {
         document.getElementById("earth")!.style.display = "block";
         const data = new FormData()
@@ -22,14 +20,13 @@ class FileUpload extends React.Component<FileUploadProps, {}> {
         axios.post("/backend/ratings", data)
             .then((res: AxiosResponse<RatingsResponse>) => {
                 this.props.movieStore!.myMovies = res.data.found;
-                this.props.changeDataStateCallback(res.data.found);
             })
-            .catch(function (error: any) {
-                console.log(error);
+            .catch((error: any) => {
+                console.error(error);
             })
             .finally(() => {
                 document.getElementById("earth")!.style.display = "none";
-                this.props.stateStore!.closeImportModal();
+                this.props.redirectToPage('worldmap');
             });
     }
 
@@ -60,4 +57,4 @@ class FileUpload extends React.Component<FileUploadProps, {}> {
     }
 }
 
-export default FileUpload;
+export default ImdbImport;

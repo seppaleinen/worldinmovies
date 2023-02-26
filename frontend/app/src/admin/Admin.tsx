@@ -5,21 +5,6 @@ import axios from "axios";
 import ndjsonStream from "can-ndjson-stream";
 import Header from "../Header";
 
-/**
- *     # Imports a daily file with the data of what movies are available to download
- *     path('import/tmdb/daily',               views.download_file),
- *     # Starts to fetch info from tmdb with the keys from daily
- *     path('import/tmdb/data',                views.fetch_movie),
- *     # Runs /daily, /genres, /countries, /languages
- *     path('import/base',                     views.base_fetch),
- *     path('import/tmdb/genres',              views.fetch_genres),
- *     path('import/tmdb/countries',           views.fetch_countries),
- *     path('import/tmdb/languages',           views.fetch_languages),
- *     path('import/tmdb/changes',             views.check_tmdb_for_changes),
- *     path('import/imdb/ratings',             views.fetch_imdb_ratings),
- *     path('import/imdb/titles',              views.fetch_imdb_titles),
- *     re_path(r'^status$',                    views.import_status, name='import_status'),
- */
 const Admin = () => {
     const [status, setStatus] = useState({"fetched": 0, "total": 0, "percentage_done": 0});
     const [baseImport, setBaseImport] = useState<string[]>([]);
@@ -52,7 +37,7 @@ const Admin = () => {
 
     return (
         <div>
-            <Header/>
+            <Header redirectToPage={() => console.log("")}/>
 
             <span>Fetched {status.fetched} out of {status.total} movies which is {status.percentage_done}%</span><br/>
 

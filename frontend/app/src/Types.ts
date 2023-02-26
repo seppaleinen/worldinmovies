@@ -3,8 +3,6 @@ import {StateStoreType} from "./stores/StateStore";
 
 export interface MyMovieMapState {
     myMovies?: Record<string, MyMovie[]>;
-    rerenderModal: number;
-    rerenderImportModal: number;
 }
 
 export interface Movie {
@@ -41,6 +39,7 @@ export interface Props {
     movieStore?: StoreType;
     stateStore?: StateStoreType;
     data?: MyMovie[];
+    redirectToPage: (page: string) => void;
 }
 
 export interface MovieModalState {

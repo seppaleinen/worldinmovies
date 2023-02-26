@@ -1,15 +1,13 @@
 import React from 'react';
 import {inject, observer} from "mobx-react";
-import {Movie, MovieModalState, MyMovie, Props} from "../Types";
+import {Movie, MovieModalState, MyMovie} from "../Types";
+import {StoreType} from "../stores/MovieStore";
+import {StateStoreType} from "../stores/StateStore";
+import './MovieModal.scss';
 
 @inject('movieStore', 'stateStore')
 @observer
 class MovieModal extends React.Component<Props, MovieModalState> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {rerender: Math.random()};
-    }
-
     renderTopMovies(data: Movie[]) {
         return (
             data.slice()
@@ -23,15 +21,6 @@ class MovieModal extends React.Component<Props, MovieModalState> {
                     </tr>
                 )
         );
-    }
-
-    componentDidUpdate(prevProps: Props, prevState: MovieModalState) {
-        if (this.state.rerender !== prevState.rerender) {
-            this.setState({rerender: this.state.rerender});
-        }
-        if (this.props.stateStore!.showMovieModal !== prevProps.stateStore!.showMovieModal) {
-            this.setState({rerender: this.state.rerender});
-        }
     }
 
     shouldIRenderMyMovies() {
@@ -71,19 +60,10 @@ class MovieModal extends React.Component<Props, MovieModalState> {
         )
     }
 
-    componentDidMount() {
-        // When the user clicks on <span> (x), close the modal
-        document.getElementById("closeMovieModalButton")!.onclick = () => {
-            this.props.stateStore!.toggleShowMovieModal();
-        }
-    }
-
     render() {
-        const showModal = this.props.stateStore!.showMovieModal ? 'block' : 'none';
         return (
-            <div id="myModal" className="modal" style={{display: showModal}}>
+            <div id="myModal" className="modal">
                 <div className="modal-content">
-                    <span id="closeMovieModalButton" className='close movieModalClose'>&times;</span>
                     <div id="modal-text">
                         <section id="containingSection">
                             <div id="rankedMoviesTable"><h2>Top ranked movies
@@ -108,6 +88,12 @@ class MovieModal extends React.Component<Props, MovieModalState> {
             </div>
         )
     }
+}
+
+export interface Props {
+    movieStore?: StoreType;
+    stateStore?: StateStoreType;
+    data?: MyMovie[];
 }
 
 export default MovieModal;
