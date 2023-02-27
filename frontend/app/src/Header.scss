@@ -2,7 +2,6 @@ nav {
   position: sticky;
   background: var(--blue3);
   padding: 40px 80px;
-  gap: 10px;
   height: 56px;
   box-shadow: 1px 1px 5px 0 var(--blue5);
 
@@ -23,6 +22,7 @@ nav {
       flex-direction: row;
       justify-content: flex-end;
       align-items: center;
+      margin-left: 0;
       padding: 0;
       gap: 16px;
 
@@ -66,6 +66,7 @@ nav {
       align-items: center;
       padding: 8px 8px;
       height: 48px;
+      box-shadow: 1px 1px 5px 0 var(--blue5);
 
       color: var(--green4);
 
@@ -80,7 +81,9 @@ nav {
       align-items: center;
       padding: 16px;
       gap: 8px;
-      height: 68px;
+      height: 64px;
+      box-shadow: 1px 1px 5px 0 var(--blue5);
+      border-style: none;
 
       color: var(--green4);
 
@@ -105,20 +108,19 @@ nav {
 
 @media screen and (max-width: 768px) {
   nav {
-    position: sticky;
     width: 120vw;
     padding: 20px 8px;
 
-    .menu-content {
-      display: none;
-      position: absolute;
-      background-color: var(--blue1);
-      min-width: 80px;
-      box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-      z-index: -1;
-      border-radius: 8px;
-    }
+    #nav-links {
 
+      #nav-links-left {
+        gap: 8px;
+      }
+
+      #nav-links-right {
+        gap: 8px;
+      }
+    }
   }
 }
 
