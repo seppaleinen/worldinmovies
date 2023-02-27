@@ -1,6 +1,6 @@
 import React from "react";
 import './Header.scss';
-import {homeIcon, importMoviesIcon, menuIcon, searchIcon, worldMapIcon} from "./Svgs";
+import {adminIcon, homeIcon, importMoviesIcon, menuIcon, searchIcon, worldMapIcon} from "./Svgs";
 
 const menuButton = (props: Props) => {
     return <div id={"menu"}>
@@ -16,8 +16,11 @@ const menuButton = (props: Props) => {
 }
 
 const adminButton = () => {
-    return <div className={"button"} >
-        <a href={"/admin"}>Admin</a>
+    return <div className={"button"}>
+        <a href={"/admin"}>
+            {adminIcon()}
+            Admin
+        </a>
     </div>
 }
 
@@ -29,14 +32,16 @@ const importMoviesButton = (props: Props) => {
 }
 
 const search = () => {
-    return <div className={"searchbutton"}>
+    return <div className={"searchbutton menu-item"}>
         {searchIcon()}
-        <input type="text" placeholder="Search"></input>
+        <span className="input" role="textbox" contentEditable>
+
+        </span>
     </div>;
 }
 
 const worldMapButton = (props: Props) => {
-    return <button className={"button"} onClick={() => props.redirectToPage('worldmap')}>
+    return <button className={"button menu-item"} onClick={() => props.redirectToPage('worldmap')}>
         {worldMapIcon()}
         World Map
     </button>;

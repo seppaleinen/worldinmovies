@@ -1,9 +1,10 @@
 nav {
+  position: sticky;
   background: var(--blue3);
   padding: 40px 80px;
   gap: 10px;
   height: 56px;
-  display: grid;
+  box-shadow: 1px 1px 5px 0 var(--blue5);
 
   #nav-links {
     display: grid;
@@ -25,12 +26,17 @@ nav {
       padding: 0;
       gap: 16px;
 
-      input {
-        border-style: none;
-        background: var(--blue1);
-        padding-top: 0;
-        padding-bottom: 0;
-        height: 40px;
+      .input[contenteditable]:empty::before {
+        content: "Search";
+        color: var(--blue2);
+      }
+
+      .input {
+        font-family: inherit;
+        font-size: inherit;
+        display: flex;
+        align-items: center;
+        border-color: var(--blue4);
       }
 
       .menu-content {
@@ -38,13 +44,18 @@ nav {
         position: absolute;
         background-color: var(--blue1);
         min-width: 160px;
-        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
         z-index: 1;
-        border-radius:8px;
+        border-radius: 8px;
       }
 
       #menu:hover .menu-content {
         display: block;
+      }
+
+      a {
+        text-decoration: none;
+        color: var(--green4);
       }
     }
 
@@ -53,8 +64,8 @@ nav {
       flex-direction: row;
       justify-content: center;
       align-items: center;
-      padding: 8px 16px;
-      gap: 2px;
+      padding: 8px 8px;
+      height: 48px;
 
       color: var(--green4);
 
@@ -65,10 +76,11 @@ nav {
     .button {
       display: flex;
       flex-direction: row;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
       padding: 16px;
-      gap: 10px;
+      gap: 8px;
+      height: 68px;
 
       color: var(--green4);
 
@@ -84,10 +96,29 @@ nav {
   .svg-fill {
     fill: var(--green3);
   }
+
   .svg-stroke {
     stroke: var(--green3);
   }
 }
 
 
+@media screen and (max-width: 768px) {
+  nav {
+    position: sticky;
+    width: 120vw;
+    padding: 20px 8px;
+
+    .menu-content {
+      display: none;
+      position: absolute;
+      background-color: var(--blue1);
+      min-width: 80px;
+      box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+      z-index: -1;
+      border-radius: 8px;
+    }
+
+  }
+}
 
