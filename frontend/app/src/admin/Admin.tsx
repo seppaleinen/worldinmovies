@@ -1,8 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import './Admin.scss';
 // @ts-ignore
 import ndjsonStream from "can-ndjson-stream";
-import Header from "../Header";
 
 const Admin = () => {
     const [status, setStatus] = useState({"fetched": 0, "total": 0, "percentage_done": 0});
@@ -35,8 +34,6 @@ const Admin = () => {
 
     return (
         <div>
-            <Header redirectToPage={() => console.log("")}/>
-
             <span>Fetched {status.fetched} out of {status.total} movies which is {status.percentage_done}%</span><br/>
 
             <button onClick={() => startLanguageImport('/import/base')}>Import TMDB Base</button>

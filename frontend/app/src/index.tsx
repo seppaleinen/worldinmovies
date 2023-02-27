@@ -1,7 +1,6 @@
 import React from 'react';
 import './index.scss';
 import Home from './Home';
-import Admin from './admin/Admin';
 import {Provider} from "mobx-react";
 import * as serviceWorker from './serviceWorker';
 import * as Sentry from '@sentry/browser';
@@ -25,10 +24,10 @@ const Main = () =>
         <BrowserRouter>
             <Routes>
                 <Route path="/">
-                    <Route index element={<Home/>}/>
+                    <Route index element={<Home startPage={'welcome'}/>}/>
                 </Route>
                 <Route path="/admin">
-                    <Route index element={<Admin/>}/>
+                    <Route index element={<Home startPage={'admin'}/>}/>
                 </Route>
             </Routes>
         </BrowserRouter>

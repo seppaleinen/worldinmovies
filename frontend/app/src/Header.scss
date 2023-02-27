@@ -14,10 +14,7 @@ nav {
       flex-direction: row;
       justify-content: flex-start;
       align-items: center;
-      padding: 0;
       gap: 16px;
-
-      height: 64px;
     }
 
     #nav-links-right {
@@ -56,10 +53,7 @@ nav {
       flex-direction: row;
       justify-content: center;
       align-items: center;
-      padding-right: 16px;
-      padding-left: 16px;
-      padding-top: 8px;
-      padding-bottom: 8px;
+      padding: 8px 16px;
       gap: 2px;
 
       color: var(--green4);

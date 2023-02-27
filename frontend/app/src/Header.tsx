@@ -10,8 +10,15 @@ const menuButton = (props: Props) => {
         </button>
         <div className={"menu-content"}>
             {importMoviesButton(props)}
+            {adminButton()}
         </div>
     </div>;
+}
+
+const adminButton = () => {
+    return <div className={"button"} >
+        <a href={"/admin"}>Admin</a>
+    </div>
 }
 
 const importMoviesButton = (props: Props) => {
