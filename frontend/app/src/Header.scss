@@ -1,7 +1,7 @@
 nav {
   position: sticky;
   background: var(--blue3);
-  padding: 40px 80px;
+  padding: 24px 80px;
   height: 56px;
   box-shadow: 1px 1px 5px 0 var(--blue5);
 
@@ -10,21 +10,16 @@ nav {
     grid-template-columns: 1fr 1fr;
 
     #nav-links-left {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      align-items: center;
+      display: grid;
+      grid-template-columns: fit-content(120px) fit-content(120px);
       gap: 16px;
     }
 
     #nav-links-right {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-      align-items: center;
-      margin-left: 0;
-      padding: 0;
+      display: grid;
+      grid-template-columns: fit-content(120px) fit-content(120px);
       gap: 16px;
+      justify-content: end;
 
       .input[contenteditable]:empty::before {
         content: "Search";
@@ -108,11 +103,27 @@ nav {
 
 @media screen and (max-width: 768px) {
   nav {
-    width: 120vw;
-    padding: 20px 8px;
+    padding: 24px 8px;
 
     #nav-links {
 
+      #nav-links-left {
+        gap: 8px;
+      }
+
+      #nav-links-right {
+        gap: 8px;
+      }
+    }
+  }
+}
+
+
+@media screen and (min-width: 768px) and (max-width: 950px) {
+  nav {
+    padding: 24px 24px;
+
+    #nav-links {
       #nav-links-left {
         gap: 8px;
       }
