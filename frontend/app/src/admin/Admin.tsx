@@ -10,28 +10,27 @@ const Admin = () => {
     const [baseImport, setBaseImport] = useState<string[]>([]);
 
     useEffect(() => {
-        async function getStatus() {
-            let response = await axios.get('/backend/status', {timeout: 5000});
-            setStatus(response.data);
-        }
-
-        getStatus();
+        fetch('/backend/status')
+            .then(response => response.json())
+            .then(response => {
+                setStatus(response);
+            })
     }, []);
 
     const startLanguageImport = (path: string) => {
         fetch("/backend" + path)
-            .then((response: Response) => ndjsonStream( response.body ))
+            .then((response: Response) => ndjsonStream(response.body))
             .then((stream: ReadableStream<string>) => {
                 const reader = stream.getReader();
                 let read: any;
-                reader.read().then( read = ( result: ReadableStreamReadResult<string> ) => {
-                    if ( result.done ) {
+                reader.read().then(read = (result: ReadableStreamReadResult<string>) => {
+                    if (result.done) {
                         return;
                     }
 
                     setBaseImport(prevState => [...prevState.slice(-9), result.value])
-                    reader.read().then( read );
-                } );
+                    reader.read().then(read);
+                });
             })
     }
 

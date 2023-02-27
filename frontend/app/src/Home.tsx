@@ -1,22 +1,25 @@
-import React, {useEffect} from 'react';
+import React, {lazy, Suspense} from 'react';
 import './Home.scss';
 import Header from "./Header";
 import Welcome from "./Welcome";
-import MyMoviesMap from "./movies/MyMoviesMap";
-import Import from "./import/Import";
-import TraktImport from "./import/TraktImport";
-import ImdbImport from "./import/ImdbImport";
-import MovieModal from "./movies/MovieModal";
+
+const Import = lazy(() => import('./import/Import'));
+const ImdbImport = lazy(() => import('./import/ImdbImport'));
+const TraktImport = lazy(() => import('./import/TraktImport'));
+const MyMoviesMap = lazy(() => import('./movies/MyMoviesMap'));
+const MovieModal = lazy(() => import('./movies/MovieModal'));
 
 const Home = () => {
     const [pageContent, setPageContent] = React.useState('welcome')
 
-    useEffect(() => {
-        console.log("Pagecontent: " + pageContent);
-    }, [pageContent]);
-
     const changePage = (page: string) => {
         setPageContent(page);
+    }
+
+    const wrapInSuspense = (component: any) => {
+        return <Suspense fallback={<div>Loading...</div>}>
+            {component}
+        </Suspense>
     }
 
     return (
@@ -24,11 +27,11 @@ const Home = () => {
             <Header redirectToPage={changePage}/>
 
             {pageContent === 'welcome' ? <Welcome/> : null}
-            {pageContent === 'worldmap' ? <MyMoviesMap redirectToPage={changePage}/> : null}
-            {pageContent === 'import' ? <Import redirectToPage={changePage}/> : null}
-            {pageContent === 'trakt' ? <TraktImport/> : null}
-            {pageContent === 'imdb' ? <ImdbImport redirectToPage={changePage}/> : null}
-            {pageContent === 'movie-details' ? <MovieModal/> : null}
+            {pageContent === 'worldmap' ? wrapInSuspense(<MyMoviesMap redirectToPage={changePage}/>) : null}
+            {pageContent === 'import' ? wrapInSuspense(<Import redirectToPage={changePage}/>) : null}
+            {pageContent === 'trakt' ? wrapInSuspense(<TraktImport/>) : null}
+            {pageContent === 'imdb' ? wrapInSuspense(<ImdbImport redirectToPage={changePage}/>) : null}
+            {pageContent === 'movie-details' ? wrapInSuspense(<MovieModal/>) : null}
         </div>
     )
 }

@@ -8,6 +8,7 @@
       "dom",
       "es2015"
     ],
+    "module": "Node16",
     "target": "ES2019",
     "jsx": "react",
     "resolveJsonModule": true,
