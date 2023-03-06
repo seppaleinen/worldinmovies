@@ -1,96 +1,41 @@
-nav {
+header {
   position: sticky;
   background: var(--blue3);
-  padding: 24px 80px;
-  height: 56px;
-  box-shadow: 1px 1px 5px 0 var(--blue5);
+  padding: 12px;
+  height: auto;
+  box-shadow: 2px 2px 8px 0 var(--blue5);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
 
-  #nav-links {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-
-    #nav-links-left {
-      display: grid;
-      grid-template-columns: fit-content(120px) fit-content(120px);
-      gap: 16px;
-    }
-
-    #nav-links-right {
-      display: grid;
-      grid-template-columns: fit-content(120px) fit-content(120px);
-      gap: 16px;
-      justify-content: end;
-
-      .input[contenteditable]:empty::before {
-        content: "Search";
-        color: var(--blue2);
-      }
-
-      .input {
-        font-family: inherit;
-        font-size: inherit;
-        display: flex;
-        align-items: center;
-        border-color: var(--blue4);
-      }
-
-      .menu-content {
-        display: none;
-        position: absolute;
-        background-color: var(--blue1);
-        min-width: 160px;
-        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-        z-index: 1;
-        border-radius: 8px;
-      }
-
-      #menu:hover .menu-content {
-        display: block;
-      }
-
-      a {
-        text-decoration: none;
-        color: var(--green4);
-      }
-    }
-
-    .searchbutton {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      padding: 8px 8px;
-      height: 48px;
-      box-shadow: 1px 1px 5px 0 var(--blue5);
-
-      color: var(--green4);
-
-      background: var(--blue1);
-      border-radius: 10px;
-    }
-
-    .button {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      align-items: center;
-      padding: 16px;
-      gap: 8px;
-      height: 64px;
-      box-shadow: 1px 1px 5px 0 var(--blue5);
-      border-style: none;
-
-      color: var(--green4);
-
-      background: var(--blue1);
-      border-radius: 8px;
-    }
-
-    .button:hover {
-      background: var(--blue2);
-    }
+  #side-menu {
+    display: none;
   }
 
+  .button {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 16px;
+    gap: 8px;
+    height: 64px;
+    box-shadow: 2px 2px 8px 0 var(--blue5);
+    border-style: none;
+
+    color: var(--green4);
+
+    background: var(--blue1);
+    border-radius: 8px;
+  }
+
+  .button:hover {
+    background: var(--blue2);
+  }
+
+  // Color the svgs
   .svg-fill {
     fill: var(--green3);
   }
@@ -98,40 +43,219 @@ nav {
   .svg-stroke {
     stroke: var(--green3);
   }
-}
+
+  .hamb {
+    cursor: pointer;
+    padding: 12px;
+    position: absolute;
+    right: 12px;
+
+    .hamb-line {
+      background: var(--blue1);
+      display: block;
+      height: 2px;
+      position: relative;
+      width: 24px;
+    }
+
+    .hamb-line::before,
+    .hamb-line::after {
+      background: var(--blue1);
+      content: '';
+      display: block;
+      height: 100%;
+      position: absolute;
+      transition: all .2s ease-out;
+      width: 100%;
+    }
+
+    .hamb-line::before {
+      top: 5px;
+    }
+
+    .hamb-line::after {
+      top: -5px;
+    }
+  }
+
+  /* Toggle menu icon */
+  .side-menu:checked ~ nav {
+    position: absolute;
+    height: fit-content;
+    width: 240px;
+    right: 0;
+    display: block;
+    background-color: var(--blue4);
+
+    .button {
+      background-color: var(--blue4);
+      width: 100%;
+      color: var(--green2);
+      padding: 20px;
+    }
+
+    .button:hover {
+      background-color: var(--blue5);
+    }
+  }
+
+  .side-menu:checked ~ .hamb .hamb-line {
+    background: transparent;
+  }
+
+  .side-menu:checked ~ .hamb .hamb-line::before {
+    transform: rotate(-45deg);
+    top: 0;
+  }
+
+  .side-menu:checked ~ .hamb .hamb-line::after {
+    transform: rotate(45deg);
+    top: 0;
+  }
+
+  .search {
+    padding: 8px;
+    height: 48px;
+    width: 112px;
+    position: absolute;
+    right: 64px;
+  }
+
+  .search:hover {
+    background: var(--blue1);
+  }
+
+  .input[contenteditable]:empty::before {
+    content: "Search";
+    color: var(--blue2);
+  }
+
+  .input {
+    font-family: inherit;
+    font-size: inherit;
+    display: flex;
+    align-items: center;
+    border-color: var(--blue4);
+  }
 
 
-@media screen and (max-width: 768px) {
   nav {
-    padding: 24px 8px;
+    display: none;
+    height: 100%;
+    top: 90px;
+    position: relative;
+    background-color: var(--blue4);
+    overflow: visible;
 
-    #nav-links {
+    .subnav:hover .subnav-content {
+      display: block;
+    }
 
-      #nav-links-left {
-        gap: 8px;
-      }
+    .subnav {
+      /* Sub nav */
 
-      #nav-links-right {
-        gap: 8px;
+      .subnav-content {
+        background-color: var(--green2);
+        width: 100%;
+        z-index: 1;
+        display: none;
+
+
+        div {
+          color: var(--green2);
+          text-decoration: none;
+          padding: 0;
+          text-align: center;
+        }
+
+        a {
+          text-decoration: none;
+          color: var(--green2);
+        }
+
+        .button {
+          height: fit-content;
+          border-radius: 0;
+        }
       }
     }
   }
 }
 
+.button {
+  cursor: pointer;
+}
+.button:hover{
+  background-color: var(--blue2);
+}
 
-@media screen and (min-width: 768px) and (max-width: 950px) {
-  nav {
-    padding: 24px 24px;
+@media (min-width: 768px) {
+  header {
+    padding: 24px 96px;
 
-    #nav-links {
-      #nav-links-left {
-        gap: 8px;
+    .side-menu:checked ~ nav {
+      .subnav {
+        background-color: var(--blue1);
+        width: 100%;
+        color: var(--green2);
+
+        .button:hover {
+          background-color: var(--blue1);
+        }
+      }
+    }
+
+    .search {
+      position: fixed;
+      right: 200px;
+    }
+
+    nav {
+      display: block;
+      max-height: none;
+      top: 0;
+      position: relative;
+      float: right;
+      width: auto;
+      background-color: transparent;
+
+      .worldmap {
+        position: relative;
+        float: left;
       }
 
-      #nav-links-right {
-        gap: 8px;
+      .subnav {
+        position: fixed;
+        right: 96px;
+
+        .subnav-content {
+          position: absolute;
+          top: 70px;
+          display: none;
+          background-color: var(--blue1);
+          height: fit-content;
+          width: 100%;
+
+          .button {
+            width: 120px;
+            padding: 16px;
+            height: 64px;
+
+            color: var(--green4);
+
+            background: var(--blue1);
+          }
+
+          a {
+            text-decoration: none;
+            color: var(--green4);
+          }
+        }
       }
+    }
+
+    .hamb {
+      display: none;
     }
   }
 }
-

@@ -3,12 +3,12 @@ import './Header.scss';
 import {adminIcon, homeIcon, importMoviesIcon, menuIcon, searchIcon, worldMapIcon} from "./Svgs";
 
 const menuButton = (props: Props) => {
-    return <div id={"menu"}>
-        <button className={"button"}>
+    return <div id={"menu"} className={"subnav"}>
+        <button className={"button subnavbtn"}>
             {menuIcon()}
             Menu
         </button>
-        <div className={"menu-content"}>
+        <div className={"subnav-content"}>
             {importMoviesButton(props)}
             {adminButton()}
         </div>
@@ -32,23 +32,22 @@ const importMoviesButton = (props: Props) => {
 }
 
 const search = () => {
-    return <div className={"searchbutton menu-item"}>
+    return <div className={"search button"}>
         {searchIcon()}
         <span className="input" role="textbox" contentEditable>
-
         </span>
     </div>;
 }
 
 const worldMapButton = (props: Props) => {
-    return <button className={"button menu-item"} onClick={() => props.redirectToPage('worldmap')}>
+    return <button className={"button worldmap"} onClick={() => props.redirectToPage('worldmap')}>
         {worldMapIcon()}
         World Map
     </button>;
 }
 
 const homeButton = (props: Props) => {
-    return <button className={"button"} onClick={() => props.redirectToPage('welcome')}>
+    return <button className={"button home"} onClick={() => props.redirectToPage('welcome')}>
         {homeIcon()}
         The World in Movies
     </button>;
@@ -57,18 +56,17 @@ const homeButton = (props: Props) => {
 
 const Header = (props: Props) => {
     return (
-        <nav>
-            <div id="nav-links">
-                <div id="nav-links-left">
-                    {homeButton(props)}
-                    {worldMapButton(props)}
-                </div>
-                <div id="nav-links-right">
-                    {search()}
-                    {menuButton(props)}
-                </div>
-            </div>
-        </nav>
+        <header>
+            {homeButton(props)}
+
+            {search()}
+            <input className="side-menu" type="checkbox" id="side-menu"/>
+            <label className="hamb" htmlFor="side-menu"><span className="hamb-line"></span></label>
+            <nav>
+                {worldMapButton(props)}
+                {menuButton(props)}
+            </nav>
+        </header>
     );
 }
 
