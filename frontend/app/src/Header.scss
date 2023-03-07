@@ -118,7 +118,7 @@ header {
     height: 48px;
     width: 112px;
     position: absolute;
-    right: 64px;
+    right: 72px;
   }
 
   .search:hover {
@@ -151,12 +151,20 @@ header {
       display: block;
     }
 
+    #subnav-menu {
+      display: none;
+    }
+
     .subnav {
       /* Sub nav */
+      .subnavbtn {
+        height: fit-content;
+      }
 
       .subnav-content {
         background-color: var(--green2);
         width: 100%;
+        height: fit-content;
         z-index: 1;
         display: none;
 
@@ -185,7 +193,8 @@ header {
 .button {
   cursor: pointer;
 }
-.button:hover{
+
+.button:hover {
   background-color: var(--blue2);
 }
 
@@ -224,31 +233,52 @@ header {
         float: left;
       }
 
+      .subnav:hover .subnav-content {
+        display: none;
+      }
+
+      .subnav-menu:checked ~ .subnav-content {
+        display: block;
+      }
+
       .subnav {
         position: fixed;
         right: 96px;
 
+        .subnavbtn {
+          height: fit-content;
+          padding: 22px 16px;
+        }
+
         .subnav-content {
           position: absolute;
-          top: 70px;
+          top: 88px;
           display: none;
-          background-color: var(--blue1);
-          height: fit-content;
-          width: 100%;
 
+          div {
+            text-align: left;
+
+          }
           .button {
             width: 120px;
             padding: 16px;
-            height: 64px;
+            height: 32px;
+            color: var(--green2);
 
-            color: var(--green4);
-
-            background: var(--blue1);
+            background-color: var(--blue4);
           }
 
           a {
             text-decoration: none;
-            color: var(--green4);
+            color: var(--green2);
+          }
+          // Color the svgs
+          .svg-fill {
+            fill: var(--green2);
+          }
+
+          .svg-stroke {
+            stroke: var(--green2);
           }
         }
       }

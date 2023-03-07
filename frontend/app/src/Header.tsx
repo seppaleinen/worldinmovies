@@ -4,10 +4,11 @@ import {adminIcon, homeIcon, importMoviesIcon, menuIcon, searchIcon, worldMapIco
 
 const menuButton = (props: Props) => {
     return <div id={"menu"} className={"subnav"}>
-        <button className={"button subnavbtn"}>
+        <input className="subnav-menu" type="checkbox" id="subnav-menu"/>
+        <label className={"button subnavbtn"} htmlFor="subnav-menu">
             {menuIcon()}
             Menu
-        </button>
+        </label>
         <div className={"subnav-content"}>
             {importMoviesButton(props)}
             {adminButton()}
