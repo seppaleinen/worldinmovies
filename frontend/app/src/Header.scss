@@ -78,27 +78,6 @@ header {
     }
   }
 
-  /* Toggle menu icon */
-  .side-menu:checked ~ nav {
-    position: absolute;
-    height: fit-content;
-    width: 240px;
-    right: 0;
-    display: block;
-    background-color: var(--blue4);
-
-    .button {
-      background-color: var(--blue4);
-      width: 100%;
-      color: var(--green2);
-      padding: 20px;
-    }
-
-    .button:hover {
-      background-color: var(--blue5);
-    }
-  }
-
   .side-menu:checked ~ .hamb .hamb-line {
     background: transparent;
   }
@@ -112,6 +91,13 @@ header {
     transform: rotate(45deg);
     top: 0;
   }
+
+  /* Toggle menu icon */
+  .side-menu:checked ~ nav {
+    right: 0;
+    display: block;
+  }
+
 
   .search {
     padding: 8px;
@@ -142,10 +128,33 @@ header {
   nav {
     display: none;
     height: 100%;
-    top: 90px;
-    position: relative;
-    background-color: var(--blue4);
+    top: 88px;
+    position: fixed;
+    width: 100%;
+    background-color: var(--blue2);
     overflow: visible;
+    z-index: -1;
+
+    .button:hover {
+      background-color: var(--blue3);
+    }
+
+    .svg-fill {
+      fill: var(--green4);
+    }
+
+    .svg-stroke {
+      stroke: var(--green4);
+    }
+
+    .button {
+      background-color: var(--blue2);
+      width: 100%;
+      color: var(--green5);
+      padding: 20px;
+      border-radius: 0;
+      box-shadow: 0 0 0 0 var(--blue5);
+    }
 
     .subnav:hover .subnav-content {
       display: block;
@@ -162,28 +171,28 @@ header {
       }
 
       .subnav-content {
-        background-color: var(--green2);
+        position: fixed;
         width: 100%;
-        height: fit-content;
-        z-index: 1;
         display: none;
 
-
         div {
-          color: var(--green2);
+          color: var(--green5);
           text-decoration: none;
-          padding: 0;
           text-align: center;
+        }
+
+        div:hover {
+          background-color: var(--blue3);
         }
 
         a {
           text-decoration: none;
-          color: var(--green2);
+          color: var(--green5);
         }
 
         .button {
-          height: fit-content;
           border-radius: 0;
+          height: 20px
         }
       }
     }
@@ -228,6 +237,16 @@ header {
       width: auto;
       background-color: transparent;
 
+      .button {
+        background-color: var(--blue1);
+        border-radius: 8px;
+        box-shadow: 2px 2px 8px 0 var(--blue5);
+      }
+
+      .button:hover {
+        background-color: var(--blue2);
+      }
+
       .worldmap {
         position: relative;
         float: left;
@@ -243,42 +262,51 @@ header {
 
       .subnav {
         position: fixed;
-        right: 96px;
 
         .subnavbtn {
+          position: fixed;
           height: fit-content;
           padding: 22px 16px;
+          right: 96px;
+          width: 64px;
         }
 
         .subnav-content {
           position: absolute;
+          width: 260px;
           top: 88px;
           display: none;
+          right: 0;
 
           div {
             text-align: left;
-
           }
+
           .button {
-            width: 120px;
+            width: 100%;
             padding: 16px;
             height: 32px;
-            color: var(--green2);
+            color: var(--green4);
+            border-radius: 0;
+            box-shadow: 0 0 0 0 var(--blue5);
+            background-color: var(--blue3);
+          }
 
-            background-color: var(--blue4);
+          .button:hover {
+            background-color: var(--blue2);
           }
 
           a {
             text-decoration: none;
-            color: var(--green2);
+            color: var(--green4);
           }
           // Color the svgs
           .svg-fill {
-            fill: var(--green2);
+            fill: var(--green4);
           }
 
           .svg-stroke {
-            stroke: var(--green2);
+            stroke: var(--green4);
           }
         }
       }
