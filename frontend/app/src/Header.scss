@@ -207,25 +207,24 @@ header {
   background-color: var(--blue2);
 }
 
+@media (max-width: 768px) {
+  header {
+    .button.home {
+      font-size: 0;
+      display: flex;
+      justify-content: center;
+      gap: 0;
+    }
+  }
+}
+
+
 @media (min-width: 768px) {
   header {
     padding: 24px 96px;
 
-    .side-menu:checked ~ nav {
-      .subnav {
-        background-color: var(--blue1);
-        width: 100%;
-        color: var(--green2);
-
-        .button:hover {
-          background-color: var(--blue1);
-        }
-      }
-    }
-
     .search {
-      position: fixed;
-      right: 200px;
+      position: static;
     }
 
     nav {
@@ -272,11 +271,13 @@ header {
         }
 
         .subnav-content {
-          position: absolute;
-          width: 260px;
-          top: 88px;
+          position: fixed;
+          border-color: var(--blue5);
+          width: 40%;
+          top: 112px;
           display: none;
           right: 0;
+          box-shadow: 2px 2px 2px 0 var(--blue5);
 
           div {
             text-align: left;
@@ -288,7 +289,7 @@ header {
             height: 32px;
             color: var(--green4);
             border-radius: 0;
-            box-shadow: 0 0 0 0 var(--blue5);
+            box-shadow: none;
             background-color: var(--blue3);
           }
 
@@ -300,6 +301,7 @@ header {
             text-decoration: none;
             color: var(--green4);
           }
+
           // Color the svgs
           .svg-fill {
             fill: var(--green4);
