@@ -27,15 +27,6 @@ header {
     position: relative;
     z-index: 1;
 
-    .subnav-content {
-      background: var(--complement);
-      box-shadow: 2px 2px 2px 0 var(--text-color);
-      left: -260px;
-      padding: 8px;
-      position: absolute;
-      top: 40px;
-      width: 270px;
-    }
   }
 }
 
@@ -158,6 +149,12 @@ a {
 
     #side-menu:checked ~ nav {
       display: flex;
+      flex-direction: column;
+    }
+    
+    #side-menu:checked ~ nav .subnav-content {
+      display: flex;
+      flex-direction: column;
     }
   }
 }
@@ -169,5 +166,14 @@ a {
     gap: 16px;
     justify-content: flex-start;
     border-radius: 8px;
+  }
+  .subnav-content {
+    background: var(--complement);
+    box-shadow: 2px 2px 2px 0 var(--text-color);
+    left: -260px;
+    padding: 8px;
+    position: absolute;
+    top: 40px;
+    width: 270px;
   }
 }
