@@ -87,7 +87,7 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
                             regions:
                                 [{
                                     attribute: 'fill',
-                                    scale: {seen: 'var(#A8D4FF)', unseen: 'var(--complement)'},
+                                    scale: {seen: 'var(--accent)', unseen: 'var(--complement)'},
                                 }]
                         }}
                         regionStyle={{
