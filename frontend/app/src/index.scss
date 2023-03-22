@@ -1,9 +1,15 @@
 body {
+  background: var(--dominant);
   margin: 0;
-  background: var(--blue1);
+  width: 100%;
 }
 
 :root {
+  --dominant: #CCE1F5; //Light blue
+  --complement: #8ACBFD; //Darker blue
+  --accent: #E6B7AA; //Pinkish
+  --text-color: #0D0F10; //Black
+
   --blue1: #F0F7FF;
   --blue2: #B2C7E0;
   --blue3: #7B88AD;

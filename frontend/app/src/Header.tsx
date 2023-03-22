@@ -1,28 +1,21 @@
 import React from "react";
 import './Header.scss';
-import {adminIcon, homeIcon, importMoviesIcon, menuIcon, searchIcon, worldMapIcon} from "./Svgs";
+import {adminIcon, homeIcon, importMoviesIcon, searchIcon, worldMapIcon} from "./Svgs";
 
-const menuButton = (props: Props) => {
+const menuButton = () => {
     return <div id={"menu"} className={"subnav"}>
-        <input className="subnav-menu" type="checkbox" id="subnav-menu"/>
-        <label className={"button subnavbtn"} htmlFor="subnav-menu">
-            {menuIcon()}
-            Menu
+        <label className="hamb" htmlFor="side-menu"><span className="hamb-line"></span></label>
+        <label className={"button subnavbtn"} htmlFor="side-menu">
+            <label htmlFor="side-menu">Menu</label>
         </label>
-        <div className={"subnav-content"}>
-            {importMoviesButton(props)}
-            {adminButton()}
-        </div>
     </div>;
 }
 
 const adminButton = () => {
-    return <div className={"button"}>
-        <a href={"/admin"}>
-            {adminIcon()}
-            Admin
-        </a>
-    </div>
+    return <a href={"/admin"} className={"button"}>
+        {adminIcon()}
+        Admin
+    </a>
 }
 
 const importMoviesButton = (props: Props) => {
@@ -58,15 +51,21 @@ const homeButton = (props: Props) => {
 const Header = (props: Props) => {
     return (
         <header>
-            {homeButton(props)}
-
-            {search()}
-            <input className="side-menu" type="checkbox" id="side-menu"/>
-            <label className="hamb" htmlFor="side-menu"><span className="hamb-line"></span></label>
-            <nav>
-                {worldMapButton(props)}
-                {menuButton(props)}
-            </nav>
+            <div className={"left-headers"}>
+                <input className="side-menu" type="checkbox" id="side-menu"/>
+                {menuButton()}
+                {homeButton(props)}
+                <nav>
+                    {worldMapButton(props)}
+                    <div className={"subnav-content"}>
+                        {importMoviesButton(props)}
+                        {adminButton()}
+                    </div>
+                </nav>
+            </div>
+            <div className={"right-headers"}>
+                {search()}
+            </div>
         </header>
     );
 }

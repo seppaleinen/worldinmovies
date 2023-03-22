@@ -1,0 +1,320 @@
+header {
+  position: sticky;
+  background: var(--blue3);
+  padding: 12px;
+  height: auto;
+  box-shadow: 2px 2px 8px 0 var(--blue5);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+
+  #side-menu {
+    display: none;
+  }
+
+  .button {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 16px;
+    gap: 8px;
+    height: 64px;
+    box-shadow: 2px 2px 8px 0 var(--blue5);
+    border-style: none;
+
+    color: var(--green4);
+
+    background: var(--blue1);
+    border-radius: 8px;
+  }
+
+  .button:hover {
+    background: var(--blue2);
+  }
+
+  // Color the svgs
+  .svg-fill {
+    fill: var(--green3);
+  }
+
+  .svg-stroke {
+    stroke: var(--green3);
+  }
+
+  .hamb {
+    cursor: pointer;
+    padding: 12px;
+    position: absolute;
+    right: 12px;
+
+    .hamb-line {
+      background: var(--blue1);
+      display: block;
+      height: 2px;
+      position: relative;
+      width: 24px;
+    }
+
+    .hamb-line::before,
+    .hamb-line::after {
+      background: var(--blue1);
+      content: '';
+      display: block;
+      height: 100%;
+      position: absolute;
+      transition: all .2s ease-out;
+      width: 100%;
+    }
+
+    .hamb-line::before {
+      top: 5px;
+    }
+
+    .hamb-line::after {
+      top: -5px;
+    }
+  }
+
+  .side-menu:checked ~ .hamb .hamb-line {
+    background: transparent;
+  }
+
+  .side-menu:checked ~ .hamb .hamb-line::before {
+    transform: rotate(-45deg);
+    top: 0;
+  }
+
+  .side-menu:checked ~ .hamb .hamb-line::after {
+    transform: rotate(45deg);
+    top: 0;
+  }
+
+  /* Toggle menu icon */
+  .side-menu:checked ~ nav {
+    right: 0;
+    display: block;
+  }
+
+
+  .search {
+    padding: 8px;
+    height: 48px;
+    width: 112px;
+    position: absolute;
+    right: 72px;
+  }
+
+  .search:hover {
+    background: var(--blue1);
+  }
+
+  .input[contenteditable]:empty::before {
+    content: "Search";
+    color: var(--blue2);
+  }
+
+  .input {
+    font-family: inherit;
+    font-size: inherit;
+    display: flex;
+    align-items: center;
+    border-color: var(--blue4);
+  }
+
+
+  nav {
+    display: none;
+    height: 100%;
+    top: 88px;
+    position: fixed;
+    width: 100%;
+    background-color: var(--blue2);
+    overflow: visible;
+    z-index: -1;
+
+    .button:hover {
+      background-color: var(--blue3);
+    }
+
+    .svg-fill {
+      fill: var(--green4);
+    }
+
+    .svg-stroke {
+      stroke: var(--green4);
+    }
+
+    .button {
+      background-color: var(--blue2);
+      width: 100%;
+      color: var(--green5);
+      padding: 20px;
+      border-radius: 0;
+      box-shadow: 0 0 0 0 var(--blue5);
+    }
+
+    .subnav:hover .subnav-content {
+      display: block;
+    }
+
+    #subnav-menu {
+      display: none;
+    }
+
+    .subnav {
+      /* Sub nav */
+      .subnavbtn {
+        height: fit-content;
+      }
+
+      .subnav-content {
+        position: fixed;
+        width: 100%;
+        display: none;
+
+        div {
+          color: var(--green5);
+          text-decoration: none;
+          text-align: center;
+        }
+
+        div:hover {
+          background-color: var(--blue3);
+        }
+
+        a {
+          text-decoration: none;
+          color: var(--green5);
+        }
+
+        .button {
+          border-radius: 0;
+          height: 20px
+        }
+      }
+    }
+  }
+}
+
+.button {
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: var(--blue2);
+}
+
+@media (max-width: 768px) {
+  header {
+    .button.home {
+      font-size: 0;
+      display: flex;
+      justify-content: center;
+      gap: 0;
+    }
+  }
+}
+
+
+@media (min-width: 768px) {
+  header {
+    padding: 24px 96px;
+
+    .search {
+      position: static;
+    }
+
+    nav {
+      display: block;
+      max-height: none;
+      top: 0;
+      position: relative;
+      float: right;
+      width: auto;
+      background-color: transparent;
+
+      .button {
+        background-color: var(--blue1);
+        border-radius: 8px;
+        box-shadow: 2px 2px 8px 0 var(--blue5);
+      }
+
+      .button:hover {
+        background-color: var(--blue2);
+      }
+
+      .worldmap {
+        position: relative;
+        float: left;
+      }
+
+      .subnav:hover .subnav-content {
+        display: none;
+      }
+
+      .subnav-menu:checked ~ .subnav-content {
+        display: block;
+      }
+
+      .subnav {
+        position: fixed;
+
+        .subnavbtn {
+          position: fixed;
+          height: fit-content;
+          padding: 22px 16px;
+          right: 96px;
+          width: 64px;
+        }
+
+        .subnav-content {
+          position: fixed;
+          border-color: var(--blue5);
+          width: 40%;
+          top: 112px;
+          display: none;
+          right: 0;
+e
+          div {
+            text-align: left;
+          }
+
+          .button {
+            width: 100%;
+            padding: 16px;
+            height: 32px;
+            color: var(--green4);
+            border-radius: 0;
+            box-shadow: none;
+            background-color: var(--blue3);
+          }
+
+          .button:hover {
+            background-color: var(--blue2);
+          }
+
+          a {
+            text-decoration: none;
+            color: var(--green4);
+          }
+
+          // Color the svgs
+          .svg-fill {
+            fill: var(--green4);
+          }
+
+          .svg-stroke {
+            stroke: var(--green4);
+          }
+        }
+      }
+    }
+
+    .hamb {
+      display: none;
+    }
+  }
+}

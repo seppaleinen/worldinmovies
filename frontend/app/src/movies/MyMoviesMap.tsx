@@ -81,22 +81,18 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
                 <div id="mappy">
                     <VectorMap
                         map={customWorldMapJson}
-                        backgroundColor="#a5bfdd"
+                        backgroundColor="var(--dominant)"
                         mapRef={this.myRef}
-                        style={{
-                            width: '100%',
-                            height: '100%'
-                        }}
                         series={{
                             regions:
                                 [{
                                     attribute: 'fill',
-                                    scale: {seen: '#c9dfaf', unseen: '#A8A8A8'},
+                                    scale: {seen: 'var(#A8D4FF)', unseen: 'var(--complement)'},
                                 }]
                         }}
                         regionStyle={{
-                            hover: {fill: '#A8A8A8'},
-                            initial: {fill: '#A8A8A8'}
+                            hover: {fill: '#A8D4FF'},
+                            initial: {fill: 'var(--complement)'}
                         }}
                         zoomOnScroll={false}
                         onRegionClick={this.onRegionClick}

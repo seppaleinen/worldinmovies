@@ -1,321 +1,173 @@
 header {
-  position: sticky;
-  background: var(--blue3);
-  padding: 12px;
-  height: auto;
-  box-shadow: 2px 2px 8px 0 var(--blue5);
+  align-items: center;
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
   gap: 8px;
+  justify-content: space-between;
+  position: sticky;
+  padding: clamp(16px, 2.4vw, 24px) clamp(24px, 5vw, 80px);
 
-  #side-menu {
-    display: none;
-  }
-
-  .button {
+  .left-headers {
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 16px;
     gap: 8px;
-    height: 64px;
-    box-shadow: 2px 2px 8px 0 var(--blue5);
-    border-style: none;
-
-    color: var(--green4);
-
-    background: var(--blue1);
-    border-radius: 8px;
-  }
-
-  .button:hover {
-    background: var(--blue2);
-  }
-
-  // Color the svgs
-  .svg-fill {
-    fill: var(--green3);
-  }
-
-  .svg-stroke {
-    stroke: var(--green3);
-  }
-
-  .hamb {
-    cursor: pointer;
-    padding: 12px;
-    position: absolute;
-    right: 12px;
-
-    .hamb-line {
-      background: var(--blue1);
-      display: block;
-      height: 2px;
-      position: relative;
-      width: 24px;
-    }
-
-    .hamb-line::before,
-    .hamb-line::after {
-      background: var(--blue1);
-      content: '';
-      display: block;
-      height: 100%;
-      position: absolute;
-      transition: all .2s ease-out;
-      width: 100%;
-    }
-
-    .hamb-line::before {
-      top: 5px;
-    }
-
-    .hamb-line::after {
-      top: -5px;
-    }
-  }
-
-  .side-menu:checked ~ .hamb .hamb-line {
-    background: transparent;
-  }
-
-  .side-menu:checked ~ .hamb .hamb-line::before {
-    transform: rotate(-45deg);
-    top: 0;
-  }
-
-  .side-menu:checked ~ .hamb .hamb-line::after {
-    transform: rotate(45deg);
-    top: 0;
-  }
-
-  /* Toggle menu icon */
-  .side-menu:checked ~ nav {
-    right: 0;
-    display: block;
-  }
-
-
-  .search {
-    padding: 8px;
-    height: 48px;
-    width: 112px;
-    position: absolute;
-    right: 72px;
-  }
-
-  .search:hover {
-    background: var(--blue1);
-  }
-
-  .input[contenteditable]:empty::before {
-    content: "Search";
-    color: var(--blue2);
-  }
-
-  .input {
-    font-family: inherit;
-    font-size: inherit;
-    display: flex;
-    align-items: center;
-    border-color: var(--blue4);
-  }
-
-
-  nav {
-    display: none;
-    height: 100%;
-    top: 88px;
-    position: fixed;
-    width: 100%;
-    background-color: var(--blue2);
-    overflow: visible;
-    z-index: -1;
-
-    .button:hover {
-      background-color: var(--blue3);
-    }
-
-    .svg-fill {
-      fill: var(--green4);
-    }
-
-    .svg-stroke {
-      stroke: var(--green4);
-    }
-
-    .button {
-      background-color: var(--blue2);
-      width: 100%;
-      color: var(--green5);
-      padding: 20px;
-      border-radius: 0;
-      box-shadow: 0 0 0 0 var(--blue5);
-    }
-
-    .subnav:hover .subnav-content {
-      display: block;
-    }
-
-    #subnav-menu {
-      display: none;
-    }
+    justify-content: flex-start;
 
     .subnav {
-      /* Sub nav */
-      .subnavbtn {
-        height: fit-content;
-      }
+      gap: 0;
+    }
+  }
 
-      .subnav-content {
-        position: fixed;
-        width: 100%;
-        display: none;
+  nav {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
 
-        div {
-          color: var(--green5);
-          text-decoration: none;
-          text-align: center;
-        }
-
-        div:hover {
-          background-color: var(--blue3);
-        }
-
-        a {
-          text-decoration: none;
-          color: var(--green5);
-        }
-
-        .button {
-          border-radius: 0;
-          height: 20px
-        }
-      }
+    .subnav-content {
+      background: var(--complement);
+      box-shadow: 2px 2px 2px 0 var(--text-color);
+      left: -260px;
+      padding: 8px;
+      position: absolute;
+      top: 40px;
+      width: 270px;
     }
   }
 }
 
-.button {
-  cursor: pointer;
+// Add placeholder on searchbar
+.input[contenteditable]:empty::before {
+  color: var(--text-color);
+  content: 'Search';
 }
 
-.button:hover {
-  background-color: var(--blue2);
+.button,
+.subnav {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  width: auto;
+  min-height: 40px;
+  justify-content: center;
+}
+
+.button:not(.search):hover {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
+}
+
+a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.hamb {
+  cursor: pointer;
+  padding: 19px 8px;
+
+  .hamb-line {
+    background: var(--text-color);
+    display: block;
+    height: 2px;
+    position: relative;
+    width: 24px;
+  }
+
+  .hamb-line::before,
+  .hamb-line::after {
+    background: var(--text-color);
+    content: '';
+    display: block;
+    height: 100%;
+    position: absolute;
+    transition: all .2s ease-out;
+    width: 100%;
+  }
+
+  .hamb-line::before {
+    top: 5px;
+  }
+
+  .hamb-line::after {
+    top: -5px;
+  }
+}
+
+#side-menu, #subnav-menu, .subnav-content {
+  display: none;
+}
+
+.side-menu:checked ~ .subnav .hamb .hamb-line {
+  background: transparent;
+}
+
+.side-menu:checked ~ .subnav .hamb .hamb-line::before {
+  top: 0;
+  transform: rotate(-45deg);
+}
+
+.side-menu:checked ~ .subnav .hamb .hamb-line::after {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.svg-fill {
+  fill: var(--text-color);
+}
+
+.svg-stroke {
+  stroke: var(--text-color);
 }
 
 @media (max-width: 768px) {
   header {
-    .button.home {
-      font-size: 0;
+
+    .button {
+      height: fit-content;
+      width: 100%;
       display: flex;
       justify-content: center;
+    }
+
+    .button.home,
+    .subnavbtn {
+      font-size: 0;
+      min-height: 40px;
       gap: 0;
+    }
+
+    nav {
+      display: none;
+      top: 60px;
+      width: 60%;
+      height: fit-content;
+      position: absolute;
+      background: var(--complement);
+      box-shadow: 2px 2px 2px 0 var(--text-color);
+      border-radius: 8px;
+    }
+
+    #side-menu:checked ~ nav {
+      display: flex;
     }
   }
 }
 
-
 @media (min-width: 768px) {
-  header {
-    padding: 24px 96px;
-
-    .search {
-      position: static;
-    }
-
-    nav {
-      display: block;
-      max-height: none;
-      top: 0;
-      position: relative;
-      float: right;
-      width: auto;
-      background-color: transparent;
-
-      .button {
-        background-color: var(--blue1);
-        border-radius: 8px;
-        box-shadow: 2px 2px 8px 0 var(--blue5);
-      }
-
-      .button:hover {
-        background-color: var(--blue2);
-      }
-
-      .worldmap {
-        position: relative;
-        float: left;
-      }
-
-      .subnav:hover .subnav-content {
-        display: none;
-      }
-
-      .subnav-menu:checked ~ .subnav-content {
-        display: block;
-      }
-
-      .subnav {
-        position: fixed;
-
-        .subnavbtn {
-          position: fixed;
-          height: fit-content;
-          padding: 22px 16px;
-          right: 96px;
-          width: 64px;
-        }
-
-        .subnav-content {
-          position: fixed;
-          border-color: var(--blue5);
-          width: 40%;
-          top: 112px;
-          display: none;
-          right: 0;
-          box-shadow: 2px 2px 2px 0 var(--blue5);
-
-          div {
-            text-align: left;
-          }
-
-          .button {
-            width: 100%;
-            padding: 16px;
-            height: 32px;
-            color: var(--green4);
-            border-radius: 0;
-            box-shadow: none;
-            background-color: var(--blue3);
-          }
-
-          .button:hover {
-            background-color: var(--blue2);
-          }
-
-          a {
-            text-decoration: none;
-            color: var(--green4);
-          }
-
-          // Color the svgs
-          .svg-fill {
-            fill: var(--green4);
-          }
-
-          .svg-stroke {
-            stroke: var(--green4);
-          }
-        }
-      }
-    }
-
-    .hamb {
-      display: none;
-    }
+  #side-menu:checked ~ nav > .subnav-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: flex-start;
+    border-radius: 8px;
   }
 }
