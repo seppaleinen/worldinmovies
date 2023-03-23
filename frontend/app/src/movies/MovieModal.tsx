@@ -1,90 +1,65 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {inject, observer} from "mobx-react";
 import {Movie, MovieModalState, MyMovie} from "../Types";
-import {StoreType} from "../stores/MovieStore";
+import MovieStore, {StoreType} from "../stores/MovieStore";
 import {StateStoreType} from "../stores/StateStore";
-import './MovieModal.scss';
+import styles from './MovieModal.module.scss';
+
 
 @inject('movieStore', 'stateStore')
 @observer
 class MovieModal extends React.Component<Props, MovieModalState> {
-    renderTopMovies(data: Movie[]) {
+
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            toggleRankedMovies: 'best',
+        };
+
+    }
+
+    renderTopMovies(store: MovieStore) {
+        const data = this.state.toggleRankedMovies === 'best' ? store.movies : store.myMovies[this.props.stateStore!.code];
         return (
             data.slice()
                 .sort((a: Movie, b: Movie) => (a.vote_average > b.vote_average) ? -1 : 1)
                 .map((item: Movie) =>
-                    <tr key={item.imdb_id}>
-                        <td></td>
-                        <td><a href={"https://www.imdb.com/title/" + item.imdb_id} target="_blank"
-                               rel="noopener noreferrer">{item.original_title}{item.en_title}</a></td>
-                        <td>{item.vote_average}</td>
-                    </tr>
+                    <div className={styles.movieCard} key={item.imdb_id}>
+                        <img className={styles.poster} src={`https://image.tmdb.org/t/p/original/${item.poster_path}`}
+                             alt={item.en_title}/>
+                        <div className={styles.movieCardText}>
+                            <div>{item.original_title} ({item.release_date.slice(0,4)})</div>
+                            <div className={styles.englishTitle}>{item.en_title}</div>
+                            <div>{item.vote_average}</div>
+                        </div>
+                    </div>
                 )
         );
     }
 
-    shouldIRenderMyMovies() {
-        const movieStore = this.props.movieStore!;
-        const stateStore = this.props.stateStore!;
-        return movieStore.myMovies !== undefined && Object.keys(movieStore.myMovies).length !== 0 && stateStore.code in movieStore.myMovies;
-    }
-
-    renderMyMovies(data: Record<string, MyMovie[]>) {
-        let rows = data[this.props.stateStore!.code].slice()
-            .sort((a: MyMovie, b: MyMovie) => (a.personal_rating > b.personal_rating) ? -1 : 1)
-            .slice(0, 10)
-            .map((item: MyMovie) => (
-                <tr key={item.imdb_id}>
-                    <td></td>
-                    <td><a href={"https://www.imdb.com/title/" + item.imdb_id} target="_blank"
-                           rel="noopener noreferrer">{item.title}</a></td>
-                    <td>{item.personal_rating}</td>
-                </tr>
-            ));
-
-        return (
-            <div id="myMoviesTable"><h2>Your top ranked movies from {this.props.stateStore!.regionName}</h2>
-                <table className="modal-table">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Title</th>
-                        <th>Your rating</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {rows}
-                    </tbody>
-                </table>
-            </div>
-        )
+    handleClick = (newState: string) => {
+        this.setState({toggleRankedMovies: newState})
     }
 
     render() {
         return (
-            <div id="myModal" className="modal">
-                <div className="modal-content">
-                    <div id="modal-text">
-                        <section id="containingSection">
-                            <div id="rankedMoviesTable"><h2>Top ranked movies
-                                from {this.props.stateStore!.regionName}</h2>
-                                <table className="modal-table">
-                                    <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Title</th>
-                                        <th>Rating</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {this.renderTopMovies(this.props.movieStore!.movies)}
-                                    </tbody>
-                                </table>
-                            </div>
-                            {this.shouldIRenderMyMovies() && this.renderMyMovies(this.props.movieStore!.myMovies)}
-                        </section>
-                    </div>
+            <div className={styles.container}>
+                <div className={styles.title}>
+                    <h1>{this.props.stateStore!.regionName}</h1>
                 </div>
+                <div className={styles.toggle}>
+                    <h2 onClick={() => this.handleClick('best')}
+                        className={this.state.toggleRankedMovies === 'best' ? styles.activeToggle : styles.inactiveToggle}>Highest
+                        rated movies</h2>
+                    { this.props.movieStore!.myMovies[this.props.stateStore!.code] ?
+                        <h2 onClick={() => this.handleClick('my')}
+                        className={this.state.toggleRankedMovies === 'my' ? styles.activeToggle : styles.inactiveToggle}>My
+                        highest rated movies</h2> : ''
+                    }
+                </div>
+                <section className={styles.containingSection}>
+                    {this.renderTopMovies(this.props.movieStore!)}
+                </section>
             </div>
         )
     }

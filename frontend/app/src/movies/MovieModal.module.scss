@@ -1,0 +1,81 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  color: var(--text-color);
+  background: var(--accent);
+  border-radius: 8px;
+  padding: 8px 8px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.toggle {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: fit-content;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.activeToggle {
+  background: var(--complement);
+  border-radius: 8px;
+  box-shadow: 2px 2px 2px var(--text-color);
+  padding: 8px 8px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.inactiveToggle {
+  padding: 8px 8px;
+}
+
+.movieCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 8px;
+  height: fit-content;
+  cursor: pointer;
+}
+
+.movieCardText {
+  background: var(--complement);
+  line-break: loose;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 2px 2px 2px var(--text-color);
+}
+
+.poster {
+  width: 200px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 2px var(--text-color);
+}
+
+.containingSection {
+  padding: clamp(16px, 2.4vw, 24px) clamp(24px, 5vw, 80px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.englishTitle {
+  background: var(--dominant);
+  position: relative;
+  left: 4px;
+  border-radius: 4px;
+  width: fit-content;
+}

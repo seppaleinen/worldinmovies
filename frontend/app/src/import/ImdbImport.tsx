@@ -13,11 +13,12 @@ export interface FileUploadProps {
 @inject('movieStore')
 @observer
 class ImdbImport extends React.Component<FileUploadProps, {}> {
+    backendUrl = process.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : process.env.REACT_APP_BACKEND_URL;
     onChangeHandler = (event: any) => {
         document.getElementById("earth")!.style.display = "block";
         const data = new FormData()
         data.append('file', event.target.files[0])
-        axios.post("/backend/ratings", data)
+        axios.post(this.backendUrl + "/ratings", data)
             .then((res: AxiosResponse<RatingsResponse>) => {
                 this.props.movieStore!.myMovies = res.data.found;
             })

@@ -11,6 +11,7 @@ import customWorldMapJson from './customworldmap.json';
 @observer
 class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
     myRef = React.createRef<MutableRefObject<IMapObject> & null>();
+    backendUrl = process.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : process.env.REACT_APP_BACKEND_URL;
 
     constructor(props: Props) {
         super(props);
@@ -46,7 +47,7 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
     onRegionClick = (event: any, code: string) => {
         // @ts-ignore
         const regionName = this.myRef.current.getMapObject().getRegionName(code);
-        axios.get("/backend/view/best/" + code.toUpperCase(), {timeout: 5000})
+        axios.get(this.backendUrl + "/view/best/" + code.toUpperCase(), {timeout: 5000})
             .then((response: AxiosResponse) => {
                 let movieStore = this.props.movieStore!;
                 let stateStore = this.props.stateStore!;

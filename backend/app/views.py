@@ -99,7 +99,7 @@ def __alt_title(original_title, en_title):
     if fuzz.token_set_ratio(original_title, en_title) > 80:
         return None
     else:
-        return " (%s)" % en_title
+        return en_title
 
 
 @csrf_exempt
@@ -122,12 +122,13 @@ def ratings(request):
                     found_movie = Movie.objects.get(imdb_id=row_as_json['Const'])
                     for country in found_movie.production_countries.all():
                         result['found'].setdefault(country.iso_3166_1, []).append({
-                            "title": found_movie.original_title,
-                            "country_code": country.iso_3166_1,
-                            "year": row_as_json['Year'],
-                            "imdb_id": row_as_json['Const'],
-                            "personal_rating": row_as_json['Your Rating'],
-                            "rating": row_as_json['IMDb Rating']
+                            'imdb_id': found_movie.imdb_id,
+                            'original_title': found_movie.original_title,
+                            'release_date': found_movie.release_date,
+                            'poster_path': found_movie.poster_path,
+                            'vote_average': found_movie.vote_average,
+                            'vote_count': found_movie.vote_count,
+                            'country_code': country.iso_3166_1
                         })
                 except Exception as exc:
                     result['not_found'].append({

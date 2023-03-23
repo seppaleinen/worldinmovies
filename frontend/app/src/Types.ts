@@ -15,13 +15,8 @@ export interface Movie {
     en_title: string;
 }
 
-export interface MyMovie {
-    title: string;
-    country_code: string;
-    year: string;
-    imdb_id: string;
+export interface MyMovie extends Movie {
     personal_rating: string;
-    rating: string;
 }
 
 export interface RatingsResponse {
@@ -43,6 +38,6 @@ export interface Props {
 }
 
 export interface MovieModalState {
-    rerender?: number;
+    toggleRankedMovies: string;
 }
 

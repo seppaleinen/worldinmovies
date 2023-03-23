@@ -1,6 +1,6 @@
 import React from "react";
 import styles from './Header.module.scss';
-import {adminIcon, homeIcon, importMoviesIcon, searchIcon, worldMapIcon} from "./Svgs";
+import {adminIcon, homeIcon, importMoviesIcon, worldMapIcon} from "./Svgs";
 
 const menuButton = () => {
     return <div id={"menu"} className={styles.subnav}>
@@ -25,6 +25,7 @@ const importMoviesButton = (props: Props) => {
     </div>
 }
 
+/**
 const search = () => {
     return <div className={`${styles.search} ${styles.button}`}>
         {searchIcon()}
@@ -32,6 +33,7 @@ const search = () => {
         </span>
     </div>;
 }
+ **/
 
 const worldMapButton = (props: Props) => {
     return <button className={`${styles.worldmap} ${styles.button}`} onClick={() => props.redirectToPage('worldmap')}>
@@ -64,7 +66,7 @@ const Header = (props: Props) => {
                 </nav>
             </div>
             <div className={styles.rightHeaders}>
-                {search()}
+                {/*search()*/}
             </div>
         </header>
     );
