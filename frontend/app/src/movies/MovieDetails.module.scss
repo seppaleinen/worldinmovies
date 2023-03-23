@@ -1,32 +1,54 @@
 .container {
   padding: clamp(16px, 2.4vw, 24px) clamp(24px, 5vw, 80px);
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upperArea {
+  display: flex;
   flex-direction: row;
 }
 
 .poster {
-  width: 300px;
+  height: auto;
+  width: clamp(100px, 40%, 300px);
+}
+
+.countries {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
 }
 
 .upperTextArea {
   display: flex;
   flex-direction: column;
   padding: 0 8px;
+  max-width: 80%;
 }
-
+.title {
+  font-size: 2rem;
+}
 .titles {
+  grid-area: title;
   display: flex;
   flex-direction: row;
   gap: 8px;
 
-  div {
-    padding: 16px 16px;
+  div:not(.countries) {
+    padding: 8px 16px;
     border-radius: 8px;
     background: var(--accent);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    min-width: fit-content;
   }
 }
 
 .plot {
+  grid-area: plot;
   padding: 8px 0;
 }
 
@@ -50,6 +72,11 @@
 
   .notbold {
     margin: 8px 0;
-
   }
+}
+
+.genres {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
 }
