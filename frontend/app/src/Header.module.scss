@@ -1,0 +1,170 @@
+header {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: space-between;
+  position: sticky;
+  padding: clamp(16px, 2.4vw, 24px) clamp(24px, 5vw, 80px);
+}
+
+nav {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.leftheaders {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: flex-start;
+
+}
+
+.subnav {
+  gap: 0;
+}
+
+// Add placeholder on searchbar
+.input[contenteditable]:empty::before {
+  color: var(--text-color);
+  content: 'Search';
+}
+
+.button,
+.subnav {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  width: auto;
+  min-height: 40px;
+  justify-content: center;
+}
+
+.button:not(.search):hover {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
+}
+
+a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.hamb {
+  cursor: pointer;
+  padding: 19px 8px;
+}
+
+.hambLine {
+  background: var(--text-color);
+  display: block;
+  height: 2px;
+  position: relative;
+  width: 24px;
+}
+
+.hambLine::before,
+.hambLine::after {
+  background: var(--text-color);
+  content: '';
+  display: block;
+  height: 100%;
+  position: absolute;
+  transition: all .2s ease-out;
+  width: 100%;
+}
+
+.hambLine::before {
+  top: 5px;
+}
+
+.hambLine::after {
+  top: -5px;
+}
+
+.sideMenu, .subnavContent {
+  display: none;
+}
+
+.sideMenu:checked ~ .subnav .hamb .hambLine {
+  background: transparent;
+}
+
+.sideMenu:checked ~ .subnav .hamb .hambLine::before {
+  top: 0;
+  transform: rotate(-45deg);
+}
+
+.sideMenu:checked ~ .subnav .hamb .hambLine::after {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+
+@media (max-width: 768px) {
+  .button {
+    height: fit-content;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .button.home,
+  .subnavbtn {
+    font-size: 0;
+    min-height: 40px;
+    gap: 0;
+  }
+
+  nav {
+    display: none;
+    top: 60px;
+    width: 60%;
+    height: fit-content;
+    position: absolute;
+    background: var(--complement);
+    box-shadow: 2px 2px 2px 0 var(--text-color);
+    border-radius: 8px;
+  }
+
+  .sideMenu:checked ~ nav {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sideMenu:checked ~ nav .subnavContent {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 768px) {
+  .sideMenu:checked ~ nav > .subnavContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: flex-start;
+    border-radius: 8px;
+  }
+
+  .subnavContent {
+    background: var(--complement);
+    box-shadow: 2px 2px 2px 0 var(--text-color);
+    left: -260px;
+    padding: 8px;
+    position: absolute;
+    top: 40px;
+    width: 270px;
+  }
+}
