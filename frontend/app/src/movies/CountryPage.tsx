@@ -1,14 +1,16 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {inject, observer} from "mobx-react";
 import {Movie, MovieModalState, MyMovie} from "../Types";
 import MovieStore, {StoreType} from "../stores/MovieStore";
 import {StateStoreType} from "../stores/StateStore";
-import styles from './MovieModal.module.scss';
+import styles from './CountryPage.module.scss';
+import axios, {AxiosResponse} from "axios";
 
 
 @inject('movieStore', 'stateStore')
 @observer
-class MovieModal extends React.Component<Props, MovieModalState> {
+class CountryPage extends React.Component<Props, MovieModalState> {
+    backendUrl = process.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : process.env.REACT_APP_BACKEND_URL;
 
     constructor(props: Props) {
         super(props);
@@ -18,18 +20,20 @@ class MovieModal extends React.Component<Props, MovieModalState> {
 
     }
 
-    renderTopMovies(store: MovieStore) {
-        const data = this.state.toggleRankedMovies === 'best' ? store.movies : store.myMovies[this.props.stateStore!.code];
+    renderTopMovies = (store: MovieStore) => {
+        const data = this.state.toggleRankedMovies === 'best' ?
+            store.movies :
+            store.myMovies[this.props.stateStore!.code];
         return (
             data.slice()
                 .sort((a: Movie, b: Movie) => (a.vote_average > b.vote_average) ? -1 : 1)
                 .map((item: Movie) =>
-                    <div className={styles.movieCard} key={item.imdb_id}>
+                    <div className={styles.movieCard} key={item.imdb_id} onClick={() => this.getDetails(item.imdb_id)}>
                         <img className={styles.poster} src={`https://image.tmdb.org/t/p/original/${item.poster_path}`}
                              alt={item.en_title}/>
                         <div className={styles.movieCardText}>
-                            <div>{item.original_title} ({item.release_date.slice(0,4)})</div>
-                            <div className={styles.englishTitle}>{item.en_title}</div>
+                            <div>{item.original_title} ({item.release_date.slice(0, 4)})</div>
+                            {item.en_title ? <div className={styles.englishTitle}>'{item.en_title}'</div> : null}
                             <div>{item.vote_average}</div>
                         </div>
                     </div>
@@ -39,6 +43,19 @@ class MovieModal extends React.Component<Props, MovieModalState> {
 
     handleClick = (newState: string) => {
         this.setState({toggleRankedMovies: newState})
+    }
+
+    getDetails = (imdb_id: string) => {
+        console.log("asldkjAKLSdj");
+        axios.get(this.backendUrl + "/movie/imdb/" + imdb_id, {timeout: 5000})
+            .then((response: AxiosResponse) => {
+                console.log(response.data[0]);
+                this.props.redirectToPage("movie-details");
+                this.props.setMovie(response.data);
+            })
+            .catch(function (error: any) {
+                console.error(error);
+            });
     }
 
     render() {
@@ -51,10 +68,10 @@ class MovieModal extends React.Component<Props, MovieModalState> {
                     <h2 onClick={() => this.handleClick('best')}
                         className={this.state.toggleRankedMovies === 'best' ? styles.activeToggle : styles.inactiveToggle}>Highest
                         rated movies</h2>
-                    { this.props.movieStore!.myMovies[this.props.stateStore!.code] ?
+                    {this.props.movieStore!.myMovies[this.props.stateStore!.code] ?
                         <h2 onClick={() => this.handleClick('my')}
-                        className={this.state.toggleRankedMovies === 'my' ? styles.activeToggle : styles.inactiveToggle}>My
-                        highest rated movies</h2> : ''
+                            className={this.state.toggleRankedMovies === 'my' ? styles.activeToggle : styles.inactiveToggle}>My
+                            highest rated movies</h2> : ''
                     }
                 </div>
                 <section className={styles.containingSection}>
@@ -63,12 +80,15 @@ class MovieModal extends React.Component<Props, MovieModalState> {
             </div>
         )
     }
+
 }
 
 export interface Props {
+    redirectToPage: (page: string) => void;
+    setMovie: (movie: any) => void;
     movieStore?: StoreType;
     stateStore?: StateStoreType;
     data?: MyMovie[];
 }
 
-export default MovieModal;
+export default CountryPage;

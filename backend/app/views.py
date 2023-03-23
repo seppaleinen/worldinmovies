@@ -1,4 +1,4 @@
-import json, csv, simplejson, time, datetime
+import json, csv, simplejson, time, datetime, ast
 
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.db import connection
@@ -182,3 +182,9 @@ def check_tmdb_for_changes(request):
                                  (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
     end_date = request.GET.get('end_date', datetime.date.today().strftime("%Y-%m-%d"))
     return StreamingHttpResponse(check_which_movies_needs_update(start_date, end_date))
+
+
+def movie_details(request, imdb_id):
+    movie = json.dumps(ast.literal_eval(Movie.objects.get(imdb_id=imdb_id).raw_response))
+    print(movie)
+    return HttpResponse(movie)

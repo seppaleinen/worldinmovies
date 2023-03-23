@@ -54,7 +54,7 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
                 movieStore.movies = response.data.result;
                 stateStore.code = code;
                 stateStore.regionName = regionName;
-                this.props.redirectToPage("movie-details");
+                this.props.redirectToPage("country-page");
             })
             .catch(function (error: any) {
                 console.log(error);

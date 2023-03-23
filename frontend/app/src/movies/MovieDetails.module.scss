@@ -1,0 +1,55 @@
+.container {
+  padding: clamp(16px, 2.4vw, 24px) clamp(24px, 5vw, 80px);
+  display: flex;
+  flex-direction: row;
+}
+
+.poster {
+  width: 300px;
+}
+
+.upperTextArea {
+  display: flex;
+  flex-direction: column;
+  padding: 0 8px;
+}
+
+.titles {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+
+  div {
+    padding: 16px 16px;
+    border-radius: 8px;
+    background: var(--accent);
+  }
+}
+
+.plot {
+  padding: 8px 0;
+}
+
+
+.button {
+  box-shadow: 2px 2px 2px var(--text-color);
+  cursor: pointer;
+  background: var(--accent);
+  padding: 8px 8px;
+  width: fit-content;
+  border-radius: 8px;
+}
+
+.bold {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  h4 {
+    margin: 8px 0;
+  }
+
+  .notbold {
+    margin: 8px 0;
+
+  }
+}
