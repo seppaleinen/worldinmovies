@@ -185,6 +185,4 @@ def check_tmdb_for_changes(request):
 
 
 def movie_details(request, imdb_id):
-    movie = json.dumps(ast.literal_eval(Movie.objects.get(imdb_id=imdb_id).raw_response))
-    print(movie)
-    return HttpResponse(movie)
+    return HttpResponse(Movie.objects.get(imdb_id=imdb_id).raw_response)

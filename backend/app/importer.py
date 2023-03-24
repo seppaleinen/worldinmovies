@@ -133,7 +133,7 @@ def concurrent_stuff():
                 if data is not None:
                     fetched_movie = json.loads(data)
                     db_movie = Movie.objects.get(pk=fetched_movie['id'])
-                    db_movie.add_fetched_info(fetched_movie)
+                    db_movie.add_fetched_info(data)
                     for fetch_alt_title in fetched_movie['alternative_titles']['titles']:
                         title = fetch_alt_title['title'] if len(fetch_alt_title['title']) < 500 else (fetch_alt_title['title'][:498] + '..')
                         alt_title = AlternativeTitle(movie_id=db_movie.id,
