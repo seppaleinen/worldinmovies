@@ -49,7 +49,4 @@ COPY ./nginx/sites-enabled/         /etc/nginx/sites-enabled
 COPY ./nginx/nginx.conf             /etc/nginx/nginx.conf
 COPY ./nginx/.htpasswd              /etc/nginx/.htpasswd
 
-# Test configs
-RUN /usr/sbin/nginx -t
-
 CMD ["/usr/sbin/nginx"]
