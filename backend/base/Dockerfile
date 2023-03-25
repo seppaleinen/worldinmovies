@@ -10,7 +10,7 @@ RUN \
  apk add --no-cache postgresql-libs tzdata libpq && \
  apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev
 
-ADD ./requirements.txt .
+ADD requirements.txt .
 
 RUN pip install --prefix=/install --no-cache-dir -r requirements.txt && \
     apk --purge del .build-deps
@@ -24,7 +24,7 @@ ENV TZ Europe/Stockholm
 COPY --from=builder /install /usr/local
 RUN apk --no-cache add libpq curl
 
-ADD . /app
+ADD .. /app
 
 WORKDIR /app
 

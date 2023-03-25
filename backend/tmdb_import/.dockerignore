@@ -1,0 +1,7 @@
+docker-compose.yml
+*.gz
+*.pyc
+*.json
+*.db
+
+testdata/

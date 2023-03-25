@@ -17,12 +17,26 @@ services:
       timeout: 60s
       retries: 5
       start_period: 3s
+  mongo:
+    image: mongo:jammy
+    ports:
+      - "27017:27017"
+
+  tmdb_import:
+    image: seppaleinen/worldinmovies_tmdb_import
+    build: backend/tmdb_import/
+    ports:
+      - "8020:8020"
+    depends_on:
+      - mongo
 
   backend:
     image: seppaleinen/worldinmovies_backend
-    build: backend/
+    build: backend/base/
     expose:
       - 8000
+    ports:
+      - "8000:8000"
     depends_on:
       - db
     restart: on-failure
