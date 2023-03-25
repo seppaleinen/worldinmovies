@@ -1,13 +1,65 @@
-import simplejson, datetime, json
+import datetime
+import json
 
+from app.importer import download_files, fetch_tmdb_data_concurrently, import_genres, import_countries, \
+    import_languages, \
+    base_import, check_which_movies_needs_update
+from app.models import Movie
 from django.http import HttpResponse, StreamingHttpResponse
-from app.models import Movie, Genre
-from app.importer import download_files, fetch_tmdb_data_concurrently, import_genres, import_countries, import_languages, \
-     base_import, check_which_movies_needs_update
 
 
 def import_status(request):
-    return HttpResponse(simplejson.dumps({"fetched": 0, "total": 0, "percentage_done": 0}), content_type='application/json')
+    result = Movie.objects().aggregate([
+        {
+            '$facet': {
+                'Total': [
+                    {
+                        '$match': {
+                            '_id': {
+                                '$exists': True
+                            }
+                        }
+                    }, {
+                        '$count': 'count'
+                    }
+                ],
+                'Fetched': [
+                    {
+                        '$match': {
+                            'fetched': {
+                                '$eq': True
+                            }
+                        }
+                    }, {
+                        '$count': 'count'
+                    }
+                ]
+            }
+        }, {
+            '$unwind': {
+                'path': '$Total'
+            }
+        }, {
+            '$unwind': {
+                'path': '$Fetched'
+            }
+        }, {
+            '$project': {
+                'total': '$Total.count',
+                'fetched': '$Fetched.count',
+                'percentage_done': {
+                    '$multiply': [
+                        {
+                            '$divide': [
+                                '$Fetched.count', '$Total.count'
+                            ]
+                        }, 100
+                    ]
+                }
+            }
+        }
+    ])
+    return HttpResponse(result, content_type='application/json')
 
 
 # Imports
