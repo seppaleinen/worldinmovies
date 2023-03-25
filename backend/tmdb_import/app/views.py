@@ -1,5 +1,6 @@
 import datetime
 import json
+import threading
 
 from app.importer import download_files, fetch_tmdb_data_concurrently, import_genres, import_countries, \
     import_languages, \
@@ -72,8 +73,14 @@ def base_fetch(request):
     return StreamingHttpResponse(base_import())
 
 
-def fetch_movie(request):
-    return StreamingHttpResponse(fetch_tmdb_data_concurrently())
+def import_tmdb_data(request):
+    if 'import_tmdb_data' not in [thread.name for thread in threading.enumerate()]:
+        thread = threading.Thread(target=fetch_tmdb_data_concurrently, name='import_tmdb_data')
+        thread.setDaemon(True)
+        thread.start()
+        return HttpResponse(json.dumps({"Message": "Starting to process TMDB data"}))
+    else:
+        return HttpResponse(json.dumps({"Message": "TMDB data process already started"}))
 
 
 def fetch_genres(request):

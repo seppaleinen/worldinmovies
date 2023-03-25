@@ -17,10 +17,13 @@ services:
       timeout: 60s
       retries: 5
       start_period: 3s
+
   mongo:
     image: mongo:jammy
+    volumes:
+      - "mongo_data:/data/db"
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
 
   tmdb_import:
     image: seppaleinen/worldinmovies_tmdb_import
@@ -29,6 +32,26 @@ services:
       - "8020:8020"
     depends_on:
       - mongo
+
+  kafka:
+    image: docker.io/bitnami/kafka:3.4
+    privileged: true
+    ports:
+      - "2181:2181"
+      - "127.0.0.1:9092:9092"
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:2181
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+      - KAFKA_BROKER_ID=1001
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1001@127.0.0.1:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
 
   backend:
     image: seppaleinen/worldinmovies_backend
@@ -79,3 +102,9 @@ volumes:
   pgdata:
   gunicornsocket:
   certs:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
+  mongo_data:
+    driver: local

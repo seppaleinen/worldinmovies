@@ -20,7 +20,7 @@ urlpatterns = [
     # Imports a daily file with the data of what movies are available to download
     path('import/tmdb/daily',               views.download_file),
     # Starts to fetch info from tmdb with the keys from daily
-    path('import/tmdb/data',                views.fetch_movie),
+    path('import/tmdb/data',                views.import_tmdb_data),
     # Runs /daily, /genres, /countries, /languages
     path('import/base',                     views.base_fetch),
     path('import/tmdb/genres',              views.fetch_genres),

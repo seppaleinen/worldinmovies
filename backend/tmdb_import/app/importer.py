@@ -8,6 +8,7 @@ import datetime, \
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from app.models import Movie, SpokenLanguage, Genre
+from app.kafka import produce
 from itertools import chain
 
 
@@ -103,18 +104,17 @@ def __fetch_movie_with_id(id, index):
         return __fetch_movie_with_id(id, index)
     except requests.exceptions.ConnectionError as exc:
         print("ConnectionError: %s on url: %s\n Trying again in 10 seconds..." % (exc, url))
-        # traceback.print_exc()
         time.sleep(30)
         return __fetch_movie_with_id(id, index)
     if response.status_code == 200:
         return response.json()
     elif response.status_code == 429 or response.status_code == 25:
         retryAfter = int(response.headers['Retry-After']) + 1
-        # print("RetryAfter: %s" % retryAfter)
         time.sleep(retryAfter)
         return __fetch_movie_with_id(id, index)
     elif response.status_code == 404:
         Movie.objects.get(pk=id).delete()
+        produce('DELETED', id)
         print("Deleting movie with id: %s as it's not in tmdb anymore" % id)
         return None
     else:
@@ -136,14 +136,10 @@ def fetch_tmdb_data_concurrently():
                     db_movie = Movie.objects.get(pk=data['id'])
                     db_movie.add_fetched_info(data)
                     db_movie.save()
-                    yield json.dumps({"fetched": i, "total": length}) + "\n"
-                else:
-                    yield json.dumps({"deleted": True}) + "\n"
+                    produce('NEW', data['id'])
                 i += 1
             except Exception as exc:
                 print("Exception: %s" % exc)
-                yield json.dumps({"exception": exc}) + "\n"
-    print("Fetched and saved: %s movies" % length)
 
 
 def import_genres():
