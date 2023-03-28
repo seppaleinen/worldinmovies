@@ -70,7 +70,7 @@ def get_best_movies_from_all_countries(request):
 def get_best_movies_from_country(request, country_code):
     if request.method != 'GET':
         return HttpResponse("Method not allowed", status=400)
-    page = int(request.GET.get('page', 0)) * 10
+    page = int(request.GET.get('page', 0)) * 20
     with connection.cursor() as cursor:
         cursor.execute("""
             select movie.imdb_id, movie.original_title, movie.release_date, movie.poster_path, movie.vote_average, movie.vote_count, count(*) OVER() as total_count, (select title from app_alternativetitle where movie_id = movie.id and iso_3166_1 in ('US', 'GB') limit 1) as en_title from app_movie movie
@@ -78,10 +78,10 @@ def get_best_movies_from_country(request, country_code):
 	            inner join app_productioncountries pc on pc.id = pcm.productioncountries_id
 	            where movie.fetched is True
 	            and pc.iso_3166_1 = '{country_code}'
-	            and movie.vote_count > 5
+	            and movie.vote_count > 200
 	            and movie.vote_average > 0
-	            order by (movie.vote_count / (cast(movie.vote_count as numeric) + 10)) * movie.vote_average + (10 / (cast(movie.vote_count as numeric) + 10)) desc
-	            limit 10
+	            order by (movie.vote_count / (cast(movie.vote_count as numeric) + 200)) * movie.vote_average + (200 / (cast(movie.vote_count as numeric) + 200)) * 4 desc
+	            limit 20
 	            offset {offset}
         """.format(country_code=country_code, offset=page))
         result = {"result": [], "total_result": None}
@@ -98,7 +98,7 @@ def get_best_movies_from_country(request, country_code):
                 'vote_count': row[5],
                 'en_title': en_title
             })
-        return HttpResponse(simplejson.dumps(result, indent=2 * ' '), content_type='application/json; charset=utf-8')
+        return HttpResponse(simplejson.dumps(result), content_type='application/json; charset=utf-8')
 
 
 def __alt_title(original_title, en_title):

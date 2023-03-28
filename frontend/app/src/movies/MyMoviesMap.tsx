@@ -41,7 +41,7 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
     onRegionClick = (event: any, code: string) => {
         // @ts-ignore
         const regionName = this.myRef.current.getMapObject().getRegionName(code);
-        axios.get(this.backendUrl + "/view/best/" + code.toUpperCase(), {timeout: 5000})
+        axios.get(this.backendUrl + "/view/best/" + code.toUpperCase(), {timeout: 10000})
             .then((response: AxiosResponse) => {
                 let movieStore = this.props.movieStore!;
                 let stateStore = this.props.stateStore!;
