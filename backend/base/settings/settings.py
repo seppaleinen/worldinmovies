@@ -32,12 +32,10 @@ INSTALLED_APPS = [
     'health_check.cache',
     'health_check.storage',
     'health_check.contrib.migrations',
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'app',
     'corsheaders',
     'django_crontab',
@@ -65,23 +63,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 # ALLOWED_HOSTS=['http://localhost:3000', 'http://localhost:81', 'http://webapp:81', 'http://webapp:3000', 'http://localhost:8000', 'localhost:8000']
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'localhost', 'webapp', 'backend', 'worldinmovies.duckdns.org', '192.168.1.137']
 ROOT_URLCONF = 'settings.urls'
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
-
 WSGI_APPLICATION = 'settings.wsgi.application'
 
 # Database
@@ -152,19 +133,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'Europe/Stockholm'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.11/howto/static-files/
-
-STATIC_URL = '/static/'
 
 LOGGING = {
     'version': 1,

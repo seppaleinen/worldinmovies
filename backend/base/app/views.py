@@ -196,3 +196,17 @@ def check_tmdb_for_changes(request):
 
 def movie_details(request, imdb_id):
     return HttpResponse(Movie.objects.get(imdb_id=imdb_id).raw_response)
+
+
+def dostuff(movie):
+    return {"fetched": movie.fetched,
+            "_id": movie.id,
+            "data": json.loads(movie.raw_response),
+            "fetched_date": {"$date": datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}}
+
+
+def generate_datadump(request):
+    with open('datadump.json', 'w') as f:
+        for x in Movie.objects.all().iterator():
+            f.write(json.dumps(dostuff(x)))
+    return HttpResponse("Done")

@@ -14,11 +14,10 @@ def produce(event_type, message):
                              value_serializer=lambda x: pickle.dumps(
                                  json.dumps({'movie_id': message, 'event': event_type}).encode('utf-8'),
                                  pickle.HIGHEST_PROTOCOL))
-    producer.send('movie', message)
+    producer.send('movie', key=event_type, value=message)
 
 
 def kafka_consumer():
-    print("Starting kafka-consumer")
     consumer = KafkaConsumer(
         'movie',
         bootstrap_servers=['localhost:9092'],

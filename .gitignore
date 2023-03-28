@@ -10,6 +10,7 @@ backend.log
 *.db
 *.gz
 !**/testdata/*.gz
+**/datadump.json
 
 .DS_Store
 .idea/

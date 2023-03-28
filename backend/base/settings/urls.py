@@ -14,12 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.urls import path, re_path, include
-from django.contrib import admin
 
 from app import views
 
 urlpatterns = [
-    re_path(r'^admin/',                     admin.site.urls),
     # Imports a daily file with the data of what movies are available to download
     path('import/tmdb/daily',               views.download_file),
     # Starts to fetch info from tmdb with the keys from daily
@@ -38,5 +36,6 @@ urlpatterns = [
     re_path(r'^status$',                    views.import_status, name='import_status'),
     path('view/best',                       views.get_best_movies_from_all_countries),
     path('view/best/<str:country_code>',    views.get_best_movies_from_country),
-    re_path(r'^health/',                        include('health_check.urls'))
+    path('generate/generate_datadump',      views.generate_datadump),
+    re_path(r'^health/',                    include('health_check.urls'))
 ]

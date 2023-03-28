@@ -77,3 +77,16 @@ pylint --load-plugins pylint_django app/ settings/
 
 pg_restore -U postgres -f /worldinmovies.db.pgsql
 ```
+
+
+
+```bash
+docker exec -ti worldinmovies_backend_1 /bin/sh
+
+docker cp worldinmovies_backend_1:/app/datadump.json .
+docker cp datadump.json worldinmovies_mongo_1:/
+
+docker exec -ti worldinmovies_mongo_1 /bin/sh
+
+mongoimport -d tmdb -c movie --mode upsert --file datadump.json
+```
