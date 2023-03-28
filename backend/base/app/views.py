@@ -31,6 +31,16 @@ def import_status(request):
         return HttpResponse(simplejson.dumps({"fetched": fetched, "total": total, "percentage_done": percent}), content_type='application/json')
 
 
+
+"""
+The formula for calculating the Top Rated 250 Titles gives a true Bayesian estimate:
+weighted rating (WR) = (v ÷ (v+m)) × R + (m ÷ (v+m)) × C where:
+
+R = average for the movie (mean) = (Rating)
+v = number of votes for the movie = (votes)
+m = minimum votes required to be listed in the Top 250 (currently 25000)
+C = the mean vote across the whole report (currently 7.0)
+"""
 def get_best_movies_from_all_countries(request):
     with connection.cursor() as cursor:
         cursor.execute("""select country.iso_3166_1, original_title, vote_average from app_productioncountries country 
@@ -40,9 +50,9 @@ def get_best_movies_from_all_countries(request):
                                         inner join app_productioncountries pc on pc.id = pcm.productioncountries_id
                                         where pc.iso_3166_1 = country.iso_3166_1
                                         and movie.fetched is true
-                                        and movie.vote_count > 20
+                                        and movie.vote_count > 200
 										and movie.vote_average > 0
-                                        order by (movie.vote_count / (cast(movie.vote_count as numeric) + 10)) * movie.vote_average + (10 / (cast(movie.vote_count as numeric) + 10)) desc
+                                        order by (movie.vote_count / (cast(movie.vote_count as numeric) + 200)) * movie.vote_average + (200 / (cast(movie.vote_count as numeric) + 200)) * 7 desc
                                         limit 10
                                     ) p on true
                                 order by country.iso_3166_1 asc""")

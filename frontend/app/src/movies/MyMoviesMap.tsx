@@ -18,12 +18,6 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
         this.state = {
             myMovies: {},
         };
-        props.movieStore!.hydrateStore().then(() => {
-            this.setState({
-                myMovies: props.movieStore!.myMovies
-            })
-            this.generateColors();
-        });
     }
 
     generateColors = () => {
@@ -73,7 +67,12 @@ class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
     }
 
     componentDidMount() {
-        this.generateColors();
+        this.props.movieStore!.hydrateStore().then(() => {
+            this.setState({
+                myMovies: this.props.movieStore!.myMovies
+            })
+            this.generateColors();
+        });
     }
 
     render() {
