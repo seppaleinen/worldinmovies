@@ -10,6 +10,9 @@ pymongo[snappy,gssapi,srv,tls]~=4.3.3
 dnspython
 mongoengine~=0.27.0
 kafka-python~=2.0.2
+channels~=4.0.0
+daphne~=4.0.0
+uvicorn~=0.21.1
 
 # For tests
 responses>=0.22.0

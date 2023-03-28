@@ -27,4 +27,4 @@ ADD .. /app
 
 WORKDIR /app
 
-ENTRYPOINT ["/bin/sh", "-c", "python manage.py crontab add && crond & gunicorn --config=gunicorn.config.py settings.wsgi"]
+ENTRYPOINT ["/bin/sh", "-c", "python manage.py crontab add && crond & gunicorn --config=gunicorn.config.py -k uvicorn.workers.UvicornWorker --reload settings.asgi"]
