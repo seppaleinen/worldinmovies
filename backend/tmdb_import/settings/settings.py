@@ -48,7 +48,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'localhost', 'webapp', 'backend', 'worldinmovies.duckdns.org', '192.168.1.137']
+ALLOWED_HOSTS = ['*']
 ROOT_URLCONF = 'settings.urls'
 ASGI_APPLICATION = 'settings.asgi.application'
 CHANNEL_LAYERS = {
@@ -61,7 +61,9 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
-mongoengine.connect(db='tmdb', host='localhost:27017', username='', password='')
+environment = os.getenv('ENVIRONMENT', 'docker')
+mongo_url = 'mongo' if environment == 'docker' else 'localhost'
+mongoengine.connect(db='tmdb', host="%s:27017" % mongo_url, username='', password='')
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -93,7 +95,7 @@ USE_TZ = True
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
         'standard': {
             'format': '%(asctime)s %(levelname)s [%(name)s:%(lineno)s] %(module)s %(process)d %(thread)d %(message)s'
@@ -106,15 +108,15 @@ LOGGING = {
             'formatter': 'standard'
         },
         'console': {
-            'level': 'WARN',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'standard'
         },
     },
     'loggers': {
-        'gunicorn.errors': {
-            'handlers': ['gunicorn'],
-            'level': 'DEBUG',
+        'gunicorn.error': {
+            'handlers': ['console'],
+            'level': 'INFO',
             'propagate': True,
         },
         'django': {

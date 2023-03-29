@@ -8,15 +8,16 @@ WORKDIR /install
 RUN \
  apk update && \
  apk add --no-cache tzdata  && \
- apk add --no-cache --virtual .build-deps gcc g++ snappy-dev krb5-pkinit krb5-dev krb5
+ apk add --no-cache --virtual .build-deps gcc libffi-dev g++ snappy-dev krb5-pkinit krb5-dev krb5
 
 ADD requirements.txt .
 
-RUN pip install --prefix=/install --no-cache-dir -r requirements.txt
+RUN pip install --prefix=/install --no-cache-dir -r requirements.txt && \
+    apk --purge del .build-deps
 
 FROM base
 
-ENV ENVIRONMENT DOCKER
+ENV ENVIRONMENT docker
 ENV PYTHONUNBUFFERED 1
 ENV TZ Europe/Stockholm
 

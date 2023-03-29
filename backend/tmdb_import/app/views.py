@@ -92,7 +92,13 @@ def fetch_countries(request):
 
 
 def fetch_languages(request):
-    return StreamingHttpResponse(import_languages())
+    if 'import_languages' not in [thread.name for thread in threading.enumerate()]:
+        thread = threading.Thread(target=import_languages, name='import_languages')
+        thread.setDaemon(True)
+        thread.start()
+        return HttpResponse(json.dumps({"Message": "Starting to process TMDB languages"}))
+    else:
+        return HttpResponse(json.dumps({"Message": "TMDB languages process already started"}))
 
 
 def check_tmdb_for_changes(request):

@@ -1,16 +1,18 @@
 import datetime
-import pickle, json
+import json
+import pickle
+import os
 import threading
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from kafka import KafkaProducer, KafkaConsumer
 
-data = []
+kafka_url = 'kafka' if os.getenv('ENVIRONMENT', 'docker') == 'docker' else 'localhost'
 
 
 def produce(event_type, message):
-    producer = KafkaProducer(bootstrap_servers='127.0.0.1:9092',
+    producer = KafkaProducer(bootstrap_servers="%s:9092" % kafka_url,
                              value_serializer=lambda x: pickle.dumps(
                                  json.dumps({'movie_id': message, 'event': event_type}).encode('utf-8'),
                                  pickle.HIGHEST_PROTOCOL))
@@ -20,7 +22,7 @@ def produce(event_type, message):
 def kafka_consumer():
     consumer = KafkaConsumer(
         'movie',
-        bootstrap_servers=['localhost:9092'],
+        bootstrap_servers=["%s:9092" % kafka_url],
         auto_offset_reset='earliest',
         enable_auto_commit=True,
         value_deserializer=lambda x: json.loads(pickle.loads(x)))
@@ -29,16 +31,8 @@ def kafka_consumer():
         layer = get_channel_layer()
         async_to_sync(layer.group_send)('group', {"type": "events", "message": json.dumps(event)})
 
-        global data
-        data.append(event)
-        data = data[:100]
-
 
 if 'kafka_consumer' not in [thread.name for thread in threading.enumerate()]:
     thread = threading.Thread(target=kafka_consumer, name='kafka_consumer')
     thread.setDaemon(True)
     thread.start()
-
-
-def get_data():
-    return data

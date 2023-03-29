@@ -1,14 +1,74 @@
-#container {
-    background-color: #000000;
-    width: 100%;
+.container {
+    display: flex;
+    flex-flow: column;
     height: 100%;
-    max-width: 400px;
-    max-height: 400px;
-    padding: 3em;
 }
 
-#content {
-    color: #ffffff;
-    font-size: 16px;
+.terminal {
+    background-color: var(--text-color);
+    display: flex;
+    flex-flow: column;
+    padding: 8px 16px;
+    flex: 1 1 auto;
+    height: 35vw;
+    overflow: auto;
+}
+
+.content {
+    color: var(--complement);
+    font-size: 12px;
     font-family: monospace;
+    line-height: 4px;
+}
+
+.toggle {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: fit-content;
+    gap: 8px;
+    cursor: pointer;
+    flex: 0 1 auto;
+}
+
+.activeToggle {
+    background: var(--complement);
+    border-radius: 8px;
+    box-shadow: 2px 2px 2px var(--text-color);
+    padding: 8px 8px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.inactiveToggle {
+    padding: 8px 8px;
+}
+
+.buttons {
+    display: flex;
+    flex-flow: column;
+    gap: 8px;
+    justify-content: center;
+    position: relative;
+    padding: 16px;
+    flex: 0 1 auto;
+}
+
+.show {
+    display: flex;
+    flex-flow: row;
+    gap: 8px;
+    justify-content: center;
+}
+
+.hide {
+    display: none;
+}
+
+.status {
+    text-align: center;
+    flex: 0 1 auto;
 }

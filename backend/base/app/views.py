@@ -9,14 +9,6 @@ from django.views.decorators.csrf import csrf_exempt
 from fuzzywuzzy import fuzz
 
 
-def stream_response_test(request):
-    def stream_response_generator():
-        for x in range(1, 5000):
-            yield simplejson.dumps({"i": x}) + "\n"# Returns a chunk of the response to the browser
-            time.sleep(0.001)
-    return StreamingHttpResponse(stream_response_generator())
-
-
 def import_status(request):
     with connection.cursor() as cursor:
         cursor.execute("""select 
@@ -29,7 +21,6 @@ def import_status(request):
         total = result[1]
         percent = result[2] if result[2] else 0
         return HttpResponse(simplejson.dumps({"fetched": fetched, "total": total, "percentage_done": percent}), content_type='application/json')
-
 
 
 """

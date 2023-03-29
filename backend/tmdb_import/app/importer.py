@@ -5,6 +5,9 @@ import datetime, \
     concurrent.futures, \
     os, \
     time
+
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from app.models import Movie, SpokenLanguage, Genre
@@ -182,18 +185,20 @@ def import_languages():
     api_key = os.getenv('TMDB_API', 'test')
     url = "https://api.themoviedb.org/3/configuration/languages?api_key={api_key}".format(api_key=api_key)
     response = requests.get(url, stream=True)
+    layer = get_channel_layer()
     if response.status_code == 200:
         languages_from_json = json.loads(response.content)
         length = len(languages_from_json)
         i = 0
         for language in __log_progress(languages_from_json, "TMDB Languages"):
             i += 1
-            yield json.dumps({"fetched": i, "total": length}) + "\n"
+            async_to_sync(layer.group_send)('group', {"type": "events", "message": "Fetched: %s out of %s" % (i, length)})
             spoken_lang = SpokenLanguage.objects.all().filter(iso_639_1=language['iso_639_1'])
             if not spoken_lang:
                 SpokenLanguage(iso_639_1=language['iso_639_1'], name=language['english_name']).save()
     else:
-        yield json.dumps({"exception": response.status_code, "message": response.content}) + "\n"
+        print("response: %s" % response)
+        async_to_sync(layer.group_send)('group', {"type": "events", "message": "Error importing languages %s" % response.content})
 
 
 def __chunks(__list, n):

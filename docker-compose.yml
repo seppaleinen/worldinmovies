@@ -23,22 +23,25 @@ services:
     volumes:
       - "mongo_data:/data/db"
     ports:
-      - "127.0.0.1:27017:27017"
+      - "27017:27017"
 
   tmdb_import:
     image: seppaleinen/worldinmovies_tmdb_import
     build: backend/tmdb_import/
     ports:
       - "8020:8020"
+    environment:
+      - TMDB_API=${TMDB_API}
     depends_on:
       - mongo
+      - kafka
 
   kafka:
     image: docker.io/bitnami/kafka:3.4
     privileged: true
     ports:
       - "2181:2181"
-      - "127.0.0.1:9092:9092"
+      - "9092:9092"
     volumes:
       - "kafka_data:/bitnami"
     environment:

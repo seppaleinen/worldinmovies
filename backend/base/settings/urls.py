@@ -30,7 +30,6 @@ urlpatterns = [
     path('import/tmdb/changes',             views.check_tmdb_for_changes),
     path('import/imdb/ratings',             views.fetch_imdb_ratings),
     path('import/imdb/titles',              views.fetch_imdb_titles),
-    path('stream',                          views.stream_response_test),
     path('ratings',                         views.ratings, name='ratings'),
     path('movie/imdb/<str:imdb_id>',        views.movie_details),
     re_path(r'^status$',                    views.import_status, name='import_status'),
