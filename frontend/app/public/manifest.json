@@ -10,6 +10,8 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#F5DE50",
-  "background_color": "#c9dfaf"
+  "theme_color": "#8ACBFD",
+  "background_color": "#CCE1F5",
+  "description": "Are you looking for good foreign movies, then you're at the right place!",
+  "keywords": ["movies", "foreign", "worldmap", "movie discovery"]
 }
