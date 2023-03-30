@@ -6,15 +6,19 @@ import ndjsonStream from "can-ndjson-stream";
 const baseUrl = process.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : process.env.REACT_APP_BACKEND_URL;
 const tmdbUrl = process.env.REACT_APP_TMDB_URL === undefined ? '/tmdb' : process.env.REACT_APP_TMDB_URL;
 const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
-const websocketUrl = ws_scheme + '://' + window.location.host
+const websocketUrl = ws_scheme + '://' + window.location.hostname
 
+/**
+ * ws://localhost:8020/ws
+ * ws://domain/tmdb/ws
+ */
 const Admin = () => {
     const [status, setStatus] = useState({"fetched": 0, "total": 0, "percentageDone": 0});
     const [baseImport, setBaseImport] = useState<string[]>([]);
     const [toggle, setToggle] = useState<string>("tmdb")
 
     useEffect(() => {
-        let backend = null;
+        let backend = "";
         switch (toggle) {
             case 'tmdb':
                 backend = tmdbUrl;
@@ -23,13 +27,15 @@ const Admin = () => {
                 backend = baseUrl;
                 break;
         }
+        const matcher = backend.match(/.*(:\d+).*/);
+        const value = matcher !== null ? matcher[1] : backend;
         fetch(`${backend}/status`)
             .then(response => response.json())
             .then(response => {
                 setStatus(response);
             })
             .catch(error => console.error(error))
-        const ws = new WebSocket(`${websocketUrl}/${backend}/ws`);
+        const ws = new WebSocket(`${ws_scheme}://${window.location.hostname}${value}/ws`);
         ws.onmessage = (event) => {
             setBaseImport(prevState =>  [...prevState, event.data])
         }

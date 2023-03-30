@@ -8,6 +8,7 @@ import datetime, \
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from mongoengine import DoesNotExist
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from app.models import Movie, SpokenLanguage, Genre, ProductionCountries
@@ -228,8 +229,15 @@ def check_which_movies_needs_update(start_date, end_date):
         data = json.loads(response.content)
         for movie in __log_progress(data['results'], "TMDB Changes"):
             if not movie['adult']:
-                Movie.objects.filter(pk=movie['id']).update(fetched=False)
-                __send_data_to_channel("Scheduling movieId:%s for update" % movie['id'], layer=layer)
+                try:
+                    db = Movie.objects.get(pk=movie['id'])
+                    if db.fetched_date.strftime("%Y-%m-%d") < end_date:
+                        Movie.objects.filter(pk=movie['id']).update(fetched=False)
+                        __send_data_to_channel("Scheduling movieId:%s for update" % movie['id'], layer=layer)
+                    else:
+                        __send_data_to_channel("MovieId: %s has already been scheduled for update" % movie['id'])
+                except DoesNotExist:
+                    Movie(id=movie['id'], fetched=False).save()
 
 
 def cron_endpoint_for_checking_updateable_movies():
@@ -243,10 +251,12 @@ def __log_progress(iterable, message, length=None):
     count = 1
     percentage = 0
     total_count = length if length else len(iterable)
+    layer = get_channel_layer()
     for i in iterable:
         temp_perc = int(100 * count / total_count)
         if percentage != temp_perc:
             percentage = temp_perc
+            __send_data_to_channel(layer=layer, message=f"{message} data handling in progress - {percentage}%".format(message=message, percentage=percentage))
             print("{time} - {message} data handling in progress - {percentage}%".format(time=datetime.datetime.now().strftime(datetime_format), message=message, percentage=percentage))
         count += 1
         yield i
