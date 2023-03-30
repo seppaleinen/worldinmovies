@@ -25,6 +25,12 @@ services:
     ports:
       - "27017:27017"
 
+  redis:
+    image: redis:6.2-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
   tmdb_import:
     image: seppaleinen/worldinmovies_tmdb_import
     build: backend/tmdb_import/

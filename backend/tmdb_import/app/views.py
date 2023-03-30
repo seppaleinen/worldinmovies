@@ -6,7 +6,7 @@ from app.importer import download_files, fetch_tmdb_data_concurrently, import_ge
     import_languages, \
     base_import, check_which_movies_needs_update
 from app.models import Movie
-from django.http import HttpResponse, StreamingHttpResponse
+from django.http import HttpResponse
 
 
 def import_status(request):
@@ -60,17 +60,33 @@ def import_status(request):
             }
         }
     ])
-    return HttpResponse(result, content_type='application/json')
+    for row in result:
+        return HttpResponse(json.dumps({"total": row['total'],
+                                    "fetched": row['fetched'],
+                                    "percentageDone": row['percentage_done']}),
+                            content_type='application/json')
 
 
 # Imports
 
 def download_file(request):
-    return StreamingHttpResponse(download_files())
+    if 'download_files' not in [thread.name for thread in threading.enumerate()]:
+        thread = threading.Thread(target=download_files, name='download_files')
+        thread.setDaemon(True)
+        thread.start()
+        return HttpResponse(json.dumps({"Message": "Starting to process TMDB downloads"}))
+    else:
+        return HttpResponse(json.dumps({"Message": "TMDB downloads process already started"}))
 
 
 def base_fetch(request):
-    return StreamingHttpResponse(base_import())
+    if 'base_import' not in [thread.name for thread in threading.enumerate()]:
+        thread = threading.Thread(target=base_import, name='base_import')
+        thread.setDaemon(True)
+        thread.start()
+        return HttpResponse(json.dumps({"Message": "Starting to process TMDB base import"}))
+    else:
+        return HttpResponse(json.dumps({"Message": "TMDB base import process already started"}))
 
 
 def import_tmdb_data(request):
@@ -84,11 +100,23 @@ def import_tmdb_data(request):
 
 
 def fetch_genres(request):
-    return StreamingHttpResponse(import_genres())
+    if 'import_genres' not in [thread.name for thread in threading.enumerate()]:
+        thread = threading.Thread(target=import_genres, name='import_genres')
+        thread.setDaemon(True)
+        thread.start()
+        return HttpResponse(json.dumps({"Message": "Starting to process TMDB genres"}))
+    else:
+        return HttpResponse(json.dumps({"Message": "TMDB genres process already started"}))
 
 
 def fetch_countries(request):
-    return StreamingHttpResponse(import_countries())
+    if 'import_countries' not in [thread.name for thread in threading.enumerate()]:
+        thread = threading.Thread(target=import_countries, name='import_countries')
+        thread.setDaemon(True)
+        thread.start()
+        return HttpResponse(json.dumps({"Message": "Starting to process TMDB countries"}))
+    else:
+        return HttpResponse(json.dumps({"Message": "TMDB countries process already started"}))
 
 
 def fetch_languages(request):
@@ -105,7 +133,13 @@ def check_tmdb_for_changes(request):
     start_date = request.GET.get('start_date',
                                  (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
     end_date = request.GET.get('end_date', datetime.date.today().strftime("%Y-%m-%d"))
-    return StreamingHttpResponse(check_which_movies_needs_update(start_date, end_date))
+    if 'check_which_movies_needs_update' not in [thread.name for thread in threading.enumerate()]:
+        thread = threading.Thread(target=check_which_movies_needs_update, args=[start_date, end_date], name='check_which_movies_needs_update')
+        thread.setDaemon(True)
+        thread.start()
+        return HttpResponse(json.dumps({"Message": "Starting to process TMDB changes"}))
+    else:
+        return HttpResponse(json.dumps({"Message": "TMDB changes process already started"}))
 
 
 def fetch_movie_data(request, ids):

@@ -10,14 +10,14 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from app.models import Movie, SpokenLanguage, Genre
+from app.models import Movie, SpokenLanguage, Genre, ProductionCountries
 from app.kafka import produce
 from itertools import chain
 
 
 def base_import():
     def done():
-        yield json.dumps({"message": "Done"})
+        __send_data_to_channel("Base import is done")
     return chain(download_files(), import_genres(), import_countries(), import_languages(), done())
 
 
@@ -27,11 +27,13 @@ def download_files():
     daily_export_url = "http://files.tmdb.org/p/exports/movie_ids_%s.json.gz" % yesterday_formatted
     response = requests.get(daily_export_url)
 
+    layer = get_channel_layer()
     if response.status_code == 200:
         print("Downloading file")
         yield json.dumps({"message": "Downloading %s" % daily_export_url}) + "\n"
         with open('movies.json.gz', 'wb') as f:
             f.write(response.content)
+        __send_data_to_channel(layer=layer, message="Downloaded %s" % daily_export_url)
 
         movies_to_add = []
         tmdb_movie_ids = set()
@@ -53,9 +55,10 @@ def download_files():
             new_movies = (set(chunk).difference(matches))
             for c in new_movies:
                 movies_to_add.append(Movie(id=c, fetched=False))
+            __send_data_to_channel(layer=layer, message="Parsed %s out of %s movies from downloaded file" % (len(b), len(contents)))
 
         a = len(movies_to_add)
-        yield json.dumps({"message": "%s movies will be persisted" % a}) + "\n"
+        __send_data_to_channel(layer=layer, message="%s movies will be persisted" % a)
         all_unfetched_movie_ids = Movie.objects.filter(fetched=False).all().values_list('id')
         movie_ids_to_delete = (set(all_unfetched_movie_ids).difference(tmdb_movie_ids))
         b = 0
@@ -64,18 +67,18 @@ def download_files():
             for chunk in __chunks(movies_to_add, 100):
                 b += len(chunk)
                 Movie.objects.insert(chunk)
-                yield json.dumps({"message": "Persisted %s movies out of %s" % (b, a)}) + "\n"
+                __send_data_to_channel(layer=layer, message="Persisted %s movies out of %s" % (b, a))
             print("Deleting %s unfetched movies not in tmdb anymore" % len(movie_ids_to_delete))
             c = 0
             for movie_to_delete in movie_ids_to_delete:
                 Movie.objects.get(pk=movie_to_delete).delete()
                 c += 1
-                yield json.dumps({"message": "Deleted %s movies out of %s" % (c, len(movie_ids_to_delete))}) + "\n"
+                __send_data_to_channel(layer=layer, message="Deleted %s movies out of %s" % (c, len(movie_ids_to_delete)))
         except Exception as e:
             print("Error: %s" % e)
-            yield json.dumps({"exception": e}) + "\n"
+            __send_data_to_channel(layer=layer, message="Error persisting or deleting data: %s" % e)
     else:
-        yield json.dumps({"exception": response.status_code, "message": response.content}) + "\n"
+        __send_data_to_channel(layer=layer, message="Error downloading files: %s - %s" % (response.status_code, response.content))
 
 
 def __unzip_file(file_name):
@@ -137,9 +140,10 @@ def fetch_tmdb_data_concurrently():
                 data = future.result()
                 if data is not None:
                     db_movie = Movie.objects.get(pk=data['id'])
+                    new_or_update = 'UPDATE' if db_movie.data else 'NEW'
                     db_movie.add_fetched_info(data)
                     db_movie.save()
-                    produce('NEW', data['id'])
+                    produce(new_or_update, data['id'])
                 i += 1
             except Exception as exc:
                 print("Exception: %s" % exc)
@@ -150,6 +154,7 @@ def import_genres():
     api_key = os.getenv('TMDB_API', 'test')
     url = "https://api.themoviedb.org/3/genre/movie/list?api_key={api_key}&language=en-US".format(api_key=api_key)
     response = requests.get(url, stream=True)
+    layer = get_channel_layer()
     if response.status_code == 200:
         genres_from_json = json.loads(response.content)['genres']
         length = len(genres_from_json)
@@ -157,9 +162,9 @@ def import_genres():
         for genre in __log_progress(genres_from_json, "TMDB Genres"):
             Genre(id=genre['id'], name=genre['name']).save()
             i += 1
-            yield json.dumps({"fetched": i, "total": length}) + "\n"
+            __send_data_to_channel(layer=layer, message="Fetched %s genres out of %s" % (i, length))
     else:
-        yield json.dumps({"exception": response.status_code, "message": response.content}) + "\n"
+        __send_data_to_channel(layer=layer, message="Error importing countries: %s - %s" % (response.status_code, response.content))
 
 
 def import_countries():
@@ -167,17 +172,18 @@ def import_countries():
     api_key = os.getenv('TMDB_API', 'test')
     url = "https://api.themoviedb.org/3/configuration/countries?api_key={api_key}".format(api_key=api_key)
     response = requests.get(url, stream=True)
+    layer = get_channel_layer()
     if response.status_code == 200:
         countries_from_json = json.loads(response.content)
         length = len(countries_from_json)
         i = 0
         for country in __log_progress(countries_from_json, "TMDB Countries"):
             if not ProductionCountries.objects.all().filter(iso_3166_1=country['iso_3166_1']):
-                ProductionCountries.objects.update_or_create(iso_3166_1=country['iso_3166_1'], name=country['english_name'])
+                ProductionCountries(iso_3166_1=country['iso_3166_1'], name=country['english_name']).save()
             i += 1
-            yield json.dumps({"fetched": i, "total": length}) + "\n"
+            __send_data_to_channel(layer=layer, message="Fetched %s countries out of %s" % (i, length))
     else:
-        yield json.dumps({"exception": response.status_code, "message": response.content}) + "\n"
+        __send_data_to_channel(layer=layer, message="Error importing countries: %s - %s" % (response.status_code, response.content))
 
 
 def import_languages():
@@ -192,13 +198,13 @@ def import_languages():
         i = 0
         for language in __log_progress(languages_from_json, "TMDB Languages"):
             i += 1
-            async_to_sync(layer.group_send)('group', {"type": "events", "message": "Fetched: %s out of %s" % (i, length)})
+            __send_data_to_channel(layer=layer, message=f"Fetched {i} languages out of {length}")
             spoken_lang = SpokenLanguage.objects.all().filter(iso_639_1=language['iso_639_1'])
             if not spoken_lang:
                 SpokenLanguage(iso_639_1=language['iso_639_1'], name=language['english_name']).save()
     else:
         print("response: %s" % response)
-        async_to_sync(layer.group_send)('group', {"type": "events", "message": "Error importing languages %s" % response.content})
+        __send_data_to_channel("Error importing languages: %s - %s" % (response.status_code, response.content))
 
 
 def __chunks(__list, n):
@@ -217,12 +223,13 @@ def check_which_movies_needs_update(start_date, end_date):
     url = "https://api.themoviedb.org/3/movie/changes?api_key={api_key}&start_date={start_date}&end_date={end_date}&page={page}"\
         .format(api_key=api_key, start_date=start_date, end_date=end_date, page=page)
     response = requests.get(url, stream=True)
+    layer = get_channel_layer()
     if response.status_code == 200:
         data = json.loads(response.content)
         for movie in __log_progress(data['results'], "TMDB Changes"):
             if not movie['adult']:
                 Movie.objects.filter(pk=movie['id']).update(fetched=False)
-                yield json.dumps({"movie_id": movie['id']}) + "\n"
+                __send_data_to_channel("Scheduling movieId:%s for update" % movie['id'], layer=layer)
 
 
 def cron_endpoint_for_checking_updateable_movies():
@@ -243,3 +250,7 @@ def __log_progress(iterable, message, length=None):
             print("{time} - {message} data handling in progress - {percentage}%".format(time=datetime.datetime.now().strftime(datetime_format), message=message, percentage=percentage))
         count += 1
         yield i
+
+
+def __send_data_to_channel(message, layer=get_channel_layer()):
+    async_to_sync(layer.group_send)('group', {"type": "events", "message": json.dumps(message)})

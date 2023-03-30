@@ -51,9 +51,14 @@ CORS_ORIGIN_ALLOW_ALL = True
 ALLOWED_HOSTS = ['*']
 ROOT_URLCONF = 'settings.urls'
 ASGI_APPLICATION = 'settings.asgi.application'
+environment = os.getenv('ENVIRONMENT', 'docker')
+redis_url = 'redis' if environment == 'docker' else 'localhost'
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': "channels.layers.InMemoryChannelLayer"
+        'BACKEND': "channels_redis.core.RedisChannelLayer",
+        'CONFIG': {
+            'hosts': [(redis_url, 6379)],
+        }
     }
 }
 
@@ -61,7 +66,6 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
-environment = os.getenv('ENVIRONMENT', 'docker')
 mongo_url = 'mongo' if environment == 'docker' else 'localhost'
 mongoengine.connect(db='tmdb', host="%s:27017" % mongo_url, username='', password='')
 
@@ -91,7 +95,6 @@ TIME_ZONE = 'Europe/Stockholm'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-
 
 LOGGING = {
     'version': 1,

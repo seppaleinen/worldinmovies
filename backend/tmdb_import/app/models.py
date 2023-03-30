@@ -31,3 +31,11 @@ class SpokenLanguage(Document):
 
     def __str__(self):
         return "iso:{iso}, name:{name}".format(iso=self.iso_639_1, name=self.name)
+
+
+class ProductionCountries(Document):
+    iso_3166_1 = fields.StringField(primary_key=True, max_length=4)
+    name = fields.StringField(max_length=50)
+
+    def __str__(self):
+        return "iso:{iso}, name:{name}".format(iso=self.iso_3166_1, name=self.name)
