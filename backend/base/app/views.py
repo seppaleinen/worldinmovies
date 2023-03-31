@@ -51,7 +51,7 @@ def get_best_movies_from_country(request, country_code):
 	            and pc.iso_3166_1 = '{country_code}'
 	            and movie.vote_count > 200
 	            and movie.vote_average > 0
-	            order by (movie.vote_count / (cast(movie.vote_count as numeric) + 200)) * movie.vote_average + (200 / (cast(movie.vote_count as numeric) + 200)) * 4 desc
+	            order by movie.weighted_rating desc
 	            limit 20
 	            offset {page}
         """)

@@ -1,3 +1,5 @@
+import decimal
+
 from django.db import models
 
 
@@ -18,6 +20,7 @@ class Movie(models.Model):
     vote_count = models.IntegerField(null=True, blank=True)
     imdb_vote_average = models.DecimalField(decimal_places=1, max_digits=10, null=True, blank=True)
     imdb_vote_count = models.IntegerField(null=True, blank=True)
+    weighted_rating = models.DecimalField(decimal_places=1, max_digits=10, default=0)
 
     class Meta:
         indexes = [models.Index(fields=['id'], name='movie_pk_index')]
@@ -25,7 +28,8 @@ class Movie(models.Model):
     def add_fetched_info(self, fetched_movie):
         self.fetched = True
         self.budget = fetched_movie['budget']
-        self.imdb_id = fetched_movie['imdb_id'].strip() if fetched_movie['imdb_id'] and fetched_movie['imdb_id'].strip() else None
+        self.imdb_id = fetched_movie['imdb_id'].strip() if fetched_movie['imdb_id'] and fetched_movie[
+            'imdb_id'].strip() else None
         self.original_language = fetched_movie['original_language']
         self.overview = fetched_movie['overview']
         self.poster_path = fetched_movie['poster_path']
@@ -35,6 +39,23 @@ class Movie(models.Model):
         self.vote_average = fetched_movie['vote_average']
         self.vote_count = fetched_movie['vote_count']
         self.popularity = fetched_movie['popularity']
+        self.weighted_rating = self.calculate_weighted_rating()
+
+    def calculate_weighted_rating(self):
+        """
+        The formula for calculating the Top Rated 250 Titles gives a true Bayesian estimate:
+        weighted rating (WR) = (v ÷ (v+m)) × R + (m ÷ (v+m)) × C where:
+
+        R = average for the movie (mean) = (Rating)
+        v = number of votes for the movie = (votes)
+        m = minimum votes required to be listed in the Top 250 (currently 25000)
+        C = the mean vote across the whole report (currently 7.0)
+        """
+        v = decimal.Decimal(self.vote_count)
+        m = decimal.Decimal(200)
+        r = decimal.Decimal(self.vote_average)
+        c = decimal.Decimal(4)
+        return (v / (v + m)) * r + (m / (v + m)) * c
 
     def __str__(self):
         return f"id: {self.id}, original_title: {self.original_title}, fetched: {self.fetched}"
