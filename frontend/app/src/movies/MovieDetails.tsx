@@ -17,7 +17,7 @@ const MovieDetails = (props: Props) => {
                                     return item.iso_3166_1 === 'US' ? 'USA' : item.name
                                 })
                                 .map((name: string) => {
-                                    return <div className={`${styles.country} ${styles.button}`}>{name}</div>
+                                    return <div key={name} className={`${styles.country} ${styles.button}`}>{name}</div>
                                 })}
                         </div>
                     </div>
@@ -59,7 +59,7 @@ const MovieDetails = (props: Props) => {
             <div className={styles.genres}>
                 {movie.genres
                     .map((a:any) => {return a.name})
-                    .map((a:any) => {return <div className={styles.button}>{a}</div>})}
+                    .map((a:any) => {return <div key={a} className={styles.button}>{a}</div>})}
             </div>
         </div>
 

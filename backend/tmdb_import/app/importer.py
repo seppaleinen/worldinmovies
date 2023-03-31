@@ -91,11 +91,7 @@ def __unzip_file(file_name):
 
 def __fetch_movie_with_id(id, index):
     api_key = os.getenv('TMDB_API', 'test')
-    url = "https://api.themoviedb.org/3/movie/{movie_id}?" \
-          "api_key={api_key}&" \
-          "language=en-US&" \
-          "append_to_response=alternative_titles,credits,external_ids,images,account_states".format(movie_id=id,
-                                                                                                    api_key=api_key)
+    url = f"https://api.themoviedb.org/3/movie/{id}?api_key={api_key}&language=en-US&append_to_response=alternative_titles,credits,external_ids,images,account_states"
     try:
         session = requests.Session()
         retry = Retry(connect=3, backoff_factor=2)
@@ -153,7 +149,7 @@ def fetch_tmdb_data_concurrently():
 def import_genres():
     print("Importing genres")
     api_key = os.getenv('TMDB_API', 'test')
-    url = "https://api.themoviedb.org/3/genre/movie/list?api_key={api_key}&language=en-US".format(api_key=api_key)
+    url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={api_key}&language=en-US"
     response = requests.get(url, stream=True)
     layer = get_channel_layer()
     if response.status_code == 200:
@@ -171,7 +167,7 @@ def import_genres():
 def import_countries():
     print("Importing countries")
     api_key = os.getenv('TMDB_API', 'test')
-    url = "https://api.themoviedb.org/3/configuration/countries?api_key={api_key}".format(api_key=api_key)
+    url = f"https://api.themoviedb.org/3/configuration/countries?api_key={api_key}"
     response = requests.get(url, stream=True)
     layer = get_channel_layer()
     if response.status_code == 200:
@@ -190,7 +186,7 @@ def import_countries():
 def import_languages():
     print("Importing languages")
     api_key = os.getenv('TMDB_API', 'test')
-    url = "https://api.themoviedb.org/3/configuration/languages?api_key={api_key}".format(api_key=api_key)
+    url = f"https://api.themoviedb.org/3/configuration/languages?api_key={api_key}"
     response = requests.get(url, stream=True)
     layer = get_channel_layer()
     if response.status_code == 200:
@@ -221,8 +217,7 @@ def check_which_movies_needs_update(start_date, end_date):
     """
     api_key = os.getenv('TMDB_API', 'test')
     page = 1
-    url = "https://api.themoviedb.org/3/movie/changes?api_key={api_key}&start_date={start_date}&end_date={end_date}&page={page}"\
-        .format(api_key=api_key, start_date=start_date, end_date=end_date, page=page)
+    url = f"https://api.themoviedb.org/3/movie/changes?api_key={api_key}&start_date={start_date}&end_date={end_date}&page={page}"
     response = requests.get(url, stream=True)
     layer = get_channel_layer()
     if response.status_code == 200:
@@ -256,8 +251,8 @@ def __log_progress(iterable, message, length=None):
         temp_perc = int(100 * count / total_count)
         if percentage != temp_perc:
             percentage = temp_perc
-            __send_data_to_channel(layer=layer, message=f"{message} data handling in progress - {percentage}%".format(message=message, percentage=percentage))
-            print("{time} - {message} data handling in progress - {percentage}%".format(time=datetime.datetime.now().strftime(datetime_format), message=message, percentage=percentage))
+            __send_data_to_channel(layer=layer, message=f"{message} data handling in progress - {percentage}%")
+            print(f"{datetime.datetime.now().strftime(datetime_format)} - {message} data handling in progress - {percentage}%")
         count += 1
         yield i
 

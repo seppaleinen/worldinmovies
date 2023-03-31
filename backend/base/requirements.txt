@@ -8,9 +8,14 @@ django-cors-headers
 django-crontab
 fuzzywuzzy[speedup]
 django-health-check
+kafka-python~=2.0.2
+channels~=4.0.0
+daphne~=4.0.0
+uvicorn~=0.21.1
+websockets~=10.4
+channels_redis~=4.1.0
 
 # For tests
 responses>=0.22.0
-progressbar2>=4.2.0
 pylint
 pylint-django

@@ -6,16 +6,14 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 data = []
 
 
-class TextRoomConsumer(AsyncWebsocketConsumer):
+class Consumer(AsyncWebsocketConsumer):
     groupId = 'group'
 
     """
     Helper method
     """
     async def send_data(self, text_data):
-        event = f"{datetime.datetime.now()} - TMDB - {text_data}"
-        global data
-        data = data[:-1]
+        event = f"{datetime.datetime.now()} - BASE - {text_data}"
         data.append(event)
         await self.send(text_data=event)
 

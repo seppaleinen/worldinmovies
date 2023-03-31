@@ -14,7 +14,7 @@ class Movie(Document):
         self.fetched_date = datetime.datetime.today()
 
     def __str__(self):
-        return "id: %s, fetched: %s, fetched_at: %s" % (self.id, self.fetched, self.fetched_date)
+        return f"id: {self.id}, fetched: {self.fetched}, fetched_at: {self.fetched_date.isoformat()}"
 
 
 class Genre(Document):
@@ -22,7 +22,7 @@ class Genre(Document):
     name = fields.StringField()
 
     def __str__(self):
-        return "id:{id}, name:{name}".format(id=self.id, name=self.name)
+        return f"id:{self.id}, name:{self.name}"
 
 
 class SpokenLanguage(Document):
@@ -30,7 +30,7 @@ class SpokenLanguage(Document):
     name = fields.StringField(max_length=50)
 
     def __str__(self):
-        return "iso:{iso}, name:{name}".format(iso=self.iso_639_1, name=self.name)
+        return f"iso:{self.iso_639_1}, name:{self.name}"
 
 
 class ProductionCountries(Document):
@@ -38,4 +38,4 @@ class ProductionCountries(Document):
     name = fields.StringField(max_length=50)
 
     def __str__(self):
-        return "iso:{iso}, name:{name}".format(iso=self.iso_3166_1, name=self.name)
+        return f"iso:{self.iso_3166_1}, name:{self.name}"

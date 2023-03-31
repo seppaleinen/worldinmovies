@@ -10,7 +10,7 @@ import axios, {AxiosResponse} from "axios";
 @inject('movieStore', 'stateStore')
 @observer
 class CountryPage extends React.Component<Props, MovieModalState> {
-    backendUrl = process.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : process.env.REACT_APP_BACKEND_URL;
+    tmdbUrl = process.env.REACT_APP_TMDB_URL === undefined ? '/tmdb' : process.env.REACT_APP_TMDB_URL;
 
     constructor(props: Props) {
         super(props);
@@ -28,7 +28,7 @@ class CountryPage extends React.Component<Props, MovieModalState> {
             data.slice()
                 .sort((a: Movie, b: Movie) => (a.vote_average > b.vote_average) ? -1 : 1)
                 .map((item: Movie) =>
-                    <div className={styles.movieCard} key={item.imdb_id} onClick={() => this.getDetails(item.imdb_id)}>
+                    <div className={styles.movieCard} key={item.id} onClick={() => this.getDetails(item.id)}>
                         <img className={styles.poster} src={`https://image.tmdb.org/t/p/original/${item.poster_path}`}
                              alt={item.en_title}/>
                         <div className={styles.movieCardText}>
@@ -45,13 +45,11 @@ class CountryPage extends React.Component<Props, MovieModalState> {
         this.setState({toggleRankedMovies: newState})
     }
 
-    getDetails = (imdb_id: string) => {
-        console.log("asldkjAKLSdj");
-        axios.get(this.backendUrl + "/movie/imdb/" + imdb_id, {timeout: 5000})
+    getDetails = (id: string) => {
+        axios.get(this.tmdbUrl + "/movie/" + id, {timeout: 5000})
             .then((response: AxiosResponse) => {
-                console.log(response.data[0]);
                 this.props.redirectToPage("movie-details");
-                this.props.setMovie(response.data);
+                this.props.setMovie(response.data[0]);
             })
             .catch(function (error: any) {
                 console.error(error);

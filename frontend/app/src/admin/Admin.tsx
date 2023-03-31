@@ -1,17 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import styles from './Admin.module.scss';
 // @ts-ignore
-import ndjsonStream from "can-ndjson-stream";
 
 const baseUrl = process.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : process.env.REACT_APP_BACKEND_URL;
 const tmdbUrl = process.env.REACT_APP_TMDB_URL === undefined ? '/tmdb' : process.env.REACT_APP_TMDB_URL;
 const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
-const websocketUrl = ws_scheme + '://' + window.location.hostname
 
-/**
- * ws://localhost:8020/ws
- * ws://domain/tmdb/ws
- */
 const Admin = () => {
     const [status, setStatus] = useState({"fetched": 0, "total": 0, "percentageDone": 0});
     const [baseImport, setBaseImport] = useState<string[]>([]);
@@ -27,17 +21,18 @@ const Admin = () => {
                 backend = baseUrl;
                 break;
         }
-        const matcher = backend.match(/.*(:\d+).*/);
-        const value = matcher !== null ? matcher[1] : backend;
         fetch(`${backend}/status`)
             .then(response => response.json())
             .then(response => {
                 setStatus(response);
             })
             .catch(error => console.error(error))
+        const matcher = backend.match(/.*(:\d+).*/);
+        const value = matcher !== null ? matcher[1] : backend;
         const ws = new WebSocket(`${ws_scheme}://${window.location.hostname}${value}/ws`);
+        setBaseImport([])
         ws.onmessage = (event) => {
-            setBaseImport(prevState =>  [...prevState, event.data])
+            setBaseImport(prevState => [...prevState, event.data]);
         }
         ws.onerror = (error) => {
             console.log(error)
@@ -46,18 +41,8 @@ const Admin = () => {
 
     const triggerImport = (path: string) => {
         fetch(path)
-            .then((response: Response) => ndjsonStream(response.body))
-            .then((stream: ReadableStream<string>) => {
-                const reader = stream.getReader();
-                let read: any;
-                reader.read().then(read = (result: ReadableStreamReadResult<string>) => {
-                    if (result.done) {
-                        return;
-                    }
-
-                    reader.read().then(read);
-                });
-            })
+            .then(() => setBaseImport(prevState => [...prevState, `${path} called successfully`]))
+            .catch(error => setBaseImport(prevState => [...prevState, `Call to ${path} failed due to ${error}`]));
     }
 
     const handleClick = (newState: string) => {
@@ -72,32 +57,40 @@ const Admin = () => {
                 <h2 onClick={() => handleClick('base')}
                     className={toggle === 'base' ? styles.activeToggle : styles.inactiveToggle}>Base</h2>
             </div>
-            <span className={styles.status}>Fetched {status.fetched} out of {status.total} movies which is {status.percentageDone}%</span><br/>
+            <span
+                className={styles.status}>Fetched {status.fetched} out of {status.total} movies which is {status.percentageDone}%</span><br/>
 
             <div className={styles.buttons}>
                 <div className={toggle === 'tmdb' ? styles.show : styles.hide}>
                     <button className="button" onClick={() => triggerImport(tmdbUrl + '/import/base')}>Import TMDB Base
                     </button>
-                    <button className="button" onClick={() => triggerImport(tmdbUrl + '/import/tmdb/data')}>Import TMDB Data
+                    <button className="button" onClick={() => triggerImport(tmdbUrl + '/import/tmdb/data')}>Import TMDB
+                        Data
                     </button>
-                    <button className="button" onClick={() => triggerImport(tmdbUrl + '/import/tmdb/languages')}>Import TMDB
+                    <button className="button" onClick={() => triggerImport(tmdbUrl + '/import/tmdb/languages')}>Import
+                        TMDB
                         Languages
                     </button>
-                    <button className="button" onClick={() => triggerImport(tmdbUrl + '/import/tmdb/genres')}>Import TMDB
+                    <button className="button" onClick={() => triggerImport(tmdbUrl + '/import/tmdb/genres')}>Import
+                        TMDB
                         Genres
                     </button>
-                    <button className="button" onClick={() => triggerImport(tmdbUrl + '/import/tmdb/countries')}>Import TMDB
+                    <button className="button" onClick={() => triggerImport(tmdbUrl + '/import/tmdb/countries')}>Import
+                        TMDB
                         Countries
                     </button>
-                    <button className="button" onClick={() => triggerImport(tmdbUrl + '/import/tmdb/changes')}>Import TMDB
+                    <button className="button" onClick={() => triggerImport(tmdbUrl + '/import/tmdb/changes')}>Import
+                        TMDB
                         Changes
                     </button>
                 </div>
                 <div className={toggle === 'base' ? styles.show : styles.hide}>
-                    <button className="button" onClick={() => triggerImport(baseUrl + '/import/imdb/ratings')}>Import IMDB
+                    <button className="button" onClick={() => triggerImport(baseUrl + '/import/imdb/ratings')}>Import
+                        IMDB
                         Ratings
                     </button>
-                    <button className="button" onClick={() => triggerImport(baseUrl + '/import/imdb/titles')}>Import IMDB
+                    <button className="button" onClick={() => triggerImport(baseUrl + '/import/imdb/titles')}>Import
+                        IMDB
                         Titles
                     </button>
                 </div>

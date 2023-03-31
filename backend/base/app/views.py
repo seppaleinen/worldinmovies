@@ -1,10 +1,14 @@
-import json, csv, simplejson, time, datetime, ast
+import csv
+import datetime
+import json
+import threading
 
-from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
+import simplejson
+
+from app.importer import import_imdb_ratings, import_imdb_alt_titles
+from app.models import Movie
 from django.db import connection
-from app.models import Movie, Genre
-from app.importer import download_files, concurrent_stuff, import_genres, import_countries, import_languages, \
-    base_import, import_imdb_ratings, check_which_movies_needs_update, import_imdb_alt_titles
+from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from fuzzywuzzy import fuzz
 
@@ -20,7 +24,8 @@ def import_status(request):
         fetched = result[0] if result[0] else 0
         total = result[1]
         percent = result[2] if result[2] else 0
-        return HttpResponse(simplejson.dumps({"fetched": fetched, "total": total, "percentage_done": percent}), content_type='application/json')
+        return HttpResponse(simplejson.dumps({"fetched": fetched, "total": total, "percentageDone": percent}),
+                            content_type='application/json')
 
 
 """
@@ -32,39 +37,14 @@ v = number of votes for the movie = (votes)
 m = minimum votes required to be listed in the Top 250 (currently 25000)
 C = the mean vote across the whole report (currently 7.0)
 """
-def get_best_movies_from_all_countries(request):
-    with connection.cursor() as cursor:
-        cursor.execute("""select country.iso_3166_1, original_title, vote_average from app_productioncountries country 
-                                join lateral (
-                                    select * from app_movie movie
-                                        inner join app_productioncountries_movies pcm on pcm.movie_id = movie.id
-                                        inner join app_productioncountries pc on pc.id = pcm.productioncountries_id
-                                        where pc.iso_3166_1 = country.iso_3166_1
-                                        and movie.fetched is true
-                                        and movie.vote_count > 200
-										and movie.vote_average > 0
-                                        order by (movie.vote_count / (cast(movie.vote_count as numeric) + 200)) * movie.vote_average + (200 / (cast(movie.vote_count as numeric) + 200)) * 7 desc
-                                        limit 10
-                                    ) p on true
-                                order by country.iso_3166_1 asc""")
-        result = []
-        for row in cursor.fetchall():
-            result.append({
-                "title": row[0],
-                "country_codes": row[1],
-                "vote_average": row[2]
-            })
-        return HttpResponse(simplejson.dumps(result), content_type='application/json')
-
-
 @csrf_exempt
 def get_best_movies_from_country(request, country_code):
     if request.method != 'GET':
         return HttpResponse("Method not allowed", status=400)
     page = int(request.GET.get('page', 0)) * 20
     with connection.cursor() as cursor:
-        cursor.execute("""
-            select movie.imdb_id, movie.original_title, movie.release_date, movie.poster_path, movie.vote_average, movie.vote_count, count(*) OVER() as total_count, (select title from app_alternativetitle where movie_id = movie.id and iso_3166_1 in ('US', 'GB') limit 1) as en_title from app_movie movie
+        cursor.execute(f"""
+            select movie.imdb_id, movie.original_title, movie.release_date, movie.poster_path, movie.vote_average, movie.vote_count, count(*) OVER() as total_count, (select title from app_alternativetitle where movie_id = movie.id and iso_3166_1 in ('US', 'GB') limit 1) as en_title, movie.id from app_movie movie
 	            inner join app_productioncountries_movies pcm on pcm.movie_id = movie.id
 	            inner join app_productioncountries pc on pc.id = pcm.productioncountries_id
 	            where movie.fetched is True
@@ -73,8 +53,8 @@ def get_best_movies_from_country(request, country_code):
 	            and movie.vote_average > 0
 	            order by (movie.vote_count / (cast(movie.vote_count as numeric) + 200)) * movie.vote_average + (200 / (cast(movie.vote_count as numeric) + 200)) * 4 desc
 	            limit 20
-	            offset {offset}
-        """.format(country_code=country_code, offset=page))
+	            offset {page}
+        """)
         result = {"result": [], "total_result": None}
         for row in cursor.fetchall():
             result['total_result'] = row[6]
@@ -87,7 +67,8 @@ def get_best_movies_from_country(request, country_code):
                 'poster_path': row[3],
                 'vote_average': row[4],
                 'vote_count': row[5],
-                'en_title': en_title
+                'en_title': en_title,
+                'id': row[8]
             })
         return HttpResponse(simplejson.dumps(result), content_type='application/json; charset=utf-8')
 
@@ -144,60 +125,35 @@ def ratings(request):
 
 
 # Imports
-
-
-def download_file(request):
-    return StreamingHttpResponse(download_files())
-
-
-def base_fetch(request):
-    return StreamingHttpResponse(base_import())
-
-
-def fetch_movie(request):
-    return StreamingHttpResponse(concurrent_stuff())
-
-
-def fetch_genres(request):
-    return StreamingHttpResponse(import_genres())
-
-
-def fetch_countries(request):
-    return StreamingHttpResponse(import_countries())
-
-
-def fetch_languages(request):
-    return StreamingHttpResponse(import_languages())
-
-
 def fetch_imdb_ratings(request):
-    return StreamingHttpResponse(import_imdb_ratings())
+    if 'import_imdb_ratings' not in [thread.name for thread in threading.enumerate()]:
+        thread = threading.Thread(target=import_imdb_ratings, name='import_imdb_ratings')
+        thread.daemon = True
+        thread.start()
+        return HttpResponse(json.dumps({"Message": "Starting to process IMDB ratings"}))
+    else:
+        return HttpResponse(json.dumps({"Message": "IMDB ratings process already started"}))
 
 
 def fetch_imdb_titles(request):
-    return StreamingHttpResponse(import_imdb_alt_titles())
-
-
-def check_tmdb_for_changes(request):
-    start_date = request.GET.get('start_date',
-                                 (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
-    end_date = request.GET.get('end_date', datetime.date.today().strftime("%Y-%m-%d"))
-    return StreamingHttpResponse(check_which_movies_needs_update(start_date, end_date))
+    if 'import_imdb_alt_titles' not in [thread.name for thread in threading.enumerate()]:
+        thread = threading.Thread(target=import_imdb_alt_titles, name='import_imdb_alt_titles')
+        thread.daemon = True
+        thread.start()
+        return HttpResponse(json.dumps({"Message": "Starting to process IMDB titles"}))
+    else:
+        return HttpResponse(json.dumps({"Message": "IMDB titles process already started"}))
 
 
 def movie_details(request, imdb_id):
     return HttpResponse(Movie.objects.get(imdb_id=imdb_id).raw_response)
 
 
-def dostuff(movie):
-    return {"fetched": movie.fetched,
-            "_id": movie.id,
-            "data": json.loads(movie.raw_response),
-            "fetched_date": {"$date": datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}}
-
-
 def generate_datadump(request):
     with open('datadump.json', 'w') as f:
         for x in Movie.objects.all().iterator():
-            f.write(json.dumps(dostuff(x)))
+            f.write(json.dumps({"fetched": x.fetched,
+                                "_id": x.id,
+                                "data": json.loads(x.raw_response),
+                                "fetched_date": {"$date": datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}}))
     return HttpResponse("Done")

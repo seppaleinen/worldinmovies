@@ -8,7 +8,7 @@ WORKDIR /install
 RUN \
  apk update && \
  apk add --no-cache postgresql-libs tzdata libpq && \
- apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev
+ apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev libffi-dev g++ snappy-dev krb5-pkinit krb5-dev krb5
 
 ADD requirements.txt .
 
@@ -28,4 +28,4 @@ ADD .. /app
 
 WORKDIR /app
 
-ENTRYPOINT ["/bin/sh", "-c", "python manage.py crontab add && crond & python manage.py makemigrations && python manage.py migrate && gunicorn --config=gunicorn.config.py settings.wsgi"]
+ENTRYPOINT ["/bin/sh", "-c", "python manage.py crontab add && crond & python manage.py makemigrations && python manage.py migrate && gunicorn --config=gunicorn.config.py -k uvicorn.workers.UvicornWorker --reload settings.asgi"]

@@ -18,14 +18,12 @@ class Movie(models.Model):
     vote_count = models.IntegerField(null=True, blank=True)
     imdb_vote_average = models.DecimalField(decimal_places=1, max_digits=10, null=True, blank=True)
     imdb_vote_count = models.IntegerField(null=True, blank=True)
-    raw_response = models.TextField(null=True, blank=True)
 
     class Meta:
         indexes = [models.Index(fields=['id'], name='movie_pk_index')]
 
     def add_fetched_info(self, fetched_movie):
         self.fetched = True
-        self.raw_response = fetched_movie
         self.budget = fetched_movie['budget']
         self.imdb_id = fetched_movie['imdb_id'].strip() if fetched_movie['imdb_id'] and fetched_movie['imdb_id'].strip() else None
         self.original_language = fetched_movie['original_language']
@@ -36,9 +34,10 @@ class Movie(models.Model):
         self.runtime = fetched_movie['runtime']
         self.vote_average = fetched_movie['vote_average']
         self.vote_count = fetched_movie['vote_count']
+        self.popularity = fetched_movie['popularity']
 
     def __str__(self):
-        return "id: %s, original_title: %s, fetched: %s" % (self.id, self.original_title, self.fetched)
+        return f"id: {self.id}, original_title: {self.original_title}, fetched: {self.fetched}"
 
 
 class Genre(models.Model):
@@ -47,7 +46,7 @@ class Genre(models.Model):
     name = models.TextField()
 
     def __str__(self):
-        return "id:{id}, name:{name}".format(id=self.id, name=self.name)
+        return f"id:{self.id}, name:{self.name}"
 
 
 class AlternativeTitle(models.Model):
@@ -58,7 +57,7 @@ class AlternativeTitle(models.Model):
     type = models.CharField(max_length=500, blank=True, null=True)
 
     def __str__(self):
-        return "iso:{iso}, title:{title}".format(iso=self.iso_3166_1, title=self.title)
+        return f"iso:{self.iso_3166_1}, title:{self.title}"
 
 
 class SpokenLanguage(models.Model):
@@ -68,7 +67,7 @@ class SpokenLanguage(models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
-        return "iso:{iso}, name:{name}".format(iso=self.iso_639_1, name=self.name)
+        return f"iso:{self.iso_639_1}, name:{self.name}"
 
 
 class ProductionCountries(models.Model):
@@ -78,4 +77,4 @@ class ProductionCountries(models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
-        return "iso:{iso}, name:{name}".format(iso=self.iso_3166_1, name=self.name)
+        return f"iso:{self.iso_3166_1}, name:{self.name}"

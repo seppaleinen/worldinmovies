@@ -27,8 +27,10 @@ DEBUG = False
 # Application definition
 
 INSTALLED_APPS = [
-    'health_check',                             # required
-    'health_check.db',                          # stock Django health checkers
+    'daphne',
+    'channels',
+    'health_check',
+    'health_check.db',
     'health_check.cache',
     'health_check.storage',
     'health_check.contrib.migrations',
@@ -38,14 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'app',
     'corsheaders',
-    'django_crontab',
 ]
 
-CRONJOBS = [
-    ('0 9 * * *', 'app.importer.cron_endpoint_for_checking_updateable_movies', '>> /tmp/scheduled_job.log'),
-    ('0 10 * * *', 'app.importer.base_import', '>> /tmp/scheduled_job.log'),
-    ('0 */2 * * *', 'app.importer.concurrent_stuff', '>> /tmp/scheduled_job.log')
-]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -63,8 +59,17 @@ CORS_ORIGIN_ALLOW_ALL = True
 # ALLOWED_HOSTS=['http://localhost:3000', 'http://localhost:81', 'http://webapp:81', 'http://webapp:3000', 'http://localhost:8000', 'localhost:8000']
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'localhost', 'webapp', 'backend', 'worldinmovies.duckdns.org', '192.168.1.137']
 ROOT_URLCONF = 'settings.urls'
-WSGI_APPLICATION = 'settings.wsgi.application'
-
+ASGI_APPLICATION = 'settings.asgi.application'
+environment = os.getenv('ENVIRONMENT', 'docker')
+redis_url = 'redis' if environment == 'docker' else 'localhost'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': "channels_redis.core.RedisChannelLayer",
+        'CONFIG': {
+            'hosts': [(redis_url, 6379)],
+        }
+    }
+}
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
@@ -84,8 +89,9 @@ elif environment == 'localhost':
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'postgres',
             'USER': 'postgres',
+            'PASSWORD': 'postgres',
             'HOST': 'localhost',
-            'PORT': 5432,
+            'PORT': 5433,
             'CONN_MAX_AGE': 500,
         }
     }

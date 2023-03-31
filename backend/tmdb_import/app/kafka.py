@@ -1,7 +1,6 @@
 import datetime
 import pickle
 import os
-import threading
 import json
 
 from asgiref.sync import async_to_sync
@@ -9,7 +8,7 @@ from channels.layers import get_channel_layer
 from kafka import KafkaProducer, KafkaConsumer
 
 kafka_url = 'kafka' if os.getenv('ENVIRONMENT', 'docker') == 'docker' else 'localhost'
-producer = KafkaProducer(bootstrap_servers="%s:9092" % kafka_url,
+producer = KafkaProducer(bootstrap_servers=f"{kafka_url}:9092",
                          key_serializer=lambda x: pickle.dumps(x),
                          value_serializer=lambda x: pickle.dumps(x))
 
@@ -30,9 +29,3 @@ def kafka_consumer():
     for message in consumer:
         event = {"timestamp": datetime.datetime.now().isoformat(), "event": message.key, "value": message.value}
         async_to_sync(layer.group_send)('group', {"type": "events", "message": json.dumps(event)})
-
-
-if 'kafka_consumer' not in [thread.name for thread in threading.enumerate()]:
-    thread = threading.Thread(target=kafka_consumer, name='kafka_consumer')
-    thread.setDaemon(True)
-    thread.start()
