@@ -17,7 +17,7 @@ RUN pip install --prefix=/install --no-cache-dir -r requirements.txt && \
 
 FROM base
 
-ENV ENVIRONMENT DOCKER
+ENV ENVIRONMENT docker
 ENV PYTHONUNBUFFERED 1
 ENV TZ Europe/Stockholm
 
