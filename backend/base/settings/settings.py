@@ -83,7 +83,7 @@ elif environment == 'localhost':
             'CONN_MAX_AGE': 500,
         }
     }
-elif environment == 'DOCKER':
+elif environment == 'docker':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',

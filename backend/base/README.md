@@ -11,54 +11,26 @@ Basically will be handling
   - Fetching movie data from TMDB, dependent on the movie ids received from the daily file
 * Serving Frontend
 
-### Todo
-
-* Change ETA handling to something that doesnt require interactive shell
-* ETA of file download
-* Cron-like way of starting imports daily
-* Move import apis behind /admin
-* If import fails, save to separate failure-table with movie-id, exception message, and raw dump
-* https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/70feba9f-294e-491e-b6eb-56532684c37f
-* Get movie changes
-    - Get list of which movies have been changed between dates
-    - https://api.themoviedb.org/3/movie/changes?api_key=<<api_key>>&end_date=2019-08-01&start_date=2019-08-05&page=1
-* Get countries
-    - Hoped that it would contain languages per country as well. but no.
-    - https://api.themoviedb.org/3/configuration/countries?api_key=<<api_key>>
-* Best 10 of each country
-	- additional fields
-		- imdb_id
-		- year
-		- id
-	- look into using other than lateral join, as to make tests work
-	- alternatively, use postgres as test-db with pytest-pgsql or similar
-* Search by name
-	- wanted response-fields
-		- imdb_id
-		- id
-		- name
-		- year
-		- poster_url
-		- countryname
-
 
 ### Notes
 * To fetch images, prefix with: https://image.tmdb.org/t/p/w500/
 
-* DB Migration Guide
-  1. ```bash docker exec -ti worldinmovies_db_1 pg_dump -U postgres postgres --clean --file=/tmp/dbexport.pgsql ```
-  2. Move postgres-data/dbexport.pgsql to machine where it should be imported
-  3. `docker cp worldinmovies.db.pgsql worldinmovies_db_1:/`
-  4. `docker exec -ti worldinmovies_db_1 /bin/sh`
-  5. `psql -d postgres -U postgres -f worldinmovies.db.pgsql`
+### DB Migration Guide
+```bash
+docker exec -ti worldinmovies_db_1 pg_dump -U postgres postgres --clean --file=/tmp/dbexport.pgsql
 
+docker cp worldinmovies_db_1:/tmp/dbexport.pgsql .
 
-### Requirements
+rsync --progress dbexport.pgsql <ssh-server>:<path>
 
-* Python3
-* Postgresql
+ssh <ssh-server>
 
+docker cp dbexport.pgsql worldinmovies_db_1:/
 
+docker exec -ti worldinmovies_db_1 psql -d postgres -U postgres -f /tmp/dbexport.pgsql
+```
+
+Installation
 ```bash
 # Install requirements
 pip3 install -r requirements
@@ -67,7 +39,7 @@ pip3 install -r requirements
 ./manage.py makemigrations && ./manage.py migrate
 
 # To start server with gunicorn
-gunicorn --config=gunicorn.config.py settings.wsgi
+gunicorn --config=gunicorn.config.py -k uvicorn.workers.UvicornWorker --reload settings.asgi
 
 # To start server without gunicorn
 ./manage.py runserver
@@ -76,17 +48,4 @@ gunicorn --config=gunicorn.config.py settings.wsgi
 pylint --load-plugins pylint_django app/ settings/
 
 pg_restore -U postgres -f /worldinmovies.db.pgsql
-```
-
-
-
-```bash
-docker exec -ti worldinmovies_backend_1 /bin/sh
-
-docker cp worldinmovies_backend_1:/app/datadump.json .
-docker cp datadump.json worldinmovies_mongo_1:/
-
-docker exec -ti worldinmovies_mongo_1 /bin/sh
-
-mongoimport -d tmdb -c movie --mode upsert --file datadump.json
 ```
