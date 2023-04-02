@@ -3,6 +3,7 @@ import datetime
 import json
 import threading
 
+from babel import languages
 import simplejson
 
 from app.importer import import_imdb_ratings, import_imdb_alt_titles
@@ -42,6 +43,8 @@ def get_best_movies_from_country(request, country_code):
     if request.method != 'GET':
         return HttpResponse("Method not allowed", status=400)
     page = int(request.GET.get('page', 0)) * 20
+    langs = languages.get_official_languages(territory=country_code, regional=True, de_facto=True)
+    print(f"Lang {str(langs)}")
     with connection.cursor() as cursor:
         cursor.execute(f"""
             select movie.imdb_id, movie.original_title, movie.release_date, movie.poster_path, movie.vote_average, movie.vote_count, count(*) OVER() as total_count, (select title from app_alternativetitle where movie_id = movie.id and iso_3166_1 in ('US', 'GB') limit 1) as en_title, movie.id from app_movie movie
@@ -49,8 +52,9 @@ def get_best_movies_from_country(request, country_code):
 	            inner join app_productioncountries pc on pc.id = pcm.productioncountries_id
 	            where movie.fetched is True
 	            and pc.iso_3166_1 = '{country_code}'
-	            and movie.vote_count > 200
-	            and movie.vote_average > 0
+	            and movie.original_language in {langs}
+	            and movie.vote_count + movie.imdb_vote_count > 200
+	            and (movie.vote_average + movie.imdb_vote_average) / 2 > 0
 	            order by movie.weighted_rating desc
 	            limit 20
 	            offset {page}
