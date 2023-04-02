@@ -109,6 +109,7 @@ def ratings(request):
                     for country in found_movie.production_countries.all():
                         result['found'].setdefault(country.iso_3166_1, []).append({
                             'imdb_id': found_movie.imdb_id,
+                            'id': found_movie.id,
                             'original_title': found_movie.original_title,
                             'release_date': found_movie.release_date,
                             'poster_path': found_movie.poster_path,
