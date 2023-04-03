@@ -7,6 +7,7 @@ from app.importer import download_files, fetch_tmdb_data_concurrently, import_ge
     base_import, check_which_movies_needs_update
 from app.models import Movie
 from django.http import HttpResponse
+from app.kafka import produce
 
 
 def import_status(request):
@@ -72,7 +73,7 @@ def import_status(request):
 def download_file(request):
     if 'download_files' not in [thread.name for thread in threading.enumerate()]:
         thread = threading.Thread(target=download_files, name='download_files')
-        thread.setDaemon(True)
+        thread.daemon = True
         thread.start()
         return HttpResponse(json.dumps({"Message": "Starting to process TMDB downloads"}))
     else:
@@ -82,7 +83,7 @@ def download_file(request):
 def base_fetch(request):
     if 'base_import' not in [thread.name for thread in threading.enumerate()]:
         thread = threading.Thread(target=base_import, name='base_import')
-        thread.setDaemon(True)
+        thread.daemon = True
         thread.start()
         return HttpResponse(json.dumps({"Message": "Starting to process TMDB base import"}))
     else:
@@ -92,7 +93,7 @@ def base_fetch(request):
 def import_tmdb_data(request):
     if 'import_tmdb_data' not in [thread.name for thread in threading.enumerate()]:
         thread = threading.Thread(target=fetch_tmdb_data_concurrently, name='import_tmdb_data')
-        thread.setDaemon(True)
+        thread.daemon = True
         thread.start()
         return HttpResponse(json.dumps({"Message": "Starting to process TMDB data"}))
     else:
@@ -102,7 +103,7 @@ def import_tmdb_data(request):
 def fetch_genres(request):
     if 'import_genres' not in [thread.name for thread in threading.enumerate()]:
         thread = threading.Thread(target=import_genres, name='import_genres')
-        thread.setDaemon(True)
+        thread.daemon = True
         thread.start()
         return HttpResponse(json.dumps({"Message": "Starting to process TMDB genres"}))
     else:
@@ -112,7 +113,7 @@ def fetch_genres(request):
 def fetch_countries(request):
     if 'import_countries' not in [thread.name for thread in threading.enumerate()]:
         thread = threading.Thread(target=import_countries, name='import_countries')
-        thread.setDaemon(True)
+        thread.daemon = True
         thread.start()
         return HttpResponse(json.dumps({"Message": "Starting to process TMDB countries"}))
     else:
@@ -122,7 +123,7 @@ def fetch_countries(request):
 def fetch_languages(request):
     if 'import_languages' not in [thread.name for thread in threading.enumerate()]:
         thread = threading.Thread(target=import_languages, name='import_languages')
-        thread.setDaemon(True)
+        thread.daemon = True
         thread.start()
         return HttpResponse(json.dumps({"Message": "Starting to process TMDB languages"}))
     else:
@@ -134,8 +135,10 @@ def check_tmdb_for_changes(request):
                                  (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
     end_date = request.GET.get('end_date', datetime.date.today().strftime("%Y-%m-%d"))
     if 'check_which_movies_needs_update' not in [thread.name for thread in threading.enumerate()]:
-        thread = threading.Thread(target=check_which_movies_needs_update, args=[start_date, end_date], name='check_which_movies_needs_update')
-        thread.setDaemon(True)
+        thread = threading.Thread(target=check_which_movies_needs_update,
+                                  args=[start_date, end_date],
+                                  name='check_which_movies_needs_update')
+        thread.daemon = True
         thread.start()
         return HttpResponse(json.dumps({"Message": "Starting to process TMDB changes"}))
     else:
@@ -147,3 +150,28 @@ def fetch_movie_data(request, ids):
     data_list = Movie.objects.filter(pk__in=movie_ids).values_list('data')
     response = json.dumps([data for data in data_list])
     return HttpResponse(response)
+
+
+def generate_kafka_dump2():
+    ids = Movie.objects.all().values_list('id')
+    for i in __chunks(ids, 100):
+        for a in i:
+            produce('NEW', a)
+
+
+def generate_kafka_dump(request):
+    if 'generate_kafka_dump2' not in [thread.name for thread in threading.enumerate()]:
+        thread = threading.Thread(target=generate_kafka_dump2,
+                                  name='generate_kafka_dump2')
+        thread.daemon = True
+        thread.start()
+        return HttpResponse(json.dumps({"Message": "Starting to generate kafka dump"}))
+    else:
+        return HttpResponse(json.dumps({"Message": "kafka dump process already started"}))
+
+
+
+def __chunks(__list, n):
+    """Yield successive n-sized chunks from list."""
+    for i in range(0, len(__list), n):
+        yield __list[i:i + n]

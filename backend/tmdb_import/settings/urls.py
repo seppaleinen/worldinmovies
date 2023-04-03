@@ -13,6 +13,7 @@ urlpatterns = [
     path('import/tmdb/languages',           views.fetch_languages),
     path('import/tmdb/changes',             views.check_tmdb_for_changes),
     path('movie/<str:ids>',                 views.fetch_movie_data),
+    path('generate_kafka_dump',             views.generate_kafka_dump),
     re_path(r'^status$',                    views.import_status),
     re_path(r'^health/',                    include('health_check.urls'))
 ]

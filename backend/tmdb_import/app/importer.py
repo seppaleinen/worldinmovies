@@ -233,6 +233,8 @@ def check_which_movies_needs_update(start_date, end_date):
                         __send_data_to_channel("MovieId: %s has already been scheduled for update" % movie['id'])
                 except DoesNotExist:
                     Movie(id=movie['id'], fetched=False).save()
+    else:
+        print("Response: %s:%s" % (response.status_code, response.content))
 
 
 def cron_endpoint_for_checking_updateable_movies():
