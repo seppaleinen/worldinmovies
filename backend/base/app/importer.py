@@ -5,6 +5,7 @@ import json
 import requests
 import sys
 
+from django.db import transaction
 from app.models import Movie, AlternativeTitle
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -36,10 +37,8 @@ def import_imdb_ratings():
     with open('title.ratings.tsv.gz', 'wb') as f:
         f.write(response.content)
     if response.status_code == 200:
-        counter = 0
         contents = __unzip_file('title.ratings.tsv.gz')
         reader = csv.reader(contents, delimiter='\t')
-        # chunks_of_reader_maybe = __chunks(reader, 50)
         all_imdb_ids = Movie.objects.filter(fetched=True) \
             .exclude(imdb_id__isnull=True)\
             .exclude(imdb_id__exact='')\
@@ -47,19 +46,21 @@ def import_imdb_ratings():
             .values_list('imdb_id', flat=True)
 
         imdb_ids_length = len(all_imdb_ids)
-        # Multithread this maybe?
-        for row in __log_progress(list(reader), "IMDB Ratings"):
-            tconst = row[0]
-            if tconst in all_imdb_ids:
-                try:
-                    movie = Movie.objects.get(imdb_id=tconst)
-                    movie.imdb_vote_average = row[1]
-                    movie.imdb_vote_count = row[2]
-                    movie.save()
-                    counter += 1
-                    __send_data_to_channel(layer=layer, message=f"fetched {counter} ratings out of {imdb_ids_length}")
-                except Movie.DoesNotExist:
-                    pass
+        count = 0
+        for chunk in __chunks(list(reader), 100):
+            movies = dict()
+            for movie in chunk:
+                if movie[0] in all_imdb_ids:
+                    movies[movie[0]] = movie
+            data = Movie.objects.filter(imdb_id__in=movies.keys())
+            with transaction.atomic():
+                for db_row in data:
+                    data = movies[db_row.imdb_id]
+                    db_row.imdb_vote_average = data[1]
+                    db_row.imdb_vote_count = data[2]
+                    db_row.save()
+                count += len(movies.keys())
+                __send_data_to_channel(layer=layer, message=f"Processed {len(movies.keys())} ratings out of {count}/{imdb_ids_length}")
     else:
         __send_data_to_channel(layer=layer, message=f"Exception: {response.status_code} - {response.content}")
 
@@ -87,7 +88,21 @@ def import_imdb_alt_titles():
 
         reader = csv.reader(contents, delimiter='\t', quoting=csv.QUOTE_NONE)
         print("Processing IMDB Titles")
-        next(reader) # Skip header
+        next(reader)  # Skip header
+
+        """
+        matches = dict()
+        for chunk in __chunks(list(reader), 100):
+            # matches = dict(map(lambda x: (x[0], x), filter(lambda y: y[0] in all_imdb_ids, chunk)))
+            for movie in list(filter(lambda x: x[0] in all_imdb_ids, chunk)):
+                matches.setdefault(movie[0], []).append(movie)
+        for id_chunks in __chunks(matches, 100):
+            a = dict()
+            titles = list(map(lambda x: x[2], id_chunks.values()))
+            titles_already_in_db = Movie.objects.filter(imdb_id__in=id_chunks.keys(), title__in=titles)
+            for title in titles_already_in_db.iterator():
+                a.setdefault(title.imdb_id, title.title)
+        """
         alt_titles = []
         counter = 0
         for row in __log_progress(reader, "Processing IMDB Titles", count):
@@ -109,8 +124,10 @@ def import_imdb_alt_titles():
         i = 0
         alt_titles_len = len(alt_titles)
         for alt_titles_chunk in __chunks(alt_titles, 50):
-            AlternativeTitle.objects.bulk_create(alt_titles_chunk)
-            i += len(alt_titles_chunk)
+            with transaction.atomic():
+                for title in alt_titles_chunk:
+                    title.save()
+                    i += 1
             __send_data_to_channel(layer=layer, message=f"Persisted {i} out of {alt_titles_len} titles")
     else:
         __send_data_to_channel(layer=layer, message=f"Exception: {response.status_code} - {response.content}")
