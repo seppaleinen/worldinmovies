@@ -6,6 +6,8 @@ import responses
 import time
 from django.test import TransactionTestCase
 from app.models import Movie, Genre, SpokenLanguage, ProductionCountries
+from unittest.mock import patch
+from app.kafka import KafkaProducer
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -283,3 +285,20 @@ class CheckTMDBForChanges(SuperClass):
         self.assertEqual(responses.calls[0].request.url, url)
         self.assertEqual(False, Movie.objects.get(pk=1).fetched)
         self.assertEqual(False, Movie.objects.get(pk=2).fetched)
+
+
+class GenerateDataDumpToKafka(SuperClass):
+    @responses.activate
+    def test_generate_data(self):
+        for i in range(0, 5):
+            Movie(id=i, data={}, fetched=True).save()
+
+        with patch('app.views.produce') as mock:
+            response = self.client.get('/generate_kafka_dump')
+            self.assertEqual(response.status_code, 200)
+            args = mock.call_args_list
+            for i in range(0, 5):
+                self.assertEquals(args[i][0], ('NEW', i))
+                self.assertEquals(args[i][1], {'topic': 'data_dump'})
+
+

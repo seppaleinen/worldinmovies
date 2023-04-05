@@ -152,17 +152,14 @@ def fetch_movie_data(request, ids):
     return HttpResponse(response)
 
 
-def generate_kafka_dump2():
-    ids = Movie.objects.all().values_list('id')
-    for i in __chunks(ids, 100):
-        for a in i:
-            produce('NEW', a)
-
-
 def generate_kafka_dump(request):
-    if 'generate_kafka_dump2' not in [thread.name for thread in threading.enumerate()]:
-        thread = threading.Thread(target=generate_kafka_dump2,
-                                  name='generate_kafka_dump2')
+    def gen():
+        for chunk in __chunks(Movie.objects.all().values_list('id'), 1000):
+            [produce('NEW', x, topic='data_dump') for x in chunk]
+
+    if 'generate_kafka_dump' not in [thread.name for thread in threading.enumerate()]:
+        thread = threading.Thread(target=gen,
+                                  name='generate_kafka_dump')
         thread.daemon = True
         thread.start()
         return HttpResponse(json.dumps({"Message": "Starting to generate kafka dump"}))

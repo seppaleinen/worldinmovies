@@ -12,8 +12,8 @@ producer = KafkaProducer(bootstrap_servers=f"{kafka_url}:9092",
                          value_serializer=lambda x: repr(x).encode('utf-8'))
 
 
-def produce(event_type, message):
-    producer.send('movie', key=event_type, value=message)
+def produce(event_type, message, topic='movie'):
+    producer.send(topic, key=event_type, value=message)
 
 
 def kafka_consumer():
