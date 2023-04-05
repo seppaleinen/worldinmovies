@@ -2,6 +2,9 @@
 import os
 import sys
 
+if 'test' in sys.argv:
+    os.environ["ENVIRONMENT"] = "test"
+
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.settings")
     try:

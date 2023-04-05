@@ -170,7 +170,6 @@ def generate_kafka_dump(request):
         return HttpResponse(json.dumps({"Message": "kafka dump process already started"}))
 
 
-
 def __chunks(__list, n):
     """Yield successive n-sized chunks from list."""
     for i in range(0, len(__list), n):

@@ -1,4 +1,6 @@
-import os, mongoengine
+import mongoengine
+import os
+import mongomock
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -51,7 +53,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 ALLOWED_HOSTS = ['*']
 ROOT_URLCONF = 'settings.urls'
 ASGI_APPLICATION = 'settings.asgi.application'
-environment = os.getenv('ENVIRONMENT', 'docker')
+environment = os.environ.get('ENVIRONMENT', 'docker')
 redis_url = 'redis' if environment == 'docker' else 'localhost'
 CHANNEL_LAYERS = {
     'default': {
@@ -66,8 +68,23 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
-mongo_url = 'mongo' if environment == 'docker' else 'localhost'
-mongoengine.connect(db='tmdb', host="%s:27017" % mongo_url, username='', password='')
+
+if environment == 'docker:27017':
+    mongo_url = 'mongo'
+    mongoengine.connect(db='tmdb', host=mongo_url, username='', password='')
+elif environment == 'localhost':
+    mongo_url = 'localhost:27017'
+    mongoengine.connect(db='tmdb', host=mongo_url, username='', password='')
+
+else:
+    mongo_url = 'localhost:27018'
+    mongoengine.connect(db='tmdb', host='mongodb://localhost', mongo_client_class=mongomock.MongoClient, username='', password='')
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

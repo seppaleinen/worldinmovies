@@ -6,6 +6,7 @@ import datetime, \
     os, \
     time
 
+from django.db import transaction
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from mongoengine import DoesNotExist
@@ -13,13 +14,14 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from app.models import Movie, SpokenLanguage, Genre, ProductionCountries
 from app.kafka import produce
-from itertools import chain
 
 
 def base_import():
-    def done():
-        __send_data_to_channel("Base import is done")
-    return chain(download_files(), import_genres(), import_countries(), import_languages(), done())
+    download_files()
+    import_genres()
+    import_countries()
+    import_languages()
+    __send_data_to_channel("Base import is done")
 
 
 def download_files():
@@ -31,7 +33,6 @@ def download_files():
     layer = get_channel_layer()
     if response.status_code == 200:
         print("Downloading file")
-        yield json.dumps({"message": "Downloading %s" % daily_export_url}) + "\n"
         with open('movies.json.gz', 'wb') as f:
             f.write(response.content)
         __send_data_to_channel(layer=layer, message="Downloaded %s" % daily_export_url)
@@ -156,12 +157,14 @@ def import_genres():
         genres_from_json = json.loads(response.content)['genres']
         length = len(genres_from_json)
         i = 0
-        for genre in __log_progress(genres_from_json, "TMDB Genres"):
-            Genre(id=genre['id'], name=genre['name']).save()
-            i += 1
-            __send_data_to_channel(layer=layer, message="Fetched %s genres out of %s" % (i, length))
+        all_persisted = Genre.objects.all().values_list('id')
+        with transaction.atomic():
+            for genre in list(filter(lambda x: x['id'] not in all_persisted, genres_from_json)):
+                i += 1
+                Genre(id=genre['id'], name=genre['name']).save()
+        __send_data_to_channel(layer=layer, message=f"Fetched {length} genres out of")
     else:
-        __send_data_to_channel(layer=layer, message="Error importing countries: %s - %s" % (response.status_code, response.content))
+        __send_data_to_channel(layer=layer, message=f"Error importing countries: {response.status_code} - {response.content}")
 
 
 def import_countries():
@@ -174,13 +177,14 @@ def import_countries():
         countries_from_json = json.loads(response.content)
         length = len(countries_from_json)
         i = 0
-        for country in __log_progress(countries_from_json, "TMDB Countries"):
-            if not ProductionCountries.objects.all().filter(iso_3166_1=country['iso_3166_1']):
+        all_persisted = ProductionCountries.objects.all().values_list('iso_3166_1')
+        with transaction.atomic():
+            for country in list(filter(lambda x: x['iso_3166_1'] not in all_persisted, countries_from_json)):
+                i += 1
                 ProductionCountries(iso_3166_1=country['iso_3166_1'], name=country['english_name']).save()
-            i += 1
-            __send_data_to_channel(layer=layer, message="Fetched %s countries out of %s" % (i, length))
+        __send_data_to_channel(layer=layer, message=f"Fetched {length} countries")
     else:
-        __send_data_to_channel(layer=layer, message="Error importing countries: %s - %s" % (response.status_code, response.content))
+        __send_data_to_channel(layer=layer, message=f"Error importing countries: {response.status_code} - {response.content}")
 
 
 def import_languages():
@@ -193,15 +197,14 @@ def import_languages():
         languages_from_json = json.loads(response.content)
         length = len(languages_from_json)
         i = 0
-        for language in __log_progress(languages_from_json, "TMDB Languages"):
-            i += 1
-            __send_data_to_channel(layer=layer, message=f"Fetched {i} languages out of {length}")
-            spoken_lang = SpokenLanguage.objects.all().filter(iso_639_1=language['iso_639_1'])
-            if not spoken_lang:
+        all_persisted = SpokenLanguage.objects.all().values_list('iso_639_1')
+        with transaction.atomic():
+            for language in list(filter(lambda x: x['iso_639_1'] not in all_persisted, languages_from_json)):
+                i += 1
                 SpokenLanguage(iso_639_1=language['iso_639_1'], name=language['english_name']).save()
+        __send_data_to_channel(layer=layer, message=f"Fetched {length} languages")
     else:
-        print("response: %s" % response)
-        __send_data_to_channel("Error importing languages: %s - %s" % (response.status_code, response.content))
+        __send_data_to_channel(f"Error importing languages: {response.status_code} - {response.content}")
 
 
 def __chunks(__list, n):

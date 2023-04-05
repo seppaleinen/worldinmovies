@@ -26,7 +26,7 @@ class Genre(Document):
 
 
 class SpokenLanguage(Document):
-    iso_639_1 = fields.StringField(max_length=4)
+    iso_639_1 = fields.StringField(primary_key=True, max_length=4)
     name = fields.StringField(max_length=50)
 
     def __str__(self):
