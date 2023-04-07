@@ -75,7 +75,7 @@ def convert_country_code(country_code):
     for old_code, new_codes in code_dict.items():
         if country_code in new_codes:
             return f"'{old_code}', '{country_code}'"
-    return country_code
+    return f"'{country_code}'"
 
 
 """
@@ -93,8 +93,9 @@ def get_best_movies_from_country(request, country_code):
         return HttpResponse("Method not allowed", status=400)
     page = int(request.GET.get('page', 0)) * 20
     country_codes = convert_country_code(country_code)
-    langs = languages.get_official_languages(territory=country_code, regional=True, de_facto=True)
-    lang_query = f"and movie.original_language in {langs}" if str(langs) != "()" else ""
+    langs = str(languages.get_official_languages(territory=country_code, regional=True, de_facto=True))\
+        .replace(",)", ")")
+    lang_query = f"and movie.original_language in {langs}" if langs != "()" else ""
     with connection.cursor() as cursor:
         cursor.execute(f"""
             select movie.imdb_id, movie.original_title, movie.release_date, movie.poster_path, movie.vote_average, movie.vote_count, count(*) OVER() as total_count, (select title from app_alternativetitle where movie_id = movie.id and iso_3166_1 in ('US', 'GB') limit 1) as en_title, movie.id from app_movie movie
@@ -103,8 +104,8 @@ def get_best_movies_from_country(request, country_code):
 	            where movie.fetched is True
 	            and pc.iso_3166_1 in ({country_codes})
 	            {lang_query}
-	            and movie.vote_count > 200
-	            and (movie.vote_average) > 0
+	            and movie.vote_count + movie.imdb_vote_count > 200
+	            and ((movie.vote_average + movie.imdb_vote_average) / 2) > 0
 	            order by (movie.vote_count / (cast(movie.vote_count as numeric) + 200)) * movie.vote_average + (200 / (cast(movie.vote_count as numeric) + 200)) * 4 desc
 	            limit 20
 	            offset {page}
