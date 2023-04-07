@@ -29,6 +29,55 @@ def import_status(request):
                             content_type='application/json')
 
 
+def convert_country_code(country_code):
+    code_dict = {
+        'AN': ['BQ', 'CW', 'SX'],  # The Netherlands Antilles was divided into
+        # Bonaire, Saint Eustatius and Saba (BQ)
+        # Curaçao (CW)
+        # and Sint Maarten (SX)
+        'AQ': 'AQ',  # Antarctica is not even on the map
+        'BU': 'MM',  # Burma is now Myanmar
+        'CS': ['RS', 'SK'],  # Czechoslovakia was divided into Czechia (CZ), and Slovakia (SK)
+        'SU': ['AM', 'AZ', 'EE', 'GE', 'KZ', 'KG', 'LV', 'LT', 'MD', 'RU', 'TJ', 'TM', 'UZ'],  # USSR was divided into:
+        # Armenia (AM),
+        # Azerbaijan (AZ),
+        # Estonia (EE),
+        # Georgia (GE),
+        # Kazakstan (KZ),
+        # Kyrgyzstan (KG),
+        # Latvia (LV),
+        # Lithuania (LT),
+        # Republic of Moldova (MD),
+        # Russian Federation (RU),
+        # Tajikistan (TJ),
+        # Turkmenistan (TM),
+        # Uzbekistan (UZ).
+        'TP': 'TL',  # Name changed from East Timor (TP) to Timor-Leste (TL)
+        'UM': ['UM-DQ', 'UM-FQ', 'UM-HQ', 'UM-JQ', 'UM-MQ', 'UM-WQ'],  # United States Minor Outlying Islands is
+        # Jarvis Island   (UM-DQ)
+        # Baker Island    (UM-FQ)
+        # Howland Island  (UM-HQ)
+        # Johnston Atoll  (UM-JQ)
+        # Midway Islands  (UM-MQ)
+        # Wake Island     (UM-WQ)
+        'XC': 'IC',  # Czechoslovakia was divided into Czechia (CZ), and Slovakia (SK)
+        'XG': 'DE',  # East Germany is now germany (DE)
+        'XI': 'IM',  # Northern Ireland is kind of Isle of man
+        'YU': ['BA', 'HR', 'MK', 'CS', 'SI'],  # Former Yugoslavia was divided into
+        # Bosnia and Herzegovina (BA),
+        # Croatia (HR),
+        # The former Yugoslav Republic of Macedonia (MK),
+        # Serbia and Montenegro (CS),
+        # Slovenia (SI)
+        'ZR': 'CD'  # Name changed from Zaire to the Democratic Republic of the Congo (CD)
+    }
+
+    for old_code, new_codes in code_dict.items():
+        if country_code in new_codes:
+            return f"'{old_code}', '{country_code}'"
+    return country_code
+
+
 """
 The formula for calculating the Top Rated 250 Titles gives a true Bayesian estimate:
 weighted rating (WR) = (v ÷ (v+m)) × R + (m ÷ (v+m)) × C where:
@@ -43,15 +92,17 @@ def get_best_movies_from_country(request, country_code):
     if request.method != 'GET':
         return HttpResponse("Method not allowed", status=400)
     page = int(request.GET.get('page', 0)) * 20
+    country_codes = convert_country_code(country_code)
     langs = languages.get_official_languages(territory=country_code, regional=True, de_facto=True)
+    lang_query = f"and movie.original_language in {langs}" if str(langs) != "()" else ""
     with connection.cursor() as cursor:
         cursor.execute(f"""
             select movie.imdb_id, movie.original_title, movie.release_date, movie.poster_path, movie.vote_average, movie.vote_count, count(*) OVER() as total_count, (select title from app_alternativetitle where movie_id = movie.id and iso_3166_1 in ('US', 'GB') limit 1) as en_title, movie.id from app_movie movie
 	            inner join app_productioncountries_movies pcm on pcm.movie_id = movie.id
 	            inner join app_productioncountries pc on pc.id = pcm.productioncountries_id
 	            where movie.fetched is True
-	            and pc.iso_3166_1 = '{country_code}'
-	            and movie.original_language in {langs}
+	            and pc.iso_3166_1 in ({country_codes})
+	            {lang_query}
 	            and movie.vote_count > 200
 	            and (movie.vote_average) > 0
 	            order by (movie.vote_count / (cast(movie.vote_count as numeric) + 200)) * movie.vote_average + (200 / (cast(movie.vote_count as numeric) + 200)) * 4 desc
