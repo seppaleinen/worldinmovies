@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import styles from './Admin.module.scss';
-// @ts-ignore
 
 const baseUrl = process.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : process.env.REACT_APP_BACKEND_URL;
 const tmdbUrl = process.env.REACT_APP_TMDB_URL === undefined ? '/tmdb' : process.env.REACT_APP_TMDB_URL;
