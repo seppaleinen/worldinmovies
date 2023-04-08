@@ -146,10 +146,10 @@ def check_tmdb_for_changes(request):
 
 
 def fetch_movie_data(request, ids):
-    movie_ids = ids.split(',')
+    movie_ids = list(map(lambda x: int(x), ids.split(',')))
     data_list = Movie.objects.filter(pk__in=movie_ids).values_list('data')
-    response = json.dumps([data for data in data_list])
-    return HttpResponse(response, content_type='application/json')
+    return HttpResponse(json.dumps([data for data in data_list]),
+                        content_type='application/json')
 
 
 def generate_kafka_dump(request):

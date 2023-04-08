@@ -69,13 +69,12 @@ CHANNEL_LAYERS = {
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 
-if environment == 'docker:27017':
-    mongo_url = 'mongo'
+if environment == 'docker':
+    mongo_url = 'mongo:27017'
     mongoengine.connect(db='tmdb', host=mongo_url, username='', password='')
 elif environment == 'localhost':
     mongo_url = 'localhost:27017'
     mongoengine.connect(db='tmdb', host=mongo_url, username='', password='')
-
 else:
     mongo_url = 'localhost:27018'
     mongoengine.connect(db='tmdb', host='mongodb://localhost', mongo_client_class=mongomock.MongoClient, username='', password='')
