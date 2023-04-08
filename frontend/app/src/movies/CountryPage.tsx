@@ -28,8 +28,8 @@ class CountryPage extends React.Component<Props, MovieModalState> {
             data.slice()
                 .sort((a: Movie, b: Movie) => (a.vote_average > b.vote_average) ? -1 : 1)
                 .map((item: Movie) =>
-                    <div className={styles.movieCard} key={item.id} onClick={() => this.getDetails(item.id)}>
-                        <img className={styles.poster} src={`https://image.tmdb.org/t/p/original/${item.poster_path}`}
+                    <div className={styles.movieCard} key={item.id === undefined ? item.imdb_id : item.id} onClick={() => this.getDetails(item.id)}>
+                        <img className={styles.poster} src={`https://image.tmdb.org/t/p/w200/${item.poster_path}`}
                              alt={item.en_title}/>
                         <div className={styles.movieCardText}>
                             <div>{item.original_title} ({item.release_date.slice(0, 4)})</div>
