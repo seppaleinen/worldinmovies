@@ -1,107 +1,70 @@
-import React, {MutableRefObject} from 'react';
+import React, {RefObject, useEffect, useState} from 'react';
 import './MyMoviesMap.scss';
 import {VectorMap} from "@react-jvectormap/core"
-import axios, {AxiosResponse} from 'axios';
 import {inject, observer} from "mobx-react";
-import {MyMovie, MyMovieMapState, Props} from "../Types";
 import {IMapObject} from "@react-jvectormap/core/dist/types";
 import customWorldMapJson from './customworldmap.json';
+import {useNavigate} from "react-router-dom";
+import MovieStore from "../stores/MovieStore";
 
-@inject('movieStore', 'stateStore')
-@observer
-class MyMoviesMap extends React.Component<Props, MyMovieMapState> {
-    myRef = React.createRef<MutableRefObject<IMapObject> & null>();
-    backendUrl = process.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : process.env.REACT_APP_BACKEND_URL;
+const MyMoviesMap = inject('movieStore')
+(observer(({movieStore}: { movieStore?: MovieStore}) => {
+    let myRef: RefObject<IMapObject> = React.createRef();
+    const [myMovies, setMyMovies] = useState<{}>({})
+    const navigate = useNavigate();
 
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            myMovies: {},
-        };
-    }
-
-    generateColors = () => {
-        let colors: Record<string, string> = {}, key;
-
+    const onRegionClick = (event: any, code: string) => {
         // @ts-ignore
-        for (key in this.myRef.current.getMapObject().regions) {
-            const found = this.state.myMovies !== undefined && key in this.state.myMovies;
-            colors[key] = (found ? 'seen' /* light green */ : 'unseen' /* gray */);
-        }
-        return colors;
+        let mapObject = myRef.current.getMapObject();
+        mapObject.tip.hide(code);
+        navigate("/country/" + code);
     };
 
-    componentDidUpdate(prevProps: Props, prevState: MyMovieMapState) {
-        if (this.state.myMovies !== prevState.myMovies) {
+    useEffect(() => {
+        movieStore!.hydrateStore().then(() => {
+            setMyMovies(movieStore!.myMovies);
             // @ts-ignore
-            this.myRef.current.getMapObject().series.regions[0].setValues(this.generateColors());
-        }
-    }
+            let mapObject = myRef.current!.getMapObject();
+            const generateColors = () => {
+                let colors: Record<string, string> = {}, key;
 
-    onRegionClick = (event: any, code: string) => {
-        // @ts-ignore
-        const regionName = this.myRef.current.getMapObject().getRegionName(code);
-        axios.get(this.backendUrl + "/view/best/" + code.toUpperCase(), {timeout: 10000})
-            .then((response: AxiosResponse) => {
-                let movieStore = this.props.movieStore!;
-                let stateStore = this.props.stateStore!;
-                movieStore.movies = response.data.result;
-                stateStore.code = code;
-                stateStore.regionName = regionName;
-                this.props.redirectToPage("country-page");
-            })
-            .catch(function (error: any) {
-                console.log(error);
-            })
-            .finally(() => {
-                // @ts-ignore
-                this.myRef.current.getMapObject().tip.hide();
-            });
-
-    };
-
-    changeDataStateCallback = (data: Record<string, MyMovie[]>) => {
-        this.setState({
-            myMovies: data
-        })
-    }
-
-    componentDidMount() {
-        this.props.movieStore!.hydrateStore().then(() => {
-            this.setState({
-                myMovies: this.props.movieStore!.myMovies
-            })
-            this.generateColors();
+                if (myRef?.current) {
+                    for (key in mapObject.regions) {
+                        const found = myMovies !== undefined && key in myMovies;
+                        colors[key] = (found ? 'seen' /* light green */ : 'unseen' /* gray */);
+                    }
+                }
+                return colors;
+            };
+            mapObject.series.regions[0].setValues(generateColors());
         });
-    }
+    }, [myMovies, movieStore, myRef])
 
-    render() {
-        return (
-            <div className="map-container inner-map-container">
-                <div id="mappy">
-                    <VectorMap
-                        map={customWorldMapJson}
-                        backgroundColor="var(--dominant)"
-                        mapRef={this.myRef}
-                        series={{
-                            regions:
-                                [{
-                                    attribute: 'fill',
-                                    scale: {seen: 'var(--accent)', unseen: 'var(--complement)'},
-                                }]
-                        }}
-                        regionStyle={{
-                            hover: {fill: '#A8D4FF'},
-                            initial: {fill: 'var(--complement)'}
-                        }}
-                        zoomOnScroll={false}
-                        onRegionClick={this.onRegionClick}
-                        className="map"
-                    />
-                </div>
+    return (
+        <div className="map-container inner-map-container">
+            <div id="mappy">
+                <VectorMap
+                    map={customWorldMapJson}
+                    backgroundColor="var(--dominant)"
+                    mapRef={myRef}
+                    series={{
+                        regions:
+                            [{
+                                attribute: 'fill',
+                                scale: {seen: 'var(--accent)', unseen: 'var(--complement)'},
+                            }]
+                    }}
+                    regionStyle={{
+                        hover: {fill: '#A8D4FF'},
+                        initial: {fill: 'var(--complement)'}
+                    }}
+                    zoomOnScroll={false}
+                    onRegionClick={onRegionClick}
+                    className="map"
+                />
             </div>
-        );
-    }
-}
+        </div>
+    );
+}));
 
 export default MyMoviesMap;

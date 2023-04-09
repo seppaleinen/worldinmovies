@@ -1,11 +1,12 @@
 import React from 'react';
 import './Import.scss';
+import { useNavigate } from 'react-router-dom';
 
 export interface ImportProps {
-    redirectToPage: (data: string) => void;
 }
 
-const Import = (props: ImportProps) => {
+const Import = () => {
+    const navigate = useNavigate();
     return (
         <div>
             <div className="mainText">
@@ -13,10 +14,10 @@ const Import = (props: ImportProps) => {
                 Choose how you want to import your data
             </div>
             <div className="images">
-                <img className="image" src="/static/trakt-wide-red-black.png" alt="Trakt"
-                     onClick={() => props.redirectToPage('trakt')}/>
-                <img className="image" src="/static/IMDB-Logo.jpeg" alt="IMDB"
-                     onClick={() => props.redirectToPage('imdb')}/>
+                <img className="image" src="/trakt-wide-red-black.png" alt="Trakt"
+                     onClick={() => navigate('/import/trakt')}/>
+                <img className="image" src="/IMDB-Logo.jpeg" alt="IMDB"
+                     onClick={() => navigate("/import/imdb")}/>
             </div>
         </div>
     )

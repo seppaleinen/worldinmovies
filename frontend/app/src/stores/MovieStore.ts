@@ -7,7 +7,9 @@ export interface StoreType {
     myMovies: Record<string, MyMovie[]>;
     startStore: () => void;
     hydrateStore: () => Promise<void>;
+    setMovie: (movies: Movie[]) => void;
 }
+
 export default class MovieStore implements StoreType {
     movies: Movie[] = [];
     myMovies: Record<string, MyMovie[]> = {};
@@ -19,6 +21,11 @@ export default class MovieStore implements StoreType {
             properties: ['movies', "myMovies"],
             storage: window.localStorage
         });
+    }
+
+    @action
+    setMovie(movies: Movie[]) {
+        this.movies = movies;
     }
 
     @action

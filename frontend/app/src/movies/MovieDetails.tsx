@@ -1,9 +1,22 @@
 import styles from "./MovieDetails.module.scss"
-import React from "react";
+import React, {useEffect, useState} from "react";
+import {useParams} from "react-router-dom";
+import axios, {AxiosResponse} from "axios";
 
 const MovieDetails = (props: Props) => {
-    let movie = props.movie;
+    const params = useParams();
+    const tmdbUrl = process.env.REACT_APP_TMDB_URL === undefined ? '/tmdb' : process.env.REACT_APP_TMDB_URL;
+    const [movie, setMovie] = useState<any>()
 
+    useEffect(() => {
+        axios.get(tmdbUrl + "/movie/" + params.movieId, {timeout: 5000})
+            .then((response: AxiosResponse) => {
+                setMovie(response.data[0])
+            })
+            .catch(function (error: any) {
+                console.error(error);
+            });
+    })
     if (movie) {
         return (
             <div className={styles.container}>
@@ -32,18 +45,19 @@ const MovieDetails = (props: Props) => {
                                     return p.job === 'Director'
                                 })
                                     .map((item: any) => {
-                                        return <div key={item.name}>{item.name}</div>
+                                        return <div key={item.credit_id}>{item.name}</div>
                                     })}
                             </div>
                         </div>
                         <div className={styles.bold}>
                             <h4>Writers: </h4>
                             <div className={styles.notbold}>
-                                {movie.credits.crew.filter((p: any) => {
-                                    return p.department === 'Writing'
-                                })
+                                {movie.credits.crew
+                                    .filter((p: any) => {
+                                        return p.department === 'Writing'
+                                    })
                                     .map((item: any) => {
-                                        return <div key={item.name}>{item.name}</div>
+                                        return <div key={item.credit_id}>{item.name} ({item.job})</div>
                                     })}
                             </div>
                         </div>
@@ -79,8 +93,6 @@ const MovieDetails = (props: Props) => {
 }
 
 export interface Props {
-    redirectToPage: (page: string) => void;
-    movie: any;
 }
 
 export default MovieDetails;

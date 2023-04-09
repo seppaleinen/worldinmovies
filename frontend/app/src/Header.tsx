@@ -18,11 +18,11 @@ const adminButton = () => {
     </a>
 }
 
-const importMoviesButton = (props: Props) => {
-    return <div className={styles.button} onClick={() => props.redirectToPage('import')}>
+const importMoviesButton = () => {
+    return <a href={"/import"} className={styles.button}>
         {importMoviesIcon()}
         Import Movies
-    </div>
+    </a>
 }
 
 /**
@@ -35,32 +35,32 @@ const search = () => {
 }
  **/
 
-const worldMapButton = (props: Props) => {
-    return <button className={`${styles.worldmap} ${styles.button}`} onClick={() => props.redirectToPage('worldmap')}>
+const worldMapButton = () => {
+    return <a href={"/map"} className={`${styles.worldmap} ${styles.button}`}>
         {worldMapIcon()}
         World Map
-    </button>;
+    </a>
 }
 
-const homeButton = (props: Props) => {
-    return <button className={`${styles.button} ${styles.hoem}`} onClick={() => props.redirectToPage('welcome')}>
+const homeButton = () => {
+    return <a href={"/"} className={`${styles.button} ${styles.home}`}>
         {homeIcon()}
         The World in Movies
-    </button>;
+    </a>
 }
 
 
-const Header = (props: Props) => {
+const Header = () => {
     return (
         <header>
             <div className={styles.leftheaders}>
                 <input className={styles.sideMenu} type="checkbox" id="side-menu"/>
                 {menuButton()}
-                {homeButton(props)}
+                {homeButton()}
                 <nav className={styles.nav}>
-                    {worldMapButton(props)}
+                    {worldMapButton()}
                     <div className={styles.subnavContent}>
-                        {importMoviesButton(props)}
+                        {importMoviesButton()}
                         {adminButton()}
                     </div>
                 </nav>
@@ -70,10 +70,6 @@ const Header = (props: Props) => {
             </div>
         </header>
     );
-}
-
-export interface Props {
-    redirectToPage: (page: string) => void;
 }
 
 export default Header;

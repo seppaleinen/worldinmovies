@@ -1,5 +1,4 @@
 import {StoreType} from "./stores/MovieStore";
-import {StateStoreType} from "./stores/StateStore";
 
 export interface MyMovieMapState {
     myMovies?: Record<string, MyMovie[]>;
@@ -33,12 +32,11 @@ export interface NotFound {
 
 export interface Props {
     movieStore?: StoreType;
-    stateStore?: StateStoreType;
     data?: MyMovie[];
-    redirectToPage: (page: string) => void;
 }
 
 export interface MovieModalState {
     toggleRankedMovies: string;
+    movies: Movie[];
 }
 

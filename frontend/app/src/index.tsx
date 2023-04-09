@@ -1,13 +1,21 @@
 import React from 'react';
 import './index.scss';
 import Home from './Home';
+import MyMoviesMap from "./movies/MyMoviesMap";
+import Import from "./import/Import";
 import {Provider} from "mobx-react";
 import * as serviceWorker from './serviceWorker';
 import * as Sentry from '@sentry/browser';
-import {BrowserRouter, Routes, Route} from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import MovieStore from "./stores/MovieStore";
-import StateStore from "./stores/StateStore";
 import {createRoot} from "react-dom/client";
+import Header from "./Header";
+import TraktImport from "./import/TraktImport";
+import ImdbImport from "./import/ImdbImport";
+import CountryPage from "./movies/CountryPage";
+import MovieDetails from "./movies/MovieDetails";
+import Admin from "./admin/Admin";
+
 
 const sentryUrl = process.env.REACT_APP_SENTRY_URL;
 if (sentryUrl !== undefined && sentryUrl.length !== 0) {
@@ -15,23 +23,30 @@ if (sentryUrl !== undefined && sentryUrl.length !== 0) {
 }
 
 const stores = {
-    movieStore: new MovieStore(),
-    stateStore: new StateStore()
+    movieStore: new MovieStore()
 }
 
-const Main = () =>
-    <Provider {...stores}>
-        <BrowserRouter>
-            <Routes>
-                <Route path="/">
-                    <Route index element={<Home startPage={'welcome'}/>}/>
-                </Route>
-                <Route path="/admin">
-                    <Route index element={<Home startPage={'admin'}/>}/>
-                </Route>
-            </Routes>
-        </BrowserRouter>
-    </Provider>
+const Main = () => {
+    return (
+        <div>
+            <Header/>
+            <Provider {...stores}>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" index element={<Home />} />
+                        <Route path="/map" element={<MyMoviesMap />} />
+                        <Route path="/import" element={<Import />} />
+                        <Route path="/import/trakt" element={<TraktImport />} />
+                        <Route path="/import/imdb" element={<ImdbImport />} />
+                        <Route path="/admin" element={<Admin />} />
+                        <Route path="/country/:countryCode" element={<CountryPage />} />
+                        <Route path="/movie/:movieId" element={<MovieDetails/>} />
+                    </Routes>
+                </BrowserRouter>
+            </Provider>
+        </div>
+    )
+}
 
 const root = createRoot(document.getElementById('root') as Element);
 root.render(<Main/>);
