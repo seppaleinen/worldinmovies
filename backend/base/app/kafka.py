@@ -8,14 +8,14 @@ from app.models import Movie
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 
-kafka_url = 'kafka' if os.getenv('ENVIRONMENT', 'docker') == 'docker' else 'localhost'
+kafka_url = 'kafka:9092' if os.getenv('ENVIRONMENT', 'docker') == 'docker' else 'localhost:9093'
 tmdb_url = 'tmdb_import' if os.getenv('ENVIRONMENT', 'docker') == 'docker' else 'http://localhost:8020'
 
 
 def kafka_consumer():
     consumer = KafkaConsumer(
         'movie',
-        bootstrap_servers=["%s:9092" % kafka_url],
+        bootstrap_servers=[kafka_url],
         auto_offset_reset='earliest',
         enable_auto_commit=True,
         key_deserializer=lambda x: x.decode('utf-8'),

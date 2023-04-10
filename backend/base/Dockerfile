@@ -1,4 +1,4 @@
-FROM python:3-alpine as base
+FROM python:3.11-alpine as base
 
 FROM base as builder
 
@@ -8,7 +8,8 @@ WORKDIR /install
 RUN \
  apk update && \
  apk add --no-cache postgresql-libs tzdata libpq && \
- apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev libffi-dev g++ snappy-dev krb5-pkinit krb5-dev krb5
+ apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev libffi-dev g++ snappy-dev krb5-pkinit krb5-dev krb5 && \
+ pip install --upgrade pip
 
 ADD requirements.txt .
 

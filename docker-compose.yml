@@ -52,23 +52,50 @@ services:
 
   kafka:
     image: docker.io/bitnami/kafka:3.4
+    hostname: kafka
     privileged: true
     ports:
-      - "2181:2181"
       - "9092:9092"
+      - "9093:9093"
     volumes:
       - "kafka_data:/bitnami"
     environment:
-      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - TZ=Europe/Stockholm
+      - ALLOW_ANONYMOUS_LOGIN=yes
       - KAFKA_ENABLE_KRAFT=yes
       - KAFKA_CFG_PROCESS_ROLES=broker,controller
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:2181
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=LOCAL:PLAINTEXT,CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT
       - KAFKA_BROKER_ID=1001
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1001@127.0.0.1:2181
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1001@kafka:9094
       - ALLOW_PLAINTEXT_LISTENER=yes
+      - BITNAMI_DEBUG=yes
+      - KAFKA_KRAFT_CLUSTER_ID=OTMwNzFhYTY1ODNiNGE5OT
+      - KAFKA_CFG_KRAFT_REPLICATION_FACTOR=1
+      - KAFKA_CFG_ADVERTISED_LISTENERS=LOCAL://127.0.0.1:9093,DOCKER://kafka:9092
+      - KAFKA_CFG_LISTENERS=LOCAL://:9093,CONTROLLER://:9094,DOCKER://:9092
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=DOCKER
+      - KAFKA_CFG_DEFAULT_REPLICATION_FACTOR=1
+
+#  neo4j:
+#    image: neo4j:5
+#    container_name: neo4j
+#    ports:
+#      - "127.0.0.1:7474:7474"
+#      - "127.0.0.1:7687:7687"
+#    environment:
+#      - TZ=Europe/Stockholm
+
+#  neo4j_service:
+#    image: seppaleinen/worldinmovies_neo4j
+#    build: backend/neo4j-service/
+#    ports:
+#      - "127.0.0.1:8080:8080"
+#    restart: on-failure
+#    depends_on:
+#      - neo4j
+#      - kafka
+#      - tmdb_import
 
   backend:
     image: seppaleinen/worldinmovies_backend

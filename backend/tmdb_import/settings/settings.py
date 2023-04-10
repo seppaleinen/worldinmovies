@@ -132,6 +132,10 @@ LOGGING = {
             'formatter': 'standard'
         },
     },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
     'loggers': {
         'gunicorn.error': {
             'handlers': ['console'],
