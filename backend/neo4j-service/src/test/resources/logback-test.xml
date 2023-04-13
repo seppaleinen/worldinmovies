@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <!-- Turning down the wiremock logging -->
+    <logger name="com.github.tomakehurst.wiremock" level="WARN"/>
+    <logger name="wiremock.org" level="ERROR"/>
+    <logger name="WireMock" level="WARN"/>
+    <!-- wiremock has per endpoint servlet logging -->
+    <logger name="/" level="WARN"/>
+    <logger name="kafka" level="WARN"/>
+    <logger name="org.apache" level="WARN"/>
+    <logger name="org.springframework.data.neo4j" level="DEBUG"/>
+
+    <root level="INFO"/>
+</configuration>

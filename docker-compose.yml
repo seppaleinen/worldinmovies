@@ -77,25 +77,25 @@ services:
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=DOCKER
       - KAFKA_CFG_DEFAULT_REPLICATION_FACTOR=1
 
-#  neo4j:
-#    image: neo4j:5
-#    container_name: neo4j
-#    ports:
-#      - "127.0.0.1:7474:7474"
-#      - "127.0.0.1:7687:7687"
-#    environment:
-#      - TZ=Europe/Stockholm
+  neo4j:
+    image: neo4j:5
+    container_name: neo4j
+    ports:
+      - "127.0.0.1:7474:7474"
+      - "127.0.0.1:7687:7687"
+    environment:
+      - TZ=Europe/Stockholm
 
-#  neo4j_service:
-#    image: seppaleinen/worldinmovies_neo4j
-#    build: backend/neo4j-service/
-#    ports:
-#      - "127.0.0.1:8080:8080"
-#    restart: on-failure
-#    depends_on:
-#      - neo4j
-#      - kafka
-#      - tmdb_import
+  neo4j_service:
+    image: seppaleinen/worldinmovies_neo4j
+    build: backend/neo4j-service/
+    ports:
+      - "127.0.0.1:8080:8080"
+    restart: on-failure
+    depends_on:
+      - neo4j
+      - kafka
+      - tmdb_import
 
   backend:
     image: seppaleinen/worldinmovies_backend
