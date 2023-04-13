@@ -36,7 +36,7 @@ import static se.worldinmovies.neo4j.Neo4JIntegrationTest.stubUrlWithData;
 @SpringBootTest
 @Testcontainers
 @ActiveProfiles("test")
-@EmbeddedKafka(topics = KafkaService.TOPIC, partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9095", "port=9095"})
+@EmbeddedKafka(topics = NewKafkaConsumer.TOPIC, partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9095", "port=9095"})
 @WireMockTest(httpPort = 9999)
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @Slf4j

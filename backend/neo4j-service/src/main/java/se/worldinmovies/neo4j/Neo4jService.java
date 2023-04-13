@@ -5,7 +5,6 @@ import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import se.worldinmovies.neo4j.domain.Country;
 import se.worldinmovies.neo4j.domain.Genre;
 import se.worldinmovies.neo4j.domain.Language;
@@ -24,9 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -87,7 +84,6 @@ public class Neo4jService {
     public Flux<MovieEntity> handleNewAndUpdates(Collection<Integer> value) {
         String movieIds = value.stream().map(Object::toString).collect(Collectors.joining(","));
         return movieRepository.saveAll(tmdbService.getData("/movie/" + movieIds, Movie.class)
-                .log("Fetched")
                 //.filterWhen(data -> movieRepository.existsById(data.getMovieId()).map(result -> !result))
                 .map(a -> new MovieEntity(a, genres, languages, countries))
         );
@@ -97,7 +93,7 @@ public class Neo4jService {
         return movieRepository.deleteAllById(value);
     }
 
-    public boolean initDone() {
+    public boolean isDone() {
         return initDone.get();
     }
 }

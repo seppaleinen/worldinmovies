@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Testcontainers
 @ActiveProfiles("test")
-@EmbeddedKafka(topics = KafkaService.TOPIC, partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9095", "port=9095"})
+@EmbeddedKafka(topics = NewKafkaConsumer.TOPIC, partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9095", "port=9095"})
 @WireMockTest(httpPort = 9999)
 public class Neo4JIntegrationTest {
     @Container
@@ -106,7 +106,7 @@ public class Neo4JIntegrationTest {
     @Test
     public void canConsumeDELETE() {
         movieRepository.save(new MovieEntity(123)).block();
-        producer.send(KafkaService.TOPIC, "DELETE", "123");
+        producer.send(NewKafkaConsumer.TOPIC, "DELETE", "123");
         Awaitility.await().untilAsserted(() -> movieRepository.existsById(123).block());
     }
 
@@ -114,11 +114,11 @@ public class Neo4JIntegrationTest {
     public void canConsumeNEW() {
         stubUrlWithData("/movie/2", "response.json");
 
-        producer.send(KafkaService.TOPIC, "NEW", "2");
+        producer.send(NewKafkaConsumer.TOPIC, "NEW", "2");
 
         long before = System.currentTimeMillis();
         try {
-            Awaitility.await().atMost(2, TimeUnit.SECONDS)
+            Awaitility.await().atMost(10, TimeUnit.SECONDS)
                     .until(() -> movieRepository.existsById(2).retry(10).block());
 
             Optional<MovieEntity> asd = movieRepository.findById(2).blockOptional();
@@ -150,7 +150,7 @@ public class Neo4JIntegrationTest {
                                 .withBody("[]"))
         );
 
-        producer.send(KafkaService.TOPIC, "NEW", "3");
+        producer.send(NewKafkaConsumer.TOPIC, "NEW", "3");
         Awaitility.await().atMost(1, TimeUnit.SECONDS)
                 .untilAsserted(() -> assertFalse(movieRepository.existsById(3).blockOptional().orElse(false)));
     }

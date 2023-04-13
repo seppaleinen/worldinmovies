@@ -22,11 +22,9 @@ public class TmdbService {
 
     public <T> Flux<T> getData(String uri, Class<T> clazz) {
         try {
-            log.info("Fetching");
             return webClient.get().uri(uri)
                     .retrieve()
                     .bodyToFlux(clazz)
-                    .log("Found")
                     .retryWhen(Retry.backoff(3, Duration.ofSeconds(2)));
         } catch (WebClientResponseException e) {
             System.out.println("ResponseException: " + e.getMessage());
