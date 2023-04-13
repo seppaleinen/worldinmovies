@@ -5,7 +5,7 @@ import threading
 from app.importer import download_files, fetch_tmdb_data_concurrently, import_genres, import_countries, \
     import_languages, \
     base_import, check_which_movies_needs_update
-from app.models import Movie
+from app.models import Movie, Genre, SpokenLanguage, ProductionCountries
 from django.http import HttpResponse
 from app.kafka import produce
 
@@ -150,6 +150,21 @@ def fetch_movie_data(request, ids):
     data_list = Movie.objects.filter(pk__in=movie_ids).values_list('data')
     return HttpResponse(json.dumps([data for data in data_list]),
                         content_type='application/json')
+
+
+def dump_genres(request):
+    data = [{"id": x.id, "name": x.name} for x in Genre.objects.all()]
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+def dump_langs(request):
+    data = [{"iso_639_1": x.iso_639_1, "name": x.name} for x in SpokenLanguage.objects.all()]
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+def dump_countries(request):
+    data = [{"iso_3166_1": x.iso_3166_1, "name": x.name} for x in ProductionCountries.objects.all()]
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def generate_kafka_dump(request):
