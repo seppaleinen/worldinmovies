@@ -30,8 +30,6 @@ import se.worldinmovies.neo4j.repository.GenreRepository;
 import se.worldinmovies.neo4j.repository.LanguageRepository;
 import se.worldinmovies.neo4j.repository.MovieRepository;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -76,8 +74,8 @@ public class Neo4JIntegrationTest {
     @BeforeAll
     static void beforeAll() {
         stubUrlWithData("/dump/genres", "genres.json");
-        stubUrlWithData("/dump/langs", "empty.json");
-        stubUrlWithData("/dump/countries", "empty.json");
+        stubUrlWithData("/dump/langs", "languages.json");
+        stubUrlWithData("/dump/countries", "countries.json");
     }
 
     @BeforeEach
@@ -113,16 +111,8 @@ public class Neo4JIntegrationTest {
     }
 
     @Test
-    public void canConsumeNEW() throws URISyntaxException, IOException {
-        URL responseUrl = getClass().getClassLoader().getResource("response.json");
-        String data = Files.readString(Paths.get(responseUrl.toURI()));
-        stubFor(
-                WireMock.get(WireMock.anyUrl())
-                        .willReturn(WireMock.aResponse()
-                                .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                .withBody(data))
-        );
-
+    public void canConsumeNEW() {
+        stubUrlWithData("/movie/2", "response.json");
 
         producer.send(KafkaService.TOPIC, "NEW", "2");
 

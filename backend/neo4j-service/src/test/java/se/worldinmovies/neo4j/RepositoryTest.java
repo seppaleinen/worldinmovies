@@ -63,9 +63,9 @@ public class RepositoryTest {
 
     @BeforeAll
     static void beforeAll() {
-        stubUrlWithData("/dump/genres", "empty.json");
-        stubUrlWithData("/dump/langs", "empty.json");
-        stubUrlWithData("/dump/countries", "empty.json");
+        stubUrlWithData("/dump/genres", "genres.json");
+        stubUrlWithData("/dump/langs", "languages.json");
+        stubUrlWithData("/dump/countries", "countries.json");
     }
 
     @BeforeEach

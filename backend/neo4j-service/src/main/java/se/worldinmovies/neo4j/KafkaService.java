@@ -24,7 +24,7 @@ public class KafkaService {
     }
 
     // default topic=movie, dump=data_dump
-    @KafkaListener(topics = TOPIC, id = "12345")
+    //@KafkaListener(topics = TOPIC, id = "12345")
     public void consume(@Payload List<ConsumerRecord<String, String>> consumerRecords) {
         try {
             Flux.fromIterable(consumerRecords)
