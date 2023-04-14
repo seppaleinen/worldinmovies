@@ -16,7 +16,6 @@ import static org.springframework.data.neo4j.repository.config.ReactiveNeo4jRepo
 
 @EnableReactiveNeo4jRepositories
 @EnableTransactionManagement
-@EnableKafka
 @Configuration
 public class Config {
     @Bean

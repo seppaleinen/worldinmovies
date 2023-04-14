@@ -7,7 +7,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 
 import java.io.Serializable;
 
-@Node(labels = "Language")
+@Node("Language")
 @Data
 @NoArgsConstructor
 public class LanguageEntity implements Serializable {

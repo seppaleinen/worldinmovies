@@ -2,7 +2,11 @@ package se.worldinmovies.neo4j.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.neo4j.core.schema.*;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Property;
+import org.springframework.data.neo4j.core.schema.Relationship;
 import se.worldinmovies.neo4j.domain.Country;
 import se.worldinmovies.neo4j.domain.Genre;
 import se.worldinmovies.neo4j.domain.Language;
@@ -38,22 +42,40 @@ public class MovieEntity implements Serializable {
     @Relationship(direction = Relationship.Direction.OUTGOING)
     private List<GenreEntity> genres = new ArrayList<>();
 
-    public MovieEntity(Integer movieId) {
-        this.movieId = movieId;
-    }
+    @Transient
+    private List<Genre> tmpGenres = new ArrayList<>();
+    @Transient
+    private List<Language> tmpLangs = new ArrayList<>();
+    @Transient
+    private List<Country> tmpCountries = new ArrayList<>();
 
-    public MovieEntity(Movie newMovie, Map<Integer, GenreEntity> genres, Map<String, LanguageEntity> languages, Map<String, CountryEntity> countries) {
+    public MovieEntity(Movie newMovie) {
         this.movieId = newMovie.getMovieId();
         this.imdbId = newMovie.getImdbId();
         this.originalTitle = newMovie.getOriginalTitle();
         this.engTitle = newMovie.getEngTitle();
 
-        map(newMovie.getGenres(), genres, Genre::getId)
+        this.tmpGenres = newMovie.getGenres();
+        this.tmpLangs = newMovie.getSpokenLanguages();
+        this.tmpCountries = newMovie.getProducedBy();
+    }
+
+    public MovieEntity withGenres(Map<Integer, GenreEntity> genres) {
+        map(this.tmpGenres, genres, Genre::getId)
                 .forEach(genre -> this.genres.add(genre));
-        map(newMovie.getSpokenLanguages(), languages, Language::getIso)
+        return this;
+    }
+
+    public MovieEntity withLanguages(Map<String, LanguageEntity> languages) {
+        map(this.tmpLangs, languages, Language::getIso)
                 .forEach(lang -> this.spokenLanguages.add(lang));
-        map(newMovie.getProducedBy(), countries, Country::getIso)
+        return this;
+    }
+
+    public MovieEntity withCountries(Map<String, CountryEntity> countries) {
+        map(this.tmpCountries, countries, Country::getIso)
                 .forEach(country -> this.producedBy.add(country));
+        return this;
     }
 
     public <D, E, ID> Stream<E> map(List<D> list, Map<ID, E> countries, Function<D, ID> getId) {

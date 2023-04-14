@@ -1,6 +1,8 @@
 package se.worldinmovies.neo4j.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +11,8 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Movie {
 	@JsonProperty(value = "id")
 	private Integer movieId;
@@ -25,3 +29,5 @@ public class Movie {
 	@JsonProperty(value = "genres")
 	private List<Genre> genres = new ArrayList<>();
 }
+
+

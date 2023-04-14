@@ -21,6 +21,7 @@ import se.worldinmovies.neo4j.entity.MovieEntity;
 import javax.annotation.PostConstruct;
 import java.time.Duration;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -52,6 +53,7 @@ public class NewKafkaConsumer {
         Flux<ReceiverRecord<String, String>> kafkaFlux = KafkaReceiver.create(options).receive();
         return kafkaFlux
                 .bufferTimeout(25, Duration.ofMillis(100))
+                .onBackpressureBuffer()
                 .flatMap(record -> Flux.fromStream(record.stream()
                                 .collect(Collectors.groupingBy(ReceiverRecord::key))
                                 .entrySet()
@@ -63,30 +65,30 @@ public class NewKafkaConsumer {
                                             .map(ConsumerRecord::value)
                                             .map(Integer::valueOf)
                                             .collect(Collectors.toList());
-                                    switch (key) {
-                                        case "NEW", "UPDATE" -> {
-                                            return neo4jService.handleNewAndUpdates(values)
-                                                    .map(MovieEntity::getMovieId)
-                                                    .mapNotNull(id -> entry.getValue().stream()
-                                                            .filter(b -> id.equals(Integer.valueOf(b.value())))
-                                                            .findAny()
-                                                            .map(ReceiverRecord::receiverOffset)
-                                                            .orElse(null));
+                                    try {
+                                        switch (key) {
+                                            case "NEW", "UPDATE" -> {
+                                                return neo4jService.handleNewAndUpdates(values)
+                                                        .thenMany(Flux.fromStream(entry.getValue().stream()
+                                                                .map(ReceiverRecord::receiverOffset)));
+                                            }
+                                            case "DELETE" -> {
+                                                return neo4jService.delete(values)
+                                                        .thenMany(Flux.fromStream(entry.getValue().stream()
+                                                                .map(ReceiverRecord::receiverOffset)));
+                                            }
+                                            default -> {
+                                                return Flux.fromIterable(entry.getValue())
+                                                        .map(ReceiverRecord::receiverOffset);
+                                            }
                                         }
-                                        case "DELETE" -> {
-                                            return neo4jService.delete(values)
-                                                    .then()
-                                                    .flux()
-                                                    .flatMap(a -> Flux.fromStream(entry.getValue().stream()
-                                                            .map(ReceiverRecord::receiverOffset)));
-                                        }
-                                        default -> {
-                                            return Flux.fromIterable(entry.getValue())
-                                                    .map(ReceiverRecord::receiverOffset);
-                                        }
+                                    } catch (Exception e) {
+                                        log.error(e.getMessage());
+                                        throw e;
                                     }
                                 }))
-                        .flatMap(a -> a));
+                        , 5)
+                .flatMap(a -> a);
     }
 
     @PostConstruct

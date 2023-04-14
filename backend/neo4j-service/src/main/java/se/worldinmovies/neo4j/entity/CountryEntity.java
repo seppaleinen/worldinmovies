@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Node(labels = "Country")
+@Node("Country")
 @Data
 @NoArgsConstructor
 public class CountryEntity implements Serializable {

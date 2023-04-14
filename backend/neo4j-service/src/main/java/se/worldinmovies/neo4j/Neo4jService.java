@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -32,11 +31,9 @@ public class Neo4jService {
     private final TmdbService tmdbService;
     private final ReactiveNeo4jTemplate neo4jTemplate;
 
-    private Map<String, CountryEntity> countries = new HashMap<>();
-    private Map<String, LanguageEntity> languages = new HashMap<>();
-    private Map<Integer, GenreEntity> genres = new HashMap<>();
-
-    private final AtomicBoolean initDone = new AtomicBoolean(false);
+    private static final Map<Integer, GenreEntity> genres = new HashMap<>();
+    private static final Map<String, LanguageEntity> langs = new HashMap<>();
+    private static final Map<String, CountryEntity> countries = new HashMap<>();
 
     public Neo4jService(MovieRepository movieRepository,
                         TmdbService tmdbService,
@@ -49,51 +46,81 @@ public class Neo4jService {
     @PostConstruct
     public void setup() {
         try {
-            genres = handle("/dump/genres", Genre.class, GenreEntity.class, a -> new GenreEntity(a.getId(), a.getName()), Genre::getId)
-                    .collectMap(GenreEntity::getId)
-                    .blockOptional(Duration.ofSeconds(5)).orElse(Map.of());
-
-            languages = handle("/dump/langs", Language.class, LanguageEntity.class, a -> new LanguageEntity(a.getIso(), a.getName(), a.getEnglishName()), Language::getIso)
-                    .collectMap(LanguageEntity::getIso)
-                    .blockOptional(Duration.ofSeconds(5)).orElse(Map.of());
-
-            countries = handle("/dump/countries", Country.class, CountryEntity.class, a -> new CountryEntity(a.getIso(), a.getName(), List.of()), Country::getIso)
-                    .collectMap(CountryEntity::getIso)
-                    .blockOptional(Duration.ofSeconds(5)).orElse(Map.of());
-
-            initDone.set(true);
+            getGenres()
+                    .subscribe(genres::putAll, err -> log.error(err.getMessage()));
+            getLanguages()
+                    .subscribe(langs::putAll, err -> log.error(err.getMessage()));
+            getCountries()
+                    .subscribe(countries::putAll, err -> log.error(err.getMessage()));
         } catch (Exception e) {
             log.info("Something went wrong: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    public <T, E> Flux<E> handle(String url,
-                                 Class<T> domain,
-                                 Class<E> entity,
-                                 Function<T, E> domainToEntityMapper,
-                                 Function<T, ?> getId) {
-        return tmdbService.getData(url, domain)
-                .filterWhen(a -> neo4jTemplate.existsById(getId.apply(a), entity).map(result -> !result))
-                .flatMap(a -> Flux.just(domainToEntityMapper.apply(a)))
+    public Mono<Map<Integer, GenreEntity>> getGenres() {
+        if (genres.isEmpty()) {
+            return handle("/dump/genres", Genre.class, GenreEntity.class, a -> new GenreEntity(a.getId(), a.getName()), Genre::getId, GenreEntity::getId)
+                    .collectMap(GenreEntity::getId);
+        } else {
+            return Mono.just(genres);
+        }
+    }
+
+    public Mono<Map<String, LanguageEntity>> getLanguages() {
+        if (langs.isEmpty()) {
+            return handle("/dump/langs", Language.class, LanguageEntity.class, a -> new LanguageEntity(a.getIso(), a.getName(), a.getEnglishName()), Language::getIso, LanguageEntity::getIso)
+                    .collectMap(LanguageEntity::getIso);
+        } else {
+            return Mono.just(langs);
+        }
+    }
+
+    public Mono<Map<String, CountryEntity>> getCountries() {
+        if (countries.isEmpty()) {
+            return handle("/dump/countries", Country.class, CountryEntity.class, a -> new CountryEntity(a.getIso(), a.getName(), List.of()), Country::getIso, CountryEntity::getIso)
+                    .collectMap(CountryEntity::getIso);
+        } else {
+            return Mono.just(countries);
+        }
+    }
+
+    public <D, E, ID> Flux<E> handle(String url,
+                                     Class<D> domain,
+                                     Class<E> entity,
+                                     Function<D, E> domainToEntityMapper,
+                                     Function<D, ID> getId,
+                                     Function<E, ID> getDomainId) {
+        Mono<List<ID>> idsFlux = neo4jTemplate.findAll(entity)
+                .map(getDomainId)
+                .collectList();
+        Mono<List<D>> data = tmdbService.getData(url, domain)
+                .collectList();
+        return Flux.zip(data, idsFlux, (movies, ids) -> movies.stream()
+                        .filter(d -> !ids.contains(getId.apply(d)))
+                        .collect(Collectors.toList()))
+                .flatMap(a -> Flux.fromIterable(a)
+                        .map(domainToEntityMapper))
                 .bufferTimeout(10, Duration.ofMillis(10))
-                .flatMap(neo4jTemplate::saveAll)
+                .flatMap(neo4jTemplate::saveAll, 5)
                 .thenMany(neo4jTemplate.findAll(entity));
     }
 
     public Flux<MovieEntity> handleNewAndUpdates(Collection<Integer> value) {
+        Mono<Map<Integer, GenreEntity>> genresFlux = getGenres();
+        Mono<Map<String, LanguageEntity>> langFlux = getLanguages();
+        Mono<Map<String, CountryEntity>> countryFlux = getCountries();
         String movieIds = value.stream().map(Object::toString).collect(Collectors.joining(","));
-        return movieRepository.saveAll(tmdbService.getData("/movie/" + movieIds, Movie.class)
+        Flux<Movie> data = tmdbService.getData("/movie/" + movieIds, Movie.class);
+        return movieRepository.saveAll(data.map(MovieEntity::new)
+                        .zipWith(genresFlux, MovieEntity::withGenres)
+                        .zipWith(langFlux, MovieEntity::withLanguages)
+                        .zipWith(countryFlux, MovieEntity::withCountries)
                 //.filterWhen(data -> movieRepository.existsById(data.getMovieId()).map(result -> !result))
-                .map(a -> new MovieEntity(a, genres, languages, countries))
         );
     }
 
     public Mono<Void> delete(Collection<Integer> value) {
         return movieRepository.deleteAllById(value);
-    }
-
-    public boolean isDone() {
-        return initDone.get();
     }
 }

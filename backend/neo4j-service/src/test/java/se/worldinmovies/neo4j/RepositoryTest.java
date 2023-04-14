@@ -1,6 +1,8 @@
 package se.worldinmovies.neo4j;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +20,6 @@ import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import se.worldinmovies.neo4j.entity.CountryEntity;
 import se.worldinmovies.neo4j.entity.GenreEntity;
@@ -30,6 +31,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static se.worldinmovies.neo4j.Neo4JIntegrationTest.stubUrlWithData;
 
@@ -69,62 +71,41 @@ public class RepositoryTest {
     }
 
     @BeforeEach
-    void before() throws InterruptedException {
+    void before() {
         Flux.just(MovieEntity.class, GenreEntity.class, CountryEntity.class, LanguageEntity.class)
                 .flatMap(a -> template.deleteAll(a))
                 .subscribeOn(Schedulers.parallel())
                 .subscribe();
-        Thread.sleep(2000L);
-    }
-
-    @Test
-    public void testMassGenerate() {
-        List<GenreEntity> result = template.saveAllAs(IntStream.range(0, 200).boxed()
-                        .map(i -> new GenreEntity(i, String.valueOf(i)))
-                        .toList(), GenreEntity.class)
-                .collectList()
-                .blockOptional().orElseThrow();
-
-        assertEquals(String.format("Result should be: %s", result.size()), 200, result.size());
     }
 
     @Test
     public void testSetup() {
-        doStuff();
-    }
-
-    @Test
-    public void testSetup1() {
-        doStuff();
-    }
-
-    @Test
-    public void testSetup2() {
-        doStuff();
-    }
-
-    @Test
-    public void testSetup3() {
-        doStuff();
-    }
-
-    @Test
-    public void testSetup4() {
-        doStuff();
-    }
-
-    @Test
-    public void testSetup5() {
-        doStuff();
-    }
-
-    void doStuff() {
+        template.save(new GenreEntity(28, "Action")).block(Duration.ofSeconds(1));
+        template.save(new LanguageEntity("sv", "Svenska", "Swedish")).block(Duration.ofSeconds(1));
+        template.save(new CountryEntity("SE", "Sverige", List.of())).block(Duration.ofSeconds(1));
         stubUrlWithData("/dump/genres", "genres.json");
         stubUrlWithData("/dump/countries", "countries.json");
         stubUrlWithData("/dump/langs", "languages.json");
 
         neo4jService.setup();
 
+        verify(GenreEntity.class, 19L);
+        verify(LanguageEntity.class, 187L);
+        verify(CountryEntity.class, 251L);
+    }
+
+    @Test
+    public void verifyCaching() {
+        stubUrlWithData("/dump/genres", "genres.json");
+        stubUrlWithData("/dump/countries", "countries.json");
+        stubUrlWithData("/dump/langs", "languages.json");
+
+        neo4jService.setup();
+        neo4jService.setup();
+
+        WireMock.verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/genres"));
+        WireMock.verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/langs"));
+        WireMock.verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/countries"));
         verify(GenreEntity.class, 19L);
         verify(LanguageEntity.class, 187L);
         verify(CountryEntity.class, 251L);
