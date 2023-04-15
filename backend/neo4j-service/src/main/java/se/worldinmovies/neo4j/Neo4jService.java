@@ -1,10 +1,13 @@
 package se.worldinmovies.neo4j;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+import reactor.util.function.Tuple3;
 import se.worldinmovies.neo4j.domain.Country;
 import se.worldinmovies.neo4j.domain.Genre;
 import se.worldinmovies.neo4j.domain.Language;
@@ -31,9 +34,9 @@ public class Neo4jService {
     private final TmdbService tmdbService;
     private final ReactiveNeo4jTemplate neo4jTemplate;
 
-    private static final Map<Integer, GenreEntity> genres = new HashMap<>();
-    private static final Map<String, LanguageEntity> langs = new HashMap<>();
-    private static final Map<String, CountryEntity> countries = new HashMap<>();
+    private static Map<Integer, GenreEntity> genres = new HashMap<>();
+    private static Map<String, LanguageEntity> languages = new HashMap<>();
+    private static Map<String, CountryEntity> countries = new HashMap<>();
 
     public Neo4jService(MovieRepository movieRepository,
                         TmdbService tmdbService,
@@ -46,12 +49,9 @@ public class Neo4jService {
     @PostConstruct
     public void setup() {
         try {
-            getGenres()
-                    .subscribe(genres::putAll, err -> log.error(err.getMessage()));
-            getLanguages()
-                    .subscribe(langs::putAll, err -> log.error(err.getMessage()));
-            getCountries()
-                    .subscribe(countries::putAll, err -> log.error(err.getMessage()));
+            genres = getGenres().blockOptional(Duration.ofSeconds(5)).orElse(Map.of());
+            languages = getLanguages().blockOptional(Duration.ofSeconds(5)).orElse(Map.of());
+            countries = getCountries().blockOptional(Duration.ofSeconds(5)).orElse(Map.of());
         } catch (Exception e) {
             log.info("Something went wrong: " + e.getMessage());
             e.printStackTrace();
@@ -59,7 +59,7 @@ public class Neo4jService {
     }
 
     public Mono<Map<Integer, GenreEntity>> getGenres() {
-        if (genres.isEmpty()) {
+        if(genres.isEmpty()) {
             return handle("/dump/genres", Genre.class, GenreEntity.class, a -> new GenreEntity(a.getId(), a.getName()), Genre::getId, GenreEntity::getId)
                     .collectMap(GenreEntity::getId);
         } else {
@@ -68,16 +68,16 @@ public class Neo4jService {
     }
 
     public Mono<Map<String, LanguageEntity>> getLanguages() {
-        if (langs.isEmpty()) {
+        if(languages.isEmpty()) {
             return handle("/dump/langs", Language.class, LanguageEntity.class, a -> new LanguageEntity(a.getIso(), a.getName(), a.getEnglishName()), Language::getIso, LanguageEntity::getIso)
                     .collectMap(LanguageEntity::getIso);
         } else {
-            return Mono.just(langs);
+            return Mono.just(languages);
         }
     }
 
     public Mono<Map<String, CountryEntity>> getCountries() {
-        if (countries.isEmpty()) {
+        if(countries.isEmpty()) {
             return handle("/dump/countries", Country.class, CountryEntity.class, a -> new CountryEntity(a.getIso(), a.getName(), List.of()), Country::getIso, CountryEntity::getIso)
                     .collectMap(CountryEntity::getIso);
         } else {

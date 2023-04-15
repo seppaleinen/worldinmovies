@@ -3,10 +3,7 @@ package se.worldinmovies.neo4j.entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Transient;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Property;
-import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.neo4j.core.schema.*;
 import se.worldinmovies.neo4j.domain.Country;
 import se.worldinmovies.neo4j.domain.Genre;
 import se.worldinmovies.neo4j.domain.Language;
@@ -48,6 +45,10 @@ public class MovieEntity implements Serializable {
     private List<Language> tmpLangs = new ArrayList<>();
     @Transient
     private List<Country> tmpCountries = new ArrayList<>();
+
+    public MovieEntity(Integer movieId) {
+        this.movieId = movieId;
+    }
 
     public MovieEntity(Movie newMovie) {
         this.movieId = newMovie.getMovieId();

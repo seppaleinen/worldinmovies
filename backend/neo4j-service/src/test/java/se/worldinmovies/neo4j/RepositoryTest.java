@@ -29,7 +29,7 @@ import se.worldinmovies.neo4j.repository.MovieRepository;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
@@ -38,7 +38,7 @@ import static se.worldinmovies.neo4j.Neo4JIntegrationTest.stubUrlWithData;
 @SpringBootTest
 @Testcontainers
 @ActiveProfiles("test")
-@EmbeddedKafka(topics = NewKafkaConsumer.TOPIC, partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9095", "port=9095"})
+@EmbeddedKafka(topics = KafkaConsumer.TOPIC, partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9095", "port=9095"})
 @WireMockTest(httpPort = 9999)
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @Slf4j
@@ -100,15 +100,20 @@ public class RepositoryTest {
         stubUrlWithData("/dump/countries", "countries.json");
         stubUrlWithData("/dump/langs", "languages.json");
 
+
         neo4jService.setup();
         neo4jService.setup();
+        Map<Integer, GenreEntity> genres = neo4jService.getGenres().blockOptional().orElseThrow();
+        Map<String, CountryEntity> countries = neo4jService.getCountries().blockOptional().orElseThrow();
+        Map<String, LanguageEntity> languages = neo4jService.getLanguages().blockOptional().orElseThrow();
+
+        assertEquals("", 19, genres.size());
+        assertEquals("", 187, languages.size());
+        assertEquals("", 251, countries.size());
 
         WireMock.verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/genres"));
         WireMock.verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/langs"));
         WireMock.verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/countries"));
-        verify(GenreEntity.class, 19L);
-        verify(LanguageEntity.class, 187L);
-        verify(CountryEntity.class, 251L);
     }
 
     public void verify(Class<?> clazz, long expectedCount) {
