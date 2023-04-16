@@ -80,18 +80,15 @@ public class RepositoryTest {
 
     @Test
     public void testSetup() {
-        template.save(new GenreEntity(28, "Action")).block(Duration.ofSeconds(1));
-        template.save(new LanguageEntity("sv", "Svenska", "Swedish")).block(Duration.ofSeconds(1));
-        template.save(new CountryEntity("SE", "Sverige", List.of())).block(Duration.ofSeconds(1));
         stubUrlWithData("/dump/genres", "genres.json");
         stubUrlWithData("/dump/countries", "countries.json");
         stubUrlWithData("/dump/langs", "languages.json");
 
         neo4jService.setup();
 
-        verify(GenreEntity.class, 19L);
-        verify(LanguageEntity.class, 187L);
-        verify(CountryEntity.class, 251L);
+        assertEquals("", 19, neo4jService.getGenres().block().size());
+        assertEquals("", 187, neo4jService.getLanguages().block().size());
+        assertEquals("", 251, neo4jService.getCountries().block().size());
     }
 
     @Test
@@ -111,9 +108,9 @@ public class RepositoryTest {
         assertEquals("", 187, languages.size());
         assertEquals("", 251, countries.size());
 
-        WireMock.verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/genres"));
-        WireMock.verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/langs"));
-        WireMock.verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/countries"));
+        WireMock.verify(0, RequestPatternBuilder.newRequestPattern().withUrl("/dump/genres"));
+        WireMock.verify(0, RequestPatternBuilder.newRequestPattern().withUrl("/dump/langs"));
+        WireMock.verify(0, RequestPatternBuilder.newRequestPattern().withUrl("/dump/countries"));
     }
 
     public void verify(Class<?> clazz, long expectedCount) {

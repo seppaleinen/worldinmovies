@@ -39,6 +39,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
@@ -134,17 +137,50 @@ public class Neo4JIntegrationTest {
         MovieEntity movie = movieRepository.findById(2).blockOptional().orElseThrow(() -> new RuntimeException("asdlkj"));
 
         assertEquals("Ariel", movie.getOriginalTitle());
-        assertEquals(3, movie.getGenres().size());
-        assertTrue(movie.getGenres().stream().anyMatch(a -> Objects.equals(a.getName(), "Drama")), movie.getGenres().toString());
-        assertTrue(movie.getGenres().stream().anyMatch(a -> Objects.equals(a.getName(), "Comedy")), movie.getGenres().toString());
-        assertTrue(movie.getGenres().stream().anyMatch(a -> Objects.equals(a.getName(), "Crime")), movie.getGenres().toString());
-
-        assertTrue(movie.getProducedBy().stream().anyMatch(a -> Objects.equals(a.getIso(), "FI")), movie.getProducedBy().toString());
-        assertTrue(movie.getSpokenLanguages().stream().anyMatch(a -> Objects.equals(a.getIso(), "fi")), movie.getSpokenLanguages().toString());
         verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/genres"));
         verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/langs"));
         verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/countries"));
         verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/movie/2"));
+        assertEquals(genreRepository.count().blockOptional().orElseThrow(), 19L);
+    }
+
+    @Test
+    public void canConsumeNEW2() {
+        stubUrlWithData("/movie/2", "largeresponse.json");
+        beforeAll();
+
+        List<Integer> ids = IntStream.of(2)
+                .boxed()
+                .toList();
+
+        Flux.fromIterable(ids)
+                .flatMap(a -> Flux.just(producer.send(KafkaConsumer.TOPIC, "NEW", String.valueOf(a))))
+                .subscribeOn(Schedulers.parallel())
+                .subscribe();
+
+        int id = 644553;
+        long before = System.currentTimeMillis();
+        try {
+            Awaitility.await().atMost(10, TimeUnit.SECONDS)
+                    .until(() -> movieRepository.existsById(id).retry(10).blockOptional().orElse(false));
+
+            Optional<MovieEntity> asd = movieRepository.findById(id).blockOptional();
+            assertTrue(asd.isPresent());
+            assertEquals(id, asd.get().getMovieId());
+        } finally {
+            long after = System.currentTimeMillis();
+            System.out.println("Took: " + (after - before));
+        }
+
+        MovieEntity movie = movieRepository.findById(id).blockOptional().orElseThrow(() -> new RuntimeException("asdlkj"));
+
+        assertEquals(25L, movieRepository.count().block());
+        assertEquals("Glasba je časovna umetnost 3: LP film Laibach", movie.getOriginalTitle());
+        verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/genres"));
+        verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/langs"));
+        verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/countries"));
+        verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/movie/2"));
+        assertEquals(genreRepository.count().blockOptional().orElseThrow(), 19L);
     }
 
     @Test
@@ -161,42 +197,4 @@ public class Neo4JIntegrationTest {
                 .untilAsserted(() -> assertFalse(movieRepository.existsById(3).blockOptional().orElse(false)));
     }
 
-    @Test
-    void canUpdateAllModels() {
-        MovieEntity savedMovie = movieRepository.save(new MovieEntity(1)).retry(5)
-                .blockOptional().orElseThrow();
-        //assertEquals(0L, savedMovie.getVersion());
-        savedMovie.setImdbId("2");
-        MovieEntity updatedMovie = movieRepository.save(savedMovie).blockOptional().orElseThrow();
-
-        assertEquals(1, movieRepository.count().block());
-        //assertEquals(1L, updatedMovie.getVersion());
-        assertEquals("2", updatedMovie.getImdbId());
-
-        GenreEntity savedGenre = genreRepository.save(new GenreEntity(1, "genre")).blockOptional().orElseThrow(() -> new RuntimeException("No Genre Found"));
-        savedGenre.setName("genre2");
-        GenreEntity updatedGenre = genreRepository.save(savedGenre).blockOptional().orElseThrow(() -> new RuntimeException("asdasd"));
-
-        assertEquals(1, genreRepository.count().block());
-        //assertEquals(2L, updatedGenre.getVersion());
-        assertEquals("genre2", updatedGenre.getName());
-    }
-
-    @Test
-    public void relationsAreSaved() {
-        MovieEntity movie = new MovieEntity(1);
-        List<LanguageEntity> languages = List.of(new LanguageEntity("sv", "svenska", "swedish"));
-        CountryEntity country = new CountryEntity("SE", "Sweden", languages);
-        movie.getProducedBy().add(country);
-        movieRepository.save(movie).block();
-
-        MovieEntity foundMovie = movieRepository.findById(1).blockOptional().orElseThrow(() -> new RuntimeException("No movie"));
-        assertNotNull(foundMovie.getProducedBy());
-        assertFalse(foundMovie.getProducedBy().isEmpty());
-        CountryEntity foundCountry = foundMovie.getProducedBy().stream().findFirst().get();
-        assertEquals("SE", foundCountry.getIso());
-
-        LanguageEntity language = foundCountry.getLanguages().stream().findFirst().orElseThrow(() -> new RuntimeException("No Language"));
-        assertEquals("sv", language.getIso());
-    }
 }

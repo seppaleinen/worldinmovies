@@ -34,9 +34,9 @@ public class Neo4jService {
     private final TmdbService tmdbService;
     private final ReactiveNeo4jTemplate neo4jTemplate;
 
-    private static Map<Integer, GenreEntity> genres = new HashMap<>();
-    private static Map<String, LanguageEntity> languages = new HashMap<>();
-    private static Map<String, CountryEntity> countries = new HashMap<>();
+    private static final Map<Integer, GenreEntity> genres = new HashMap<>();
+    private static final Map<String, LanguageEntity> languages = new HashMap<>();
+    private static final Map<String, CountryEntity> countries = new HashMap<>();
 
     public Neo4jService(MovieRepository movieRepository,
                         TmdbService tmdbService,
@@ -49,9 +49,9 @@ public class Neo4jService {
     @PostConstruct
     public void setup() {
         try {
-            genres = getGenres().blockOptional(Duration.ofSeconds(5)).orElse(Map.of());
-            languages = getLanguages().blockOptional(Duration.ofSeconds(5)).orElse(Map.of());
-            countries = getCountries().blockOptional(Duration.ofSeconds(5)).orElse(Map.of());
+            getGenres().subscribe(genres::putAll);
+            getLanguages().subscribe(languages::putAll);
+            getCountries().subscribe(countries::putAll);
         } catch (Exception e) {
             log.info("Something went wrong: " + e.getMessage());
             e.printStackTrace();
@@ -59,7 +59,7 @@ public class Neo4jService {
     }
 
     public Mono<Map<Integer, GenreEntity>> getGenres() {
-        if(genres.isEmpty()) {
+        if (genres.isEmpty()) {
             return handle("/dump/genres", Genre.class, GenreEntity.class, a -> new GenreEntity(a.getId(), a.getName()), Genre::getId, GenreEntity::getId)
                     .collectMap(GenreEntity::getId);
         } else {
@@ -68,7 +68,7 @@ public class Neo4jService {
     }
 
     public Mono<Map<String, LanguageEntity>> getLanguages() {
-        if(languages.isEmpty()) {
+        if (languages.isEmpty()) {
             return handle("/dump/langs", Language.class, LanguageEntity.class, a -> new LanguageEntity(a.getIso(), a.getName(), a.getEnglishName()), Language::getIso, LanguageEntity::getIso)
                     .collectMap(LanguageEntity::getIso);
         } else {
@@ -77,7 +77,7 @@ public class Neo4jService {
     }
 
     public Mono<Map<String, CountryEntity>> getCountries() {
-        if(countries.isEmpty()) {
+        if (countries.isEmpty()) {
             return handle("/dump/countries", Country.class, CountryEntity.class, a -> new CountryEntity(a.getIso(), a.getName(), List.of()), Country::getIso, CountryEntity::getIso)
                     .collectMap(CountryEntity::getIso);
         } else {
@@ -96,11 +96,10 @@ public class Neo4jService {
                 .collectList();
         Mono<List<D>> data = tmdbService.getData(url, domain)
                 .collectList();
-        return Flux.zip(data, idsFlux, (movies, ids) -> movies.stream()
-                        .filter(d -> !ids.contains(getId.apply(d)))
-                        .collect(Collectors.toList()))
-                .flatMap(a -> Flux.fromIterable(a)
-                        .map(domainToEntityMapper))
+        return Flux.zip(data, idsFlux, (movies, ids) -> Flux.fromStream(movies.stream()
+                        .filter(d -> !ids.contains(getId.apply(d)))))
+                .flatMap(a -> a)
+                .map(domainToEntityMapper)
                 .bufferTimeout(10, Duration.ofMillis(10))
                 .flatMap(neo4jTemplate::saveAll, 5)
                 .thenMany(neo4jTemplate.findAll(entity));

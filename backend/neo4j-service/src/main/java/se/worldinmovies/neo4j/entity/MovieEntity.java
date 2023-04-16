@@ -2,6 +2,7 @@ package se.worldinmovies.neo4j.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.core.schema.*;
 import se.worldinmovies.neo4j.domain.Country;
@@ -30,12 +31,15 @@ public class MovieEntity implements Serializable {
     @Property
     private String engTitle;
 
+    @ReadOnlyProperty
     @Relationship(direction = Relationship.Direction.OUTGOING, type = "spoken_languages")
     private List<LanguageEntity> spokenLanguages = new ArrayList<>();
 
+    @ReadOnlyProperty
     @Relationship(direction = Relationship.Direction.OUTGOING, type = "produced_by")
     private List<CountryEntity> producedBy = new ArrayList<>();
 
+    @ReadOnlyProperty
     @Relationship(direction = Relationship.Direction.OUTGOING)
     private List<GenreEntity> genres = new ArrayList<>();
 

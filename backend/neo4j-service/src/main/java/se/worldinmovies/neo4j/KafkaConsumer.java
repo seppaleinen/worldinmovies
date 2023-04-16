@@ -65,12 +65,12 @@ public class KafkaConsumer {
         switch (key) {
             case "NEW", "UPDATE" -> {
                 return neo4jService.handleNewAndUpdates(values)
-                        .map(MovieEntity::getMovieId)
+                        .flatMap(a -> Flux.just(a.getMovieId())
                         .mapNotNull(id -> entry.getValue().stream()
                                 .filter(b -> id.equals(Integer.valueOf(b.value())))
                                 .findAny()
                                 .map(ReceiverRecord::receiverOffset)
-                                .orElse(null));
+                                .orElse(null)));
             }
             case "DELETE" -> {
                 return neo4jService.delete(values)
