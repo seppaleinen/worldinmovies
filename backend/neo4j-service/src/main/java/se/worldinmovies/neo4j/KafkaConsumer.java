@@ -6,6 +6,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
@@ -48,40 +49,40 @@ public class KafkaConsumer {
                 .bufferTimeout(25, Duration.ofMillis(100))
                 .onBackpressureBuffer()
                 .flatMap(record -> Flux.fromStream(record.stream()
-                                .collect(Collectors.groupingBy(ReceiverRecord::key))
-                                .entrySet()
-                                .stream())
-                        .flatMap(this::handleGroupAndReturnOffsets));
+                        .collect(Collectors.groupingBy(ConsumerRecord::key, Collectors.mapping(a -> Pair.of(a.value(), a.receiverOffset()), Collectors.toList())))
+                        .entrySet()
+                        .stream())
+                        .flatMap(this::handleGroupAndReturnOffsets,1),1);
 
     }
 
-    private Flux<ReceiverOffset> handleGroupAndReturnOffsets(Map.Entry<String, List<ReceiverRecord<String, String>>> entry) {
+    private Flux<ReceiverOffset> handleGroupAndReturnOffsets(Map.Entry<String, List<Pair<String, ReceiverOffset>>> entry) {
         String key = entry.getKey();
         List<Integer> values = entry.getValue()
                 .stream()
-                .map(ConsumerRecord::value)
+                .map(Pair::getFirst)
                 .map(Integer::valueOf)
                 .collect(Collectors.toList());
         switch (key) {
             case "NEW", "UPDATE" -> {
                 return neo4jService.handleNewAndUpdates(values)
-                        .flatMap(a -> Flux.just(a.getMovieId())
-                        .mapNotNull(id -> entry.getValue().stream()
-                                .filter(b -> id.equals(Integer.valueOf(b.value())))
-                                .findAny()
-                                .map(ReceiverRecord::receiverOffset)
-                                .orElse(null)));
+                        .flatMap(a -> Flux.just(a)
+                                .mapNotNull(id -> entry.getValue().stream()
+                                        .filter(b -> id.equals(Integer.valueOf(b.getFirst())))
+                                        .findAny()
+                                        .map(Pair::getSecond)
+                                        .orElse(null)),1);
             }
             case "DELETE" -> {
                 return neo4jService.delete(values)
                         .then()
                         .flux()
                         .flatMap(a -> Flux.fromStream(entry.getValue().stream()
-                                .map(ReceiverRecord::receiverOffset)));
+                                .map(Pair::getSecond)));
             }
             default -> {
                 return Flux.fromIterable(entry.getValue())
-                        .map(ReceiverRecord::receiverOffset);
+                        .map(Pair::getSecond);
             }
         }
     }

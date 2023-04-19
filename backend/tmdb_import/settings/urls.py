@@ -16,7 +16,7 @@ urlpatterns = [
     path('dump/genres',                     views.dump_genres),
     path('dump/langs',                      views.dump_langs),
     path('dump/countries',                  views.dump_countries),
-    path('generate_kafka_dump',             views.generate_kafka_dump),
+    path('dump/movies',                     views.generate_kafka_dump),
     re_path(r'^status$',                    views.import_status),
     re_path(r'^health/',                    include('health_check.urls'))
 ]

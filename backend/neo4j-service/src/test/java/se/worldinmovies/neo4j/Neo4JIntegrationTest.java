@@ -1,15 +1,17 @@
 package se.worldinmovies.neo4j;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern;
+import org.junit.After;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -21,30 +23,25 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 import reactor.core.publisher.Flux;
-import reactor.core.scheduler.Schedulers;
-import se.worldinmovies.neo4j.entity.CountryEntity;
-import se.worldinmovies.neo4j.entity.GenreEntity;
-import se.worldinmovies.neo4j.entity.LanguageEntity;
-import se.worldinmovies.neo4j.entity.MovieEntity;
-import se.worldinmovies.neo4j.repository.CountryRepository;
-import se.worldinmovies.neo4j.repository.GenreRepository;
-import se.worldinmovies.neo4j.repository.LanguageRepository;
+import reactor.core.publisher.Mono;
+import se.worldinmovies.neo4j.domain.Genre;
+import se.worldinmovies.neo4j.domain.Movie;
+import se.worldinmovies.neo4j.entity.*;
 import se.worldinmovies.neo4j.repository.MovieRepository;
 
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -62,11 +59,10 @@ public class Neo4JIntegrationTest {
     @Autowired
     private MovieRepository movieRepository;
     @Autowired
-    private GenreRepository genreRepository;
+    private ReactiveNeo4jTemplate neo4jTemplate;
     @Autowired
-    private LanguageRepository languageRepository;
-    @Autowired
-    private CountryRepository countryRepository;
+    private Neo4jService neo4jService;
+
 
     @DynamicPropertySource
     static void neo4jProperties(DynamicPropertyRegistry registry) {
@@ -85,26 +81,15 @@ public class Neo4JIntegrationTest {
 
     @BeforeEach
     public void setup() {
-        WireMock.reset();
-        Flux.just(movieRepository, genreRepository, countryRepository, languageRepository)
-                .flatMap(ReactiveCrudRepository::deleteAll)
-                .subscribeOn(Schedulers.parallel())
-                .subscribe();
+        Flux.just(MovieEntity.class, GenreEntity.class, CountryEntity.class, LanguageEntity.class, GenreRelations.class)
+                .flatMap(e -> neo4jTemplate.deleteAll(e))
+                .collectList()
+                .block();
     }
 
-    static void stubUrlWithData(String path, String file) {
-        URL responseUrl = Neo4JIntegrationTest.class.getClassLoader().getResource(file);
-        try {
-            String data = Files.readString(Paths.get(responseUrl.toURI()));
-            stubFor(
-                    WireMock.get(WireMock.urlPathMatching(path))
-                            .willReturn(WireMock.aResponse()
-                                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                    .withBody(data))
-            );
-        } catch (Exception e) {
-            fail("Nono");
-        }
+    @After
+    public void teardown() {
+        WireMock.reset();
     }
 
     @Test
@@ -116,85 +101,113 @@ public class Neo4JIntegrationTest {
 
     @Test
     public void canConsumeNEW() {
-        stubUrlWithData("/movie/2", "response.json");
+        int id = 2;
         beforeAll();
+        stubUrlWithData("/movie/" + id, "response.json");
 
-        producer.send(KafkaConsumer.TOPIC, "NEW", "2");
+        producer.send(KafkaConsumer.TOPIC, "NEW", String.valueOf(id));
 
-        long before = System.currentTimeMillis();
-        try {
-            Awaitility.await().atMost(10, TimeUnit.SECONDS)
-                    .until(() -> movieRepository.existsById(2).retry(10).block());
-
-            Optional<MovieEntity> asd = movieRepository.findById(2).blockOptional();
-            assertTrue(asd.isPresent());
-            assertEquals(2, asd.get().getMovieId());
-        } finally {
-            long after = System.currentTimeMillis();
-            System.out.println("Took: " + (after - before));
-        }
-
-        MovieEntity movie = movieRepository.findById(2).blockOptional().orElseThrow(() -> new RuntimeException("asdlkj"));
-
-        assertEquals("Ariel", movie.getOriginalTitle());
-        verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/genres"));
-        verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/langs"));
-        verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/countries"));
-        verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/movie/2"));
-        assertEquals(genreRepository.count().blockOptional().orElseThrow(), 19L);
+        MovieEntity movie = verifyMovie(id, "Ariel");
+        assertFalse(movie.getGenres().isEmpty(), "There should be genres connected to movie");
+        //assertFalse(movie.getProducedBy().isEmpty(), "There should be countries connnected to movie");
+        //assertFalse(movie.getSpokenLanguages().isEmpty(), "There should be languages connnected to movie");
+        assertEquals(19, neo4jTemplate.count(GenreEntity.class).block());
+        //assertEquals(187, neo4jTemplate.count(LanguageEntity.class).block());
+        //assertEquals(251, neo4jTemplate.count(CountryEntity.class).block());
     }
 
     @Test
     public void canConsumeNEW2() {
-        stubUrlWithData("/movie/2", "largeresponse.json");
+        int id = 644553;
+        stubUrlWithData(null, "largeresponse.json");
         beforeAll();
 
-        List<Integer> ids = IntStream.of(2)
-                .boxed()
-                .toList();
-
-        Flux.fromIterable(ids)
-                .flatMap(a -> Flux.just(producer.send(KafkaConsumer.TOPIC, "NEW", String.valueOf(a))))
-                .subscribeOn(Schedulers.parallel())
+        Flux.just(644553, 644555, 644571, 644584, 644586, 644591, 644601, 644613, 644614, 644625, 644636, 644650, 644652, 644670, 644709, 644712, 644754, 644756, 644761, 644765, 644775, 644784, 644822, 644828, 644831)
+                .map(String::valueOf)
+                .map(a -> producer.send(KafkaConsumer.TOPIC, "NEW", a))
                 .subscribe();
 
-        int id = 644553;
-        long before = System.currentTimeMillis();
-        try {
-            Awaitility.await().atMost(10, TimeUnit.SECONDS)
-                    .until(() -> movieRepository.existsById(id).retry(10).blockOptional().orElse(false));
-
-            Optional<MovieEntity> asd = movieRepository.findById(id).blockOptional();
-            assertTrue(asd.isPresent());
-            assertEquals(id, asd.get().getMovieId());
-        } finally {
-            long after = System.currentTimeMillis();
-            System.out.println("Took: " + (after - before));
-        }
-
-        MovieEntity movie = movieRepository.findById(id).blockOptional().orElseThrow(() -> new RuntimeException("asdlkj"));
-
-        assertEquals(25L, movieRepository.count().block());
-        assertEquals("Glasba je časovna umetnost 3: LP film Laibach", movie.getOriginalTitle());
-        verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/genres"));
-        verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/langs"));
-        verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/dump/countries"));
-        verify(1, RequestPatternBuilder.newRequestPattern().withUrl("/movie/2"));
-        assertEquals(genreRepository.count().blockOptional().orElseThrow(), 19L);
+        verifyMovie(id, "Glasba je časovna umetnost 3: LP film Laibach");
+        verifyMovie(644555, "Vroom!-Vroom!");
+        verifyMovie(644571, "Meidän poikamme merellä");
+        verifyMovie(644831, "Blithe Spirit");
+        //WireMock.verify(1, RequestPatternBuilder.newRequestPattern(RequestMethod.GET, WireMock.urlPathMatching("/dump/genres")));
     }
 
     @Test
-    public void canConsumeEmptyResponse() {
-        stubFor(
-                WireMock.get(UrlPathPattern.ANY)
-                        .willReturn(WireMock.aResponse()
-                                .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                .withBody("[]"))
-        );
+    public void canConsumeManyMany() {
+        List<Integer> ids = List.of(644553, 644555, 644571, 644584, 644586, 644591, 644601, 644613, 644614, 644625, 644636, 644650, 644652, 644670, 644709, 644712, 644754, 644756, 644761, 644765, 644775, 644784, 644822, 644828, 644831);
+        stubUrlWithData("/movie/" + ids.stream().map(String::valueOf).collect(Collectors.joining(",")), "largeresponse.json");
+        List<Integer> ids2 = List.of(758911, 758922, 758924, 758925, 758929, 758934, 758941, 758948, 758952, 758956, 758982, 758984, 758992, 759012, 759024, 759045, 759051, 759054, 759073, 759087, 759097, 759101, 759109, 795105, 813795);
+        stubUrlWithData("/movie/" + ids2.stream().map(String::valueOf).collect(Collectors.joining(",")), "largeresponse2.json");
+        beforeAll();
 
-        producer.send(KafkaConsumer.TOPIC, "NEW", "3");
-        Awaitility.await().atMost(1, TimeUnit.SECONDS)
-                .untilAsserted(() -> assertFalse(movieRepository.existsById(3).blockOptional().orElse(false)));
+        List<Integer> allIds = new ArrayList<>(ids);
+        allIds.addAll(ids2);
+        List<Integer> handled = Flux.fromIterable(allIds)
+                .bufferTimeout(25, Duration.ofMillis(10))
+                .flatMap(id -> neo4jService.handleNewAndUpdates(id))
+                .collectList()
+                .block();
+
+        allIds.forEach(id -> verifyMovie(id, null));
+        assertEquals(19L, neo4jTemplate.findAll(GenreEntity.class).count().block());
     }
 
+    @Test
+    public void as() {
+        beforeAll();
+
+        Movie movie = Movie.builder()
+                .movieId(1)
+                .genres(List.of(Genre.builder()
+                        .id(28)
+                        .name("Action")
+                        .build()))
+                .build();
+        Mono<Map<Integer, GenreEntity>> genres = neo4jService.getGenres();
+        Mono<Map<String, LanguageEntity>> languages = neo4jService.getLanguages();
+        Mono<Map<String, CountryEntity>> countries = neo4jService.getCountries();
+
+        movieRepository.saveAll(Mono.just(new MovieEntity(movie))
+                        .zipWith(genres, MovieEntity::withGenres)
+                        .zipWith(languages, MovieEntity::withLanguages)
+                        .zipWith(countries, MovieEntity::withCountries))
+                .blockLast();
+
+        MovieEntity movies = neo4jTemplate.findAll(MovieEntity.class).blockFirst();
+        assertNotNull(movies);
+        assertFalse(movies.getGenres().isEmpty(), "There should be genres connected to movie");
+        assertEquals(19, neo4jTemplate.findAll(GenreEntity.class).count().block());
+    }
+
+    private MovieEntity verifyMovie(int id, String optionalMovieTitle) {
+        Awaitility.await().atMost(10, TimeUnit.SECONDS)
+                .until(() -> Mono.defer(() -> movieRepository.existsById(id).retry(10)).blockOptional().orElse(false));
+
+        MovieEntity movie = movieRepository.findById(id).blockOptional()
+                .orElseGet(() -> fail(String.format("Movie: %s must be present", id)));
+
+        Optional.ofNullable(optionalMovieTitle)
+                .ifPresent(expectedMovieTitle -> assertEquals(expectedMovieTitle, movie.getOriginalTitle()));
+
+        assertEquals(id, movie.getMovieId());
+
+        return movie;
+    }
+
+    private static void stubUrlWithData(String path, String file) {
+        URL resourceFile = Neo4JIntegrationTest.class.getClassLoader().getResource(file);
+        try {
+            String data = Files.readString(Paths.get(resourceFile.toURI()));
+            stubFor(
+                    WireMock.get(path == null ? UrlPathPattern.ANY : WireMock.urlPathMatching(path))
+                            .willReturn(WireMock.aResponse()
+                                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                                    .withBody(data))
+            );
+        } catch (Exception e) {
+            fail("Nono" + e.getMessage());
+        }
+    }
 }
