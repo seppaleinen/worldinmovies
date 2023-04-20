@@ -36,6 +36,8 @@ public class MovieEntity implements Serializable {
     private String originalTitle;
     @Property
     private String engTitle;
+    @Property
+    private double weight;
     @Version
     private Long version;
 
@@ -57,17 +59,6 @@ public class MovieEntity implements Serializable {
 
     public MovieEntity(Integer movieId) {
         this.movieId = movieId;
-    }
-
-    public MovieEntity(Movie newMovie) {
-        this.movieId = newMovie.getMovieId();
-        this.imdbId = newMovie.getImdbId();
-        this.originalTitle = newMovie.getOriginalTitle();
-        this.engTitle = newMovie.getEngTitle();
-
-        this.tmpGenres = newMovie.getGenres();
-        this.tmpLangs = newMovie.getSpokenLanguages();
-        this.tmpCountries = newMovie.getProducedBy();
     }
 
     public MovieEntity withGenres(Map<Integer, GenreEntity> genres) {
@@ -97,5 +88,18 @@ public class MovieEntity implements Serializable {
                 .map(a -> Optional.ofNullable(map.get(getId.apply(a))))
                 .filter(Optional::isPresent)
                 .map(Optional::get);
+    }
+
+    public MovieEntity withData(Movie movie) {
+        this.movieId = movie.getMovieId();
+        this.imdbId = movie.getImdbId();
+        this.originalTitle = movie.getOriginalTitle();
+        this.engTitle = movie.guessEnglishTitle().orElse(null);
+        this.weight = movie.calculateWeightedRating();
+
+        this.tmpGenres = movie.getGenres();
+        this.tmpLangs = movie.getSpokenLanguages();
+        this.tmpCountries = movie.getProducedBy();
+        return this;
     }
 }

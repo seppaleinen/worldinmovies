@@ -11,6 +11,7 @@ import org.springframework.data.neo4j.repository.config.EnableReactiveNeo4jRepos
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -35,7 +36,14 @@ import static org.springframework.data.neo4j.repository.config.ReactiveNeo4jRepo
 public class Config {
     @Bean
     public WebClient webClient(@Value("${tmdb_url}") String baseUrl, WebClient.Builder webClientBuilder) {
-        return webClientBuilder.baseUrl(baseUrl).build();
+        final int twoMB = 2 * 1024 * 1024;
+        final ExchangeStrategies strategies = ExchangeStrategies.builder()
+                .codecs(codecs -> codecs.defaultCodecs().maxInMemorySize(twoMB))
+                .build();
+
+        return webClientBuilder.baseUrl(baseUrl)
+                .exchangeStrategies(strategies)
+                .build();
     }
 
     @Bean(DEFAULT_TRANSACTION_MANAGER_BEAN_NAME)

@@ -24,6 +24,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Signal;
+import reactor.test.StepVerifier;
 import se.worldinmovies.neo4j.domain.Genre;
 import se.worldinmovies.neo4j.domain.Movie;
 import se.worldinmovies.neo4j.entity.*;
@@ -38,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -81,9 +84,10 @@ public class Neo4JIntegrationTest {
 
     @BeforeEach
     public void setup() {
-        Flux.just(MovieEntity.class, GenreEntity.class, CountryEntity.class, LanguageEntity.class, GenreRelations.class)
+        Flux.just(MovieEntity.class, GenreRelations.class, LanguageRelations.class, CountryRelations.class)
                 .flatMap(e -> neo4jTemplate.deleteAll(e))
                 .collectList()
+                .retry(5)
                 .block();
     }
 
@@ -95,22 +99,24 @@ public class Neo4JIntegrationTest {
     @Test
     public void canConsumeDELETE() {
         movieRepository.save(new MovieEntity(123)).block();
+
+        Awaitility.await().until(() -> movieRepository.existsById(123).block());
+
         producer.send(KafkaConsumer.TOPIC, "DELETE", "123");
-        Awaitility.await().untilAsserted(() -> movieRepository.existsById(123).block());
+        Awaitility.await().until(() -> !movieRepository.existsById(123).block());
     }
 
     @Test
     public void canConsumeNEW() {
         int id = 2;
-        beforeAll();
         stubUrlWithData("/movie/" + id, "response.json");
 
         producer.send(KafkaConsumer.TOPIC, "NEW", String.valueOf(id));
 
         MovieEntity movie = verifyMovie(id, "Ariel");
         assertFalse(movie.getGenres().isEmpty(), "There should be genres connected to movie");
-        //assertFalse(movie.getProducedBy().isEmpty(), "There should be countries connnected to movie");
-        //assertFalse(movie.getSpokenLanguages().isEmpty(), "There should be languages connnected to movie");
+        assertFalse(movie.getProducedBy().isEmpty(), "There should be countries connected to movie");
+        assertFalse(movie.getSpokenLanguages().isEmpty(), "There should be languages connected to movie");
         assertEquals(19, neo4jTemplate.count(GenreEntity.class).block());
         //assertEquals(187, neo4jTemplate.count(LanguageEntity.class).block());
         //assertEquals(251, neo4jTemplate.count(CountryEntity.class).block());
@@ -120,7 +126,6 @@ public class Neo4JIntegrationTest {
     public void canConsumeNEW2() {
         int id = 644553;
         stubUrlWithData(null, "largeresponse.json");
-        beforeAll();
 
         Flux.just(644553, 644555, 644571, 644584, 644586, 644591, 644601, 644613, 644614, 644625, 644636, 644650, 644652, 644670, 644709, 644712, 644754, 644756, 644761, 644765, 644775, 644784, 644822, 644828, 644831)
                 .map(String::valueOf)
@@ -140,15 +145,19 @@ public class Neo4JIntegrationTest {
         stubUrlWithData("/movie/" + ids.stream().map(String::valueOf).collect(Collectors.joining(",")), "largeresponse.json");
         List<Integer> ids2 = List.of(758911, 758922, 758924, 758925, 758929, 758934, 758941, 758948, 758952, 758956, 758982, 758984, 758992, 759012, 759024, 759045, 759051, 759054, 759073, 759087, 759097, 759101, 759109, 795105, 813795);
         stubUrlWithData("/movie/" + ids2.stream().map(String::valueOf).collect(Collectors.joining(",")), "largeresponse2.json");
-        beforeAll();
 
         List<Integer> allIds = new ArrayList<>(ids);
         allIds.addAll(ids2);
-        List<Integer> handled = Flux.fromIterable(allIds)
-                .bufferTimeout(25, Duration.ofMillis(10))
-                .flatMap(id -> neo4jService.handleNewAndUpdates(id))
+        System.out.println("SUPERDUPER: " + allIds);
+        neo4jService.handleNewAndUpdates(ids)
                 .collectList()
-                .block();
+                .block()
+                .forEach(id -> verifyMovie(id, null));
+
+        neo4jService.handleNewAndUpdates(ids2)
+                .collectList()
+                .block()
+                .forEach(id -> verifyMovie(id, null));
 
         allIds.forEach(id -> verifyMovie(id, null));
         assertEquals(19L, neo4jTemplate.findAll(GenreEntity.class).count().block());
@@ -156,34 +165,48 @@ public class Neo4JIntegrationTest {
 
     @Test
     public void as() {
-        beforeAll();
+        List<Integer> ids = List.of(19995,19996,19997,19998,20002,20006,20009,20012,20013,20015,20017,20018,20019,20021,20024,20029,20030,20031,20032,20033,20044,20045,20048,20121,20941);
+        stubUrlWithData("/movie/" + ids.stream().map(String::valueOf).collect(Collectors.joining(",")), "largeresponse3.json");
 
-        Movie movie = Movie.builder()
-                .movieId(1)
-                .genres(List.of(Genre.builder()
-                        .id(28)
-                        .name("Action")
-                        .build()))
-                .build();
-        Mono<Map<Integer, GenreEntity>> genres = neo4jService.getGenres();
-        Mono<Map<String, LanguageEntity>> languages = neo4jService.getLanguages();
-        Mono<Map<String, CountryEntity>> countries = neo4jService.getCountries();
+        Flux.fromIterable(ids)
+                .bufferTimeout(25, Duration.ofMillis(10))
+                .flatMap(id -> neo4jService.handleNewAndUpdates(id))
+                .collectList()
+                .block(Duration.ofSeconds(10));
 
-        movieRepository.saveAll(Mono.just(new MovieEntity(movie))
-                        .zipWith(genres, MovieEntity::withGenres)
-                        .zipWith(languages, MovieEntity::withLanguages)
-                        .zipWith(countries, MovieEntity::withCountries))
-                .blockLast();
+        ids.forEach(id -> verifyMovie(id, null));
 
-        MovieEntity movies = neo4jTemplate.findAll(MovieEntity.class).blockFirst();
-        assertNotNull(movies);
-        assertFalse(movies.getGenres().isEmpty(), "There should be genres connected to movie");
-        assertEquals(19, neo4jTemplate.findAll(GenreEntity.class).count().block());
+        assertEquals(19L, neo4jTemplate.findAll(GenreEntity.class).count().block());
+    }
+
+    @Test
+    public void testPersistingTwice() {
+        int movieId = 2;
+        stubUrlWithData("/movie/" + movieId, "response.json");
+
+        neo4jService.handleNewAndUpdates(List.of(movieId))
+                .as(StepVerifier::create)
+                .expectNext(movieId)
+                .expectComplete()
+                .verify();
+
+        verifyMovie(movieId, "Ariel");
+
+        stubUrlWithData("/movie/" + movieId, "response_update.json");
+
+        neo4jService.handleNewAndUpdates(List.of(movieId))
+                .as(StepVerifier::create)
+                .expectNext(movieId)
+                .expectComplete()
+                .verify();
+
+        verifyMovie(movieId, "Brother's War");
+
     }
 
     private MovieEntity verifyMovie(int id, String optionalMovieTitle) {
         Awaitility.await().atMost(10, TimeUnit.SECONDS)
-                .until(() -> Mono.defer(() -> movieRepository.existsById(id).retry(10)).blockOptional().orElse(false));
+                .until(() -> Mono.defer(() -> movieRepository.existsById(id)).block());
 
         MovieEntity movie = movieRepository.findById(id).blockOptional()
                 .orElseGet(() -> fail(String.format("Movie: %s must be present", id)));

@@ -1,5 +1,6 @@
 package se.worldinmovies.neo4j;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,24 +32,23 @@ import java.util.stream.Collectors;
 @Slf4j
 @Transactional
 public class Neo4jService {
-    private final MovieRepository movieRepository;
-    private final TmdbService tmdbService;
-    private final ReactiveNeo4jTemplate neo4jTemplate;
-
     private static final Map<Integer, GenreEntity> genres = new ConcurrentHashMap<>();
     private static final Map<String, LanguageEntity> languages = new ConcurrentHashMap<>();
     private static final Map<String, CountryEntity> countries = new ConcurrentHashMap<>();
 
-    private final CountDownLatch genreLatch = new CountDownLatch(1);
-    private final CountDownLatch langLatch = new CountDownLatch(1);
-    private final CountDownLatch countryLatch = new CountDownLatch(1);
+    private static final CountDownLatch genreLatch = new CountDownLatch(1);
+    private static final CountDownLatch langLatch = new CountDownLatch(1);
+    private static final CountDownLatch countryLatch = new CountDownLatch(1);
+
+    private final MovieRepository movieRepository;
+    private final TmdbService tmdbService;
+
 
     public Neo4jService(MovieRepository movieRepository,
                         TmdbService tmdbService,
                         ReactiveNeo4jTemplate neo4jTemplate) {
         this.movieRepository = movieRepository;
         this.tmdbService = tmdbService;
-        this.neo4jTemplate = neo4jTemplate;
         handle(neo4jTemplate, tmdbService, "/dump/genres", Genre.class, GenreEntity.class, a -> new GenreEntity(a.getId(), a.getName()), Genre::getId, GenreEntity::getId)
                 .collectMap(GenreEntity::getId)
                 .subscribe(genres::putAll, err -> {
@@ -64,36 +65,24 @@ public class Neo4jService {
 
 
     public Mono<Map<Integer, GenreEntity>> getGenres() {
-        if (genreLatch.getCount() != 0) {
-            try {
-                genreLatch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return Mono.just(genres);
+        return getCached(genreLatch, genres);
     }
 
     public Mono<Map<String, LanguageEntity>> getLanguages() {
-        if (langLatch.getCount() != 0) {
-            try {
-                langLatch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return Mono.just(languages);
+        return getCached(langLatch, languages);
     }
 
     public Mono<Map<String, CountryEntity>> getCountries() {
-        if (countryLatch.getCount() != 0) {
-            try {
-                countryLatch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+        return getCached(countryLatch, countries);
+    }
+
+    @SneakyThrows
+    public <ID, E> Mono<Map<ID, E>> getCached(CountDownLatch countDownLatch, Map<ID, E> map) {
+        if (countDownLatch.getCount() != 0) {
+            countDownLatch.await();
         }
-        return Mono.just(countries);
+        return Mono.just(map);
+
     }
 
     @Transactional
@@ -124,13 +113,23 @@ public class Neo4jService {
     public Flux<Integer> handleNewAndUpdates(Collection<Integer> value) {
         String movieIds = value.stream().map(Object::toString).collect(Collectors.joining(","));
         Flux<Movie> data = tmdbService.getData("/movie/" + movieIds, Movie.class);
+        Mono<Map<Integer, MovieEntity>> existingMovies = movieRepository.findAllById(value)
+                .collectMap(MovieEntity::getMovieId)
+                .cache();
 
-        return movieRepository.saveAll(data.flatMap(a -> Mono.just(new MovieEntity(a))
-                        .zipWith(getGenres(), MovieEntity::withGenres)
-                        .zipWith(getLanguages(), MovieEntity::withLanguages)
-                        .zipWith(getCountries(), MovieEntity::withCountries)))
+        return movieRepository.saveAll(data
+                        .flatMap(fetchedMovie -> Mono.just(fetchedMovie)
+                                .zipWith(existingMovies, Neo4jService::createNewOrUpdate)
+                                .zipWith(getGenres(), MovieEntity::withGenres)
+                                .zipWith(getLanguages(), MovieEntity::withLanguages)
+                                .zipWith(getCountries(), MovieEntity::withCountries)))
+                .log("persist")
                 .retryWhen(Retry.fixedDelay(5, Duration.ofMillis(300)))
                 .map(MovieEntity::getMovieId);
+    }
+
+    private static MovieEntity createNewOrUpdate(Movie movie, Map<Integer, MovieEntity> map) {
+        return map.getOrDefault(movie.getMovieId(), new MovieEntity(movie.getMovieId())).withData(movie);
     }
 
     public Mono<Void> delete(Collection<Integer> value) {
