@@ -122,8 +122,7 @@ public class Neo4jService {
                                 .zipWith(existingMovies, Neo4jService::createNewOrUpdate)
                                 .zipWith(getGenres(), MovieEntity::withGenres)
                                 .zipWith(getLanguages(), MovieEntity::withLanguages)
-                                .zipWith(getCountries(), MovieEntity::withCountries)))
-                .log("persist")
+                                .zipWith(getCountries(), MovieEntity::withCountries), 5))
                 .retryWhen(Retry.fixedDelay(5, Duration.ofMillis(300)))
                 .map(MovieEntity::getMovieId);
     }

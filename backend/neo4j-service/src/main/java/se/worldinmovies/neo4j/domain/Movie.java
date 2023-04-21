@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -23,6 +22,8 @@ public class Movie {
     private String originalTitle;
     @JsonProperty(value = "title")
     private String engTitle;
+    @JsonProperty(value = "original_language")
+    private String originalLanguage;
     @JsonProperty(value = "spoken_languages")
     private List<Language> spokenLanguages = new ArrayList<>();
     @JsonProperty(value = "production_countries")
@@ -35,8 +36,6 @@ public class Movie {
     private double voteAverage;
     @JsonProperty(value = "vote_count")
     private int voteCount;
-    @JsonProperty(value = "alternative_titles")
-    private AltTitles alternativeTitles;
 
     /**
      * The formula for calculating the Top Rated 250 Titles gives a true Bayesian estimate:
@@ -54,14 +53,5 @@ public class Movie {
         double m = 200;
         int c = 4;
         return (v / (v + m)) * r + (m / (v + m)) * c;
-    }
-
-    public Optional<String> guessEnglishTitle() {
-        return alternativeTitles.alternativTitles()
-                .stream()
-                .filter(a -> List.of("US", "GB").contains(a.iso()))
-                .map(AltTitles.AlternativTitle::title)
-                .findFirst()
-                .or(() -> Optional.ofNullable(this.engTitle));
     }
 }

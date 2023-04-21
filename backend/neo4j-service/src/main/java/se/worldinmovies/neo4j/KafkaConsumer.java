@@ -52,7 +52,7 @@ public class KafkaConsumer {
                         .collect(Collectors.groupingBy(ConsumerRecord::key, Collectors.mapping(a -> Pair.of(a.value(), a.receiverOffset()), Collectors.toList())))
                         .entrySet()
                         .stream())
-                        .flatMap(this::handleGroupAndReturnOffsets,1),1);
+                        .flatMap(this::handleGroupAndReturnOffsets,2),1);
 
     }
 

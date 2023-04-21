@@ -14,10 +14,7 @@ import se.worldinmovies.neo4j.domain.Language;
 import se.worldinmovies.neo4j.domain.Movie;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,6 +38,9 @@ public class MovieEntity implements Serializable {
     @Version
     private Long version;
 
+    @Relationship(direction = Relationship.Direction.INCOMING, type = "original_language")
+    private LanguageRelations originalLanguage;
+
     @Relationship(direction = Relationship.Direction.INCOMING, type = "spoken_languages")
     private List<LanguageRelations> spokenLanguages = new ArrayList<>();
 
@@ -56,6 +56,8 @@ public class MovieEntity implements Serializable {
     private List<Language> tmpLangs = new ArrayList<>();
     @Transient
     private List<Country> tmpCountries = new ArrayList<>();
+    @Transient
+    private String tmpOrigLang;
 
     public MovieEntity(Integer movieId) {
         this.movieId = movieId;
@@ -73,7 +75,10 @@ public class MovieEntity implements Serializable {
         map(this.tmpLangs, languages, Language::getIso)
                 .filter(e -> this.spokenLanguages.stream().noneMatch(a -> a.getLanguage().getIso().equals(e.getIso())))
                 .forEach(e -> this.spokenLanguages.add(new LanguageRelations(e)));
-
+        this.originalLanguage = Optional.ofNullable(this.tmpOrigLang)
+                .map(a -> languages.getOrDefault(a, null))
+                .map(LanguageRelations::new)
+                .orElse(null);
         return this;
     }
 
@@ -94,12 +99,13 @@ public class MovieEntity implements Serializable {
         this.movieId = movie.getMovieId();
         this.imdbId = movie.getImdbId();
         this.originalTitle = movie.getOriginalTitle();
-        this.engTitle = movie.guessEnglishTitle().orElse(null);
+        this.engTitle = movie.getEngTitle();
         this.weight = movie.calculateWeightedRating();
 
         this.tmpGenres = movie.getGenres();
         this.tmpLangs = movie.getSpokenLanguages();
         this.tmpCountries = movie.getProducedBy();
+        this.tmpOrigLang = movie.getOriginalLanguage();
         return this;
     }
 }

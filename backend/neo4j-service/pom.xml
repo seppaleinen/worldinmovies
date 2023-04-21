@@ -16,6 +16,7 @@
 
     <properties>
         <java.version>17</java.version>
+        <neo4j.migrations.version>2.3.0</neo4j.migrations.version>
     </properties>
 
     <dependencies>
@@ -77,6 +78,13 @@
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
         </dependency>
+        <!--
+        <dependency>
+            <groupId>eu.michael-simons.neo4j</groupId>
+            <artifactId>neo4j-migrations-spring-boot-starter</artifactId>
+            <version>${neo4j.migrations.version}</version>
+        </dependency>
+        -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -138,6 +146,33 @@
                     </profiles>
                 </configuration>
             </plugin>
+            <!--
+            <plugin>
+                <groupId>eu.michael-simons.neo4j</groupId>
+                <artifactId>neo4j-migrations-maven-plugin</artifactId>
+                <version>${neo4j.migrations.version}</version>
+                <configuration>
+                    <user>neo4j</user>
+                    <password>secretpassword</password>
+                    <address>bolt://localhost:7687</address>
+                    <verbose>true</verbose>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>migrate</id>
+                        <goals>
+                            <goal>migrate</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-validate</id>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
         </plugins>
     </build>
 
