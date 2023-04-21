@@ -51,9 +51,11 @@ class Movie(models.Model):
         m = minimum votes required to be listed in the Top 250 (currently 25000)
         C = the mean vote across the whole report (currently 7.0)
         """
-        v = decimal.Decimal(self.vote_count)
+        v = decimal.Decimal(self.vote_count if self.vote_count else 0) + \
+            decimal.Decimal(self.imdb_vote_count if self.imdb_vote_count else 0)
         m = decimal.Decimal(200)
-        r = decimal.Decimal(self.vote_average)
+        r = decimal.Decimal(self.vote_average if self.vote_average else 0) + \
+            decimal.Decimal(self.imdb_vote_average if self.imdb_vote_average else 0)
         c = decimal.Decimal(4)
         return (v / (v + m)) * r + (m / (v + m)) * c
 

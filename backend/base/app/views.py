@@ -78,22 +78,22 @@ def convert_country_code(country_code):
     return f"'{country_code}'"
 
 
-"""
-The formula for calculating the Top Rated 250 Titles gives a true Bayesian estimate:
-weighted rating (WR) = (v ÷ (v+m)) × R + (m ÷ (v+m)) × C where:
-
-R = average for the movie (mean) = (Rating)
-v = number of votes for the movie = (votes)
-m = minimum votes required to be listed in the Top 250 (currently 25000)
-C = the mean vote across the whole report (currently 7.0)
-"""
 @csrf_exempt
 def get_best_movies_from_country(request, country_code):
+    """
+        The formula for calculating the Top Rated 250 Titles gives a true Bayesian estimate:
+        weighted rating (WR) = (v ÷ (v+m)) × R + (m ÷ (v+m)) × C where:
+
+        R = average for the movie (mean) = (Rating)
+        v = number of votes for the movie = (votes)
+        m = minimum votes required to be listed in the Top 250 (currently 25000)
+        C = the mean vote across the whole report (currently 7.0)
+    """
     if request.method != 'GET':
         return HttpResponse("Method not allowed", status=400)
     page = int(request.GET.get('page', 0)) * 20
     country_codes = convert_country_code(country_code)
-    langs = str(languages.get_official_languages(territory=country_code, regional=True, de_facto=True))\
+    langs = str(languages.get_official_languages(territory=country_code, regional=True, de_facto=True)) \
         .replace(",)", ")")
     lang_query = f"and movie.original_language in {langs}" if langs != "()" else ""
     with connection.cursor() as cursor:
@@ -203,6 +203,18 @@ def fetch_imdb_titles(request):
 
 def movie_details(request, imdb_id):
     return HttpResponse(Movie.objects.get(imdb_id=imdb_id).raw_response)
+
+
+def get_imdb_votes(request, ids):
+    movie_ids = list(map(lambda x: int(x), ids.split(',')))
+    data_list = Movie.objects.filter(pk__in=movie_ids).values_list("id",
+                                                                   "vote_average",
+                                                                   "vote_count",
+                                                                   "imdb_vote_average",
+                                                                   "imdb_vote_count",
+                                                                   "weighted_rating")
+    return HttpResponse(json.dumps([data for data in data_list]),
+                        content_type='application/json')
 
 
 def generate_datadump(request):

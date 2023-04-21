@@ -58,6 +58,7 @@ def import_imdb_ratings():
                     data = movies[db_row.imdb_id]
                     db_row.imdb_vote_average = data[1]
                     db_row.imdb_vote_count = data[2]
+                    db_row.weighted_rating = db_row.calculate_weighted_rating()
                     db_row.save()
                 count += len(movies.keys())
                 __send_data_to_channel(layer=layer, message=f"Processed {len(movies.keys())} ratings out of {count}/{imdb_ids_length}")
