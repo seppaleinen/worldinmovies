@@ -5,13 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
-import se.worldinmovies.neo4j.domain.Country;
-import se.worldinmovies.neo4j.domain.Genre;
-import se.worldinmovies.neo4j.domain.Language;
-import se.worldinmovies.neo4j.domain.Movie;
+import se.worldinmovies.neo4j.domain.*;
 import se.worldinmovies.neo4j.entity.CountryEntity;
 import se.worldinmovies.neo4j.entity.GenreEntity;
 import se.worldinmovies.neo4j.entity.LanguageEntity;
@@ -24,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -42,13 +39,15 @@ public class Neo4jService {
 
     private final MovieRepository movieRepository;
     private final TmdbService tmdbService;
+    private final BaseService baseService;
 
 
     public Neo4jService(MovieRepository movieRepository,
                         TmdbService tmdbService,
-                        ReactiveNeo4jTemplate neo4jTemplate) {
+                        ReactiveNeo4jTemplate neo4jTemplate, BaseService baseService) {
         this.movieRepository = movieRepository;
         this.tmdbService = tmdbService;
+        this.baseService = baseService;
         handle(neo4jTemplate, tmdbService, "/dump/genres", Genre.class, GenreEntity.class, a -> new GenreEntity(a.getId(), a.getName()), Genre::getId, GenreEntity::getId)
                 .collectMap(GenreEntity::getId)
                 .subscribe(genres::putAll, err -> {
@@ -117,12 +116,22 @@ public class Neo4jService {
                 .collectMap(MovieEntity::getMovieId)
                 .cache();
 
+        Mono<List<Votes>> votes = baseService.getData("/votes/" + movieIds, Votes.class)
+                .onErrorComplete(WebClientResponseException.NotFound.class)
+                .collectList()
+                .cache();
         return movieRepository.saveAll(data
-                        .flatMap(fetchedMovie -> Mono.just(fetchedMovie)
-                                .zipWith(existingMovies, Neo4jService::createNewOrUpdate)
-                                .zipWith(getGenres(), MovieEntity::withGenres)
-                                .zipWith(getLanguages(), MovieEntity::withLanguages)
-                                .zipWith(getCountries(), MovieEntity::withCountries), 5))
+                        .flatMap(fetchedMovie ->
+                                Mono.zip(Mono.just(fetchedMovie), existingMovies, getGenres(), getLanguages(), getCountries(), votes)
+                                        .map(a -> {
+                                            Movie movie = a.getT1();
+                                            return createNewOrUpdate(movie, a.getT2())
+                                                    .withData(movie)
+                                                    .withGenres(a.getT3())
+                                                    .withLanguages(a.getT4())
+                                                    .withCountries(a.getT5())
+                                                    .withVotes(a.getT6());
+                                        }), 5))
                 .retryWhen(Retry.fixedDelay(5, Duration.ofMillis(300)))
                 .map(MovieEntity::getMovieId);
     }

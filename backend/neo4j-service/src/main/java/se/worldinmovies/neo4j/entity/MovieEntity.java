@@ -4,19 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.*;
-import se.worldinmovies.neo4j.domain.Country;
-import se.worldinmovies.neo4j.domain.Genre;
-import se.worldinmovies.neo4j.domain.Language;
-import se.worldinmovies.neo4j.domain.Movie;
+import se.worldinmovies.neo4j.domain.*;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Node("Movie")
@@ -37,6 +32,10 @@ public class MovieEntity implements Serializable {
     private double weight;
     @Version
     private Long version;
+    private double voteAverage;
+    private int voteCount;
+    private double imdbVoteAverage;
+    private int imdbVoteCount;
 
     @Relationship(direction = Relationship.Direction.INCOMING, type = "original_language")
     private LanguageRelations originalLanguage;
@@ -88,6 +87,23 @@ public class MovieEntity implements Serializable {
                 .forEach(e -> this.producedBy.add(new CountryRelations(e)));
         return this;
     }
+
+    public MovieEntity withVotes(List<Votes> votes) {
+        Optional.ofNullable(votes)
+                .map(v -> v.stream()
+                        .filter(a -> a.id() == this.movieId)
+                        .findFirst())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .ifPresent(v -> {
+                    this.imdbVoteAverage = v.imdbVoteAverage();
+                    this.imdbVoteCount = v.imdbVoteCount();
+                    this.weight = v.weightedRating();
+                });
+
+        return this;
+    }
+
     private static <D, E, ID> Stream<E> map(List<D> list, Map<ID, E> map, Function<D, ID> getId) {
         return Optional.ofNullable(list).orElse(List.of()).stream()
                 .map(a -> Optional.ofNullable(map.get(getId.apply(a))))

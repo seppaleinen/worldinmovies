@@ -35,7 +35,19 @@ import static org.springframework.data.neo4j.repository.config.ReactiveNeo4jRepo
 @Configuration
 public class Config {
     @Bean
-    public WebClient webClient(@Value("${tmdb_url}") String baseUrl, WebClient.Builder webClientBuilder) {
+    public WebClient webClient(@Value("${tmdb_url}") String tmdbUrl, WebClient.Builder webClientBuilder) {
+        final int twoMB = 2 * 1024 * 1024;
+        final ExchangeStrategies strategies = ExchangeStrategies.builder()
+                .codecs(codecs -> codecs.defaultCodecs().maxInMemorySize(twoMB))
+                .build();
+
+        return webClientBuilder.baseUrl(tmdbUrl)
+                .exchangeStrategies(strategies)
+                .build();
+    }
+
+    @Bean(name = "baseWebClient")
+    public WebClient baseWebClient(@Value("${base_url}") String baseUrl, WebClient.Builder webClientBuilder) {
         final int twoMB = 2 * 1024 * 1024;
         final ExchangeStrategies strategies = ExchangeStrategies.builder()
                 .codecs(codecs -> codecs.defaultCodecs().maxInMemorySize(twoMB))

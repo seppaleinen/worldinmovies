@@ -1,6 +1,6 @@
 import csv
 import datetime
-import json
+import simplejson as json
 import threading
 
 from babel import languages
@@ -207,13 +207,12 @@ def movie_details(request, imdb_id):
 
 def get_imdb_votes(request, ids):
     movie_ids = list(map(lambda x: int(x), ids.split(',')))
-    data_list = Movie.objects.filter(pk__in=movie_ids).values_list("id",
-                                                                   "vote_average",
-                                                                   "vote_count",
-                                                                   "imdb_vote_average",
-                                                                   "imdb_vote_count",
-                                                                   "weighted_rating")
-    return HttpResponse(json.dumps([data for data in data_list]),
+    data_list = Movie.objects.filter(pk__in=movie_ids)
+    return HttpResponse(json.dumps([{"id": data.id, "vote_average": data.vote_average,
+                                     "vote_count": data.vote_count,
+                                     "imdb_vote_average": data.imdb_vote_average,
+                                     "imdb_vote_count": data.imdb_vote_count,
+                                     "weighted_rating": data.weighted_rating} for data in data_list], use_decimal=True),
                         content_type='application/json')
 
 

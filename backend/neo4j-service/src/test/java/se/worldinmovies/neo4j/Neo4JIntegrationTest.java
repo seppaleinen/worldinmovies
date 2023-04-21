@@ -70,6 +70,7 @@ public class Neo4JIntegrationTest {
     @DynamicPropertySource
     static void neo4jProperties(DynamicPropertyRegistry registry) {
         registry.add("tmdb_url", () -> "http://localhost:9999");
+        registry.add("base_url", () -> "http://localhost:9999");
         registry.add("spring.neo4j.uri", neo4jContainer::getBoltUrl);
         registry.add("spring.neo4j.authentication.username", () -> "neo4j");
         registry.add("spring.neo4j.authentication.password", neo4jContainer::getAdminPassword);
@@ -84,6 +85,7 @@ public class Neo4JIntegrationTest {
 
     @BeforeEach
     public void setup() {
+        stubUrlWithData(null, "votes.json");
         Flux.just(MovieEntity.class, GenreRelations.class, LanguageRelations.class, CountryRelations.class)
                 .flatMap(e -> neo4jTemplate.deleteAll(e))
                 .collectList()
@@ -110,6 +112,7 @@ public class Neo4JIntegrationTest {
     public void canConsumeNEW() {
         int id = 2;
         stubUrlWithData("/movie/" + id, "response.json");
+        stubUrlWithData("/votes/" + id, "votes.json");
 
         producer.send(KafkaConsumer.TOPIC, "NEW", String.valueOf(id));
 

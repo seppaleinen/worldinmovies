@@ -134,7 +134,7 @@ USE_TZ = True
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
         'standard': {
             'format': '%(asctime)s %(levelname)s [%(name)s:%(lineno)s] %(module)s %(process)d %(thread)d %(message)s'
@@ -151,6 +151,10 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'standard'
         },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
     },
     'loggers': {
         'gunicorn.errors': {
