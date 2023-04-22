@@ -117,6 +117,8 @@ public class MovieEntity implements Serializable {
         this.originalTitle = movie.getOriginalTitle();
         this.engTitle = movie.getEngTitle();
         this.weight = movie.calculateWeightedRating();
+        this.voteCount = movie.getVoteCount();
+        this.voteAverage = movie.getVoteAverage();
 
         this.tmpGenres = movie.getGenres();
         this.tmpLangs = movie.getSpokenLanguages();
