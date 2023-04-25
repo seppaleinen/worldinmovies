@@ -21,6 +21,7 @@ import se.worldinmovies.neo4j.domain.Language;
 import se.worldinmovies.neo4j.entity.CountryEntity;
 import se.worldinmovies.neo4j.entity.GenreEntity;
 import se.worldinmovies.neo4j.entity.LanguageEntity;
+import se.worldinmovies.neo4j.xml.LanguageMapper;
 
 import java.time.Duration;
 import java.util.List;
@@ -34,26 +35,23 @@ import static org.springframework.data.neo4j.repository.config.ReactiveNeo4jRepo
 @EnableKafka
 @Configuration
 public class Config {
-    @Bean
+    @Bean(name = "tmdbWebClient")
     public WebClient webClient(@Value("${tmdb_url}") String tmdbUrl, WebClient.Builder webClientBuilder) {
-        final int twoMB = 2 * 1024 * 1024;
-        final ExchangeStrategies strategies = ExchangeStrategies.builder()
-                .codecs(codecs -> codecs.defaultCodecs().maxInMemorySize(twoMB))
-                .build();
-
-        return webClientBuilder.baseUrl(tmdbUrl)
-                .exchangeStrategies(strategies)
-                .build();
+        return createBuilder(webClientBuilder, tmdbUrl);
     }
 
     @Bean(name = "baseWebClient")
     public WebClient baseWebClient(@Value("${base_url}") String baseUrl, WebClient.Builder webClientBuilder) {
+        return createBuilder(webClientBuilder, baseUrl);
+    }
+
+    private static WebClient createBuilder(WebClient.Builder webClientBuilder, String url) {
         final int twoMB = 2 * 1024 * 1024;
         final ExchangeStrategies strategies = ExchangeStrategies.builder()
                 .codecs(codecs -> codecs.defaultCodecs().maxInMemorySize(twoMB))
                 .build();
 
-        return webClientBuilder.baseUrl(baseUrl)
+        return webClientBuilder.baseUrl(url)
                 .exchangeStrategies(strategies)
                 .build();
     }
@@ -63,5 +61,10 @@ public class Config {
             Driver driver,
             ReactiveDatabaseSelectionProvider databaseNameProvider) {
         return new ReactiveNeo4jTransactionManager(driver, databaseNameProvider);
+    }
+
+    @Bean
+    public LanguageMapper languageMapper() {
+        return new LanguageMapper();
     }
 }

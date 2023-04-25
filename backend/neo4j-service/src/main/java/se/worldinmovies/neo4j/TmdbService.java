@@ -1,6 +1,7 @@
 package se.worldinmovies.neo4j;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -16,7 +17,7 @@ import java.util.List;
 public class TmdbService {
     private final WebClient webClient;
 
-    public TmdbService(WebClient webClient) {
+    public TmdbService(@Qualifier("tmdbWebClient") WebClient webClient) {
         this.webClient = webClient;
     }
 
@@ -25,7 +26,7 @@ public class TmdbService {
             return webClient.get().uri(uri)
                     .retrieve()
                     .bodyToFlux(clazz)
-                    .retryWhen(Retry.backoff(3, Duration.ofSeconds(2)));
+                    .retryWhen(Retry.backoff(3, Duration.ofSeconds(1)));
         } catch (WebClientResponseException e) {
             System.out.println("ResponseException: " + e.getMessage());
             throw e;

@@ -5,21 +5,19 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Property;
 
 import java.io.Serializable;
 
-@Node("Language")
+@Node(value = "Language", labels = "Language")
 @Data
 @NoArgsConstructor
 public class LanguageEntity implements Serializable {
     @Id
+    @Property
     private String iso;
+    @Property
     private String name;
+    @Property
     private String englishName;
-
-    public LanguageEntity(String iso, String name, String englishName) {
-        this.iso = iso;
-        this.name = name;
-        this.englishName = englishName;
-    }
 }

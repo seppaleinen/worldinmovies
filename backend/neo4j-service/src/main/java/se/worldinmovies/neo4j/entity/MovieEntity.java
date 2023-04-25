@@ -14,13 +14,14 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-@Node("Movie")
+@Node(value = "Movie", labels = "Movie")
 @Data
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
 public class MovieEntity implements Serializable {
     @Id
+    @Property
     private Integer movieId;
     @Property
     private String imdbId;
@@ -32,10 +33,16 @@ public class MovieEntity implements Serializable {
     private double weight;
     @Version
     private Long version;
+    @Property
     private double voteAverage;
+    @Property
     private int voteCount;
+    @Property
     private double imdbVoteAverage;
+    @Property
     private int imdbVoteCount;
+    @Property
+    private String posterPath;
 
     @Relationship(direction = Relationship.Direction.INCOMING, type = "original_language")
     private LanguageRelations originalLanguage;
@@ -106,7 +113,7 @@ public class MovieEntity implements Serializable {
 
     private static <D, E, ID> Stream<E> map(List<D> list, Map<ID, E> map, Function<D, ID> getId) {
         return Optional.ofNullable(list).orElse(List.of()).stream()
-                .map(a -> Optional.ofNullable(map.get(getId.apply(a))))
+                .map(d -> Optional.ofNullable(map.get(getId.apply(d))))
                 .filter(Optional::isPresent)
                 .map(Optional::get);
     }
@@ -119,6 +126,7 @@ public class MovieEntity implements Serializable {
         this.weight = movie.calculateWeightedRating();
         this.voteCount = movie.getVoteCount();
         this.voteAverage = movie.getVoteAverage();
+        this.posterPath = movie.getPosterPath();
 
         this.tmpGenres = movie.getGenres();
         this.tmpLangs = movie.getSpokenLanguages();

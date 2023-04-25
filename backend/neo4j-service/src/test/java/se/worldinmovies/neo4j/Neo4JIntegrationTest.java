@@ -1,5 +1,6 @@
 package se.worldinmovies.neo4j;
 
+import ac.simons.neo4j.migrations.springframework.boot.autoconfigure.MigrationsAutoConfiguration;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
@@ -10,7 +11,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -126,6 +129,19 @@ public class Neo4JIntegrationTest {
     }
 
     @Test
+    public void consumeNewAndGetBestOf() {
+        int id = 2;
+        stubUrlWithData("/movie/" + id, "response.json");
+        stubUrlWithData("/votes/" + id, "votes.json");
+
+        producer.send(KafkaConsumer.TOPIC, "NEW", String.valueOf(id));
+
+        MovieEntity movie = verifyMovie(id, "Ariel");
+
+
+    }
+
+    @Test
     public void canConsumeNEW2() {
         int id = 644553;
         stubUrlWithData(null, "largeresponse.json");
@@ -151,15 +167,14 @@ public class Neo4JIntegrationTest {
 
         List<Integer> allIds = new ArrayList<>(ids);
         allIds.addAll(ids2);
-        System.out.println("SUPERDUPER: " + allIds);
         neo4jService.handleNewAndUpdates(ids)
                 .collectList()
-                .block()
+                .blockOptional().orElseThrow()
                 .forEach(id -> verifyMovie(id, null));
 
         neo4jService.handleNewAndUpdates(ids2)
                 .collectList()
-                .block()
+                .blockOptional().orElseThrow()
                 .forEach(id -> verifyMovie(id, null));
 
         allIds.forEach(id -> verifyMovie(id, null));

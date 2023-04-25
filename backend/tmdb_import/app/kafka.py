@@ -1,6 +1,7 @@
 import datetime
 import os
 import json
+from collections import defaultdict
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -26,6 +27,9 @@ def kafka_consumer():
         key_deserializer=lambda x: x.decode('utf-8'),
         value_deserializer=lambda x: x.decode('utf-8'))
     layer = get_channel_layer()
-    for message in consumer:
-        event = {"timestamp": datetime.datetime.now().isoformat(), "event": message.key, "value": message.value}
+    for message in consumer.poll(timeout_ms=10000, max_records=25).values():
+        grouped = defaultdict(list)
+        for event in message:
+            grouped[event.key].append(event.value)
+        event = {"timestamp": datetime.datetime.now().isoformat(), "events": grouped}
         async_to_sync(layer.group_send)('group', {"type": "events", "message": json.dumps(event)})
