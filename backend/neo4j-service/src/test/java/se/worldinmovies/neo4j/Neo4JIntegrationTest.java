@@ -1,19 +1,13 @@
 package se.worldinmovies.neo4j;
 
-import ac.simons.neo4j.migrations.springframework.boot.autoconfigure.MigrationsAutoConfiguration;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern;
-import org.junit.After;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -27,10 +21,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Signal;
 import reactor.test.StepVerifier;
-import se.worldinmovies.neo4j.domain.Genre;
-import se.worldinmovies.neo4j.domain.Movie;
 import se.worldinmovies.neo4j.entity.*;
 import se.worldinmovies.neo4j.repository.MovieRepository;
 
@@ -39,13 +30,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.junit.jupiter.api.Assertions.*;
@@ -79,13 +68,6 @@ public class Neo4JIntegrationTest {
         registry.add("spring.neo4j.authentication.password", neo4jContainer::getAdminPassword);
     }
 
-    @BeforeAll
-    static void beforeAll() {
-        stubUrlWithData("/dump/genres", "genres.json");
-        stubUrlWithData("/dump/langs", "languages.json");
-        stubUrlWithData("/dump/countries", "countries.json");
-    }
-
     @BeforeEach
     public void setup() {
         stubUrlWithData(null, "votes.json");
@@ -96,7 +78,7 @@ public class Neo4JIntegrationTest {
                 .block();
     }
 
-    @After
+    @AfterEach
     public void teardown() {
         WireMock.reset();
     }
@@ -108,7 +90,7 @@ public class Neo4JIntegrationTest {
         Awaitility.await().until(() -> movieRepository.existsById(123).block());
 
         producer.send(KafkaConsumer.TOPIC, "DELETE", "123");
-        Awaitility.await().until(() -> !movieRepository.existsById(123).block());
+        Awaitility.await().until(() -> !movieRepository.existsById(123).blockOptional().orElseThrow());
     }
 
     @Test
@@ -124,12 +106,12 @@ public class Neo4JIntegrationTest {
         assertFalse(movie.getProducedBy().isEmpty(), "There should be countries connected to movie");
         assertFalse(movie.getSpokenLanguages().isEmpty(), "There should be languages connected to movie");
         assertEquals(19, neo4jTemplate.count(GenreEntity.class).block());
-        //assertEquals(187, neo4jTemplate.count(LanguageEntity.class).block());
-        //assertEquals(251, neo4jTemplate.count(CountryEntity.class).block());
+        assertEquals(187, neo4jTemplate.count(LanguageEntity.class).block());
+        assertEquals(251, neo4jTemplate.count(CountryEntity.class).block());
     }
 
     @Test
-    public void consumeNewAndGetBestOf() {
+    public void consumeNewAndGetBestOfByLanguage() {
         int id = 2;
         stubUrlWithData("/movie/" + id, "response.json");
         stubUrlWithData("/votes/" + id, "votes.json");
@@ -138,6 +120,14 @@ public class Neo4JIntegrationTest {
 
         MovieEntity movie = verifyMovie(id, "Ariel");
 
+        MovieEntity foundMovie = movieRepository.findBestByLanguage(List.of("fi"), 0, 50)
+                .blockLast();
+
+        assertNotNull(foundMovie);
+        assertEquals(foundMovie.getMovieId(), movie.getMovieId());
+        assertEquals(foundMovie.getOriginalLanguage().getLanguage().getIso(), movie.getOriginalLanguage().getLanguage().getIso());
+        assertEquals(foundMovie.getGenres().stream().sorted(Comparator.comparing(GenreRelations::getId)).toList(),
+                movie.getGenres().stream().sorted(Comparator.comparing(GenreRelations::getId)).toList());
 
     }
 
@@ -155,7 +145,6 @@ public class Neo4JIntegrationTest {
         verifyMovie(644555, "Vroom!-Vroom!");
         verifyMovie(644571, "Meidän poikamme merellä");
         verifyMovie(644831, "Blithe Spirit");
-        //WireMock.verify(1, RequestPatternBuilder.newRequestPattern(RequestMethod.GET, WireMock.urlPathMatching("/dump/genres")));
     }
 
     @Test
@@ -183,7 +172,7 @@ public class Neo4JIntegrationTest {
 
     @Test
     public void as() {
-        List<Integer> ids = List.of(19995,19996,19997,19998,20002,20006,20009,20012,20013,20015,20017,20018,20019,20021,20024,20029,20030,20031,20032,20033,20044,20045,20048,20121,20941);
+        List<Integer> ids = List.of(19995, 19996, 19997, 19998, 20002, 20006, 20009, 20012, 20013, 20015, 20017, 20018, 20019, 20021, 20024, 20029, 20030, 20031, 20032, 20033, 20044, 20045, 20048, 20121, 20941);
         stubUrlWithData("/movie/" + ids.stream().map(String::valueOf).collect(Collectors.joining(",")), "largeresponse3.json");
 
         Flux.fromIterable(ids)
