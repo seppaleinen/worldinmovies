@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -120,7 +122,7 @@ public class Neo4JIntegrationTest {
 
         MovieEntity movie = verifyMovie(id, "Ariel");
 
-        MovieEntity foundMovie = movieRepository.findBestByLanguage(List.of("fi"), 0, 50)
+        MovieEntity foundMovie = movieRepository.findBestByLanguage(List.of("fi"), 0, 25)
                 .blockLast();
 
         assertNotNull(foundMovie);
@@ -208,7 +210,6 @@ public class Neo4JIntegrationTest {
                 .verify();
 
         verifyMovie(movieId, "Brother's War");
-
     }
 
     private MovieEntity verifyMovie(int id, String optionalMovieTitle) {

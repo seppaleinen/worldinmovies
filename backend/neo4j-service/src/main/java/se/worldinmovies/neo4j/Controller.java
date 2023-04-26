@@ -1,6 +1,5 @@
 package se.worldinmovies.neo4j;
 
-import jakarta.websocket.server.PathParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import se.worldinmovies.neo4j.domain.Movie;
 import se.worldinmovies.neo4j.entity.MovieEntity;
 import se.worldinmovies.neo4j.repository.MovieRepository;
 import se.worldinmovies.neo4j.xml.LanguageMapper;
@@ -42,33 +40,43 @@ public class Controller {
         Flux<MovieEntity> a;
         switch (by) {
             case PRODUCED_BY -> a = movieRepository.findBestByProducerCountry(countryCode, languagesFromCountryCode,
-                            0, 25)
-                    .log("produced");
-            case LANGUAGE -> a = movieRepository.findBestByLanguage(languagesFromCountryCode, 0, 25)
-                    .log("lang");
+                            0, 25);
+            case LANGUAGE -> a = movieRepository.findBestByLanguage(languagesFromCountryCode, 0, 25);
             default -> a = Flux.empty();
         }
         return a.map(JsonMovie::createFromEntity)
                 .distinct(JsonMovie::id);
     }
 
-    public record Status(long total, long fetched, double percentageDone) {
+    record Status(long total, long fetched, double percentageDone) {
         static Status createFromEntity(long count, Status tmdbStatus) {
             double percentage = ((double) count / (double) tmdbStatus.total) * 100;
             return new Status(tmdbStatus.fetched, count, percentage);
         }
     }
 
-    public record JsonMovie(int id, String title, String engTitle, String posterPath) {
+    record JsonMovie(String imdbId,
+                            int id,
+                            String originalTitle,
+                            String enTitle,
+                            String posterPath,
+                            String releaseDate,
+                            double voteAverage,
+                            int voteCount) {
         static JsonMovie createFromEntity(MovieEntity movie) {
-            return new JsonMovie(movie.getMovieId(),
+            return new JsonMovie(
+                    movie.getImdbId(),
+                    movie.getMovieId(),
                     movie.getOriginalTitle(),
                     movie.getEngTitle(),
-                    movie.getPosterPath());
+                    movie.getPosterPath(),
+                    movie.getReleaseDate(),
+                    movie.getVoteAverage(),
+                    movie.getVoteCount());
         }
     }
 
-    public enum By {
+    enum By {
         PRODUCED_BY,
         LANGUAGE
     }

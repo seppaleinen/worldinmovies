@@ -37,6 +37,8 @@ public class Movie {
     private double voteAverage;
     @JsonProperty(value = "vote_count")
     private int voteCount;
+    @JsonProperty(value = "release_date")
+    private String releaseDate;
 
     /**
      * The formula for calculating the Top Rated 250 Titles gives a true Bayesian estimate:

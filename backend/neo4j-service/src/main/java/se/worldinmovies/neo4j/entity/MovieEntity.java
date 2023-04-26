@@ -43,6 +43,8 @@ public class MovieEntity implements Serializable {
     private int imdbVoteCount;
     @Property
     private String posterPath;
+    @Property
+    private String releaseDate;
 
     @Relationship(direction = Relationship.Direction.INCOMING, type = "original_language")
     private LanguageRelations originalLanguage;
@@ -127,6 +129,7 @@ public class MovieEntity implements Serializable {
         this.voteCount = movie.getVoteCount();
         this.voteAverage = movie.getVoteAverage();
         this.posterPath = movie.getPosterPath();
+        this.releaseDate = movie.getReleaseDate();
 
         this.tmpGenres = movie.getGenres();
         this.tmpLangs = movie.getSpokenLanguages();
