@@ -42,9 +42,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Testcontainers
 @ActiveProfiles("test")
-@EmbeddedKafka(topics = KafkaConsumer.TOPIC, partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9095", "port=9095"})
+@EmbeddedKafka(topics = Neo4JIntegrationTest.testtopic, partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9095", "port=9095"})
 @WireMockTest(httpPort = 9999)
 public class Neo4JIntegrationTest {
+    static final String testtopic = "supertopic";
     @Container
     static Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5")
             .withStartupTimeout(Duration.ofMinutes(5));
@@ -60,6 +61,7 @@ public class Neo4JIntegrationTest {
 
     @DynamicPropertySource
     static void neo4jProperties(DynamicPropertyRegistry registry) {
+        registry.add("kafka.topic", () -> Neo4JIntegrationTest.testtopic);
         registry.add("tmdb_url", () -> "http://localhost:9999");
         registry.add("base_url", () -> "http://localhost:9999");
         registry.add("spring.neo4j.uri", neo4jContainer::getBoltUrl);
@@ -88,7 +90,7 @@ public class Neo4JIntegrationTest {
 
         Awaitility.await().until(() -> movieRepository.existsById(123).block());
 
-        producer.send(KafkaConsumer.TOPIC, "DELETE", "123");
+        producer.send(Neo4JIntegrationTest.testtopic, "DELETE", "123");
         Awaitility.await().until(() -> !movieRepository.existsById(123).blockOptional().orElseThrow());
     }
 
@@ -98,7 +100,7 @@ public class Neo4JIntegrationTest {
         stubUrlWithData("/movie/" + id, "response.json");
         stubUrlWithData("/votes/" + id, "votes.json");
 
-        producer.send(KafkaConsumer.TOPIC, "NEW", String.valueOf(id));
+        producer.send(Neo4JIntegrationTest.testtopic, "NEW", String.valueOf(id));
 
         MovieEntity movie = verifyMovie(id, "Ariel");
         assertFalse(movie.getGenres().isEmpty(), "There should be genres connected to movie");
@@ -116,7 +118,7 @@ public class Neo4JIntegrationTest {
 
         Flux.just(644553, 644555, 644571, 644584, 644586, 644591, 644601, 644613, 644614, 644625, 644636, 644650, 644652, 644670, 644709, 644712, 644754, 644756, 644761, 644765, 644775, 644784, 644822, 644828, 644831)
                 .map(String::valueOf)
-                .map(a -> producer.send(KafkaConsumer.TOPIC, "NEW", a))
+                .map(a -> producer.send(Neo4JIntegrationTest.testtopic, "NEW", a))
                 .subscribe();
 
         verifyMovie(id, "Glasba je časovna umetnost 3: LP film Laibach");

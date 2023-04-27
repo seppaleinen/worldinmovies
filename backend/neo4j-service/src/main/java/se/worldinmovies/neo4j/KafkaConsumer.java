@@ -24,10 +24,12 @@ import java.util.stream.Collectors;
 @Log4j2
 @Service
 public class KafkaConsumer {
-    public static final String TOPIC = "data_dump";
 
     private final ReceiverOptions<String, String> receiverOptions;
     private final Neo4jService neo4jService;
+
+    @Value("${kafka.topic:movie}")
+    private String kafkaTopic;
 
     @Autowired
     public KafkaConsumer(@Value("${spring.kafka.bootstrap-servers}") String bootstrapServers, Neo4jService neo4jService) {
@@ -89,7 +91,7 @@ public class KafkaConsumer {
 
     @PostConstruct
     public void init() {
-        consumeMessages(TOPIC)
+        consumeMessages(kafkaTopic)
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe(ReceiverOffset::acknowledge);
     }
