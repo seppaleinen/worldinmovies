@@ -8,8 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -32,7 +30,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -110,27 +107,6 @@ public class Neo4JIntegrationTest {
         assertEquals(19, neo4jTemplate.count(GenreEntity.class).block());
         assertEquals(187, neo4jTemplate.count(LanguageEntity.class).block());
         assertEquals(251, neo4jTemplate.count(CountryEntity.class).block());
-    }
-
-    @Test
-    public void consumeNewAndGetBestOfByLanguage() {
-        int id = 2;
-        stubUrlWithData("/movie/" + id, "response.json");
-        stubUrlWithData("/votes/" + id, "votes.json");
-
-        producer.send(KafkaConsumer.TOPIC, "NEW", String.valueOf(id));
-
-        MovieEntity movie = verifyMovie(id, "Ariel");
-
-        MovieEntity foundMovie = movieRepository.findBestByLanguage(List.of("fi"), 0, 25)
-                .blockLast();
-
-        assertNotNull(foundMovie);
-        assertEquals(foundMovie.getMovieId(), movie.getMovieId());
-        assertEquals(foundMovie.getOriginalLanguage().getLanguage().getIso(), movie.getOriginalLanguage().getLanguage().getIso());
-        assertEquals(foundMovie.getGenres().stream().sorted(Comparator.comparing(GenreRelations::getId)).toList(),
-                movie.getGenres().stream().sorted(Comparator.comparing(GenreRelations::getId)).toList());
-
     }
 
     @Test

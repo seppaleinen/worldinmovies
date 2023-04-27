@@ -50,13 +50,12 @@ public class CountryMapper {
         //# Slovenia (SI)
     }
 
-    public static String getOldFromNew(String countryCode) {
-        return Optional.ofNullable(countryMap.get(countryCode))
-                .map(newCountryCodes -> newCountryCodes
-                        .stream()
-                        .filter(a -> a.equals(countryCode))
-                        .findAny()
-                        .orElse(countryCode))
-                .orElse(countryCode);
+    public static List<String> getOldFromNew(String countryCode) {
+        return countryMap.entrySet()
+                .stream()
+                .filter(a -> a.getValue().contains(countryCode))
+                .findAny()
+                .map(a -> List.of(countryCode, a.getKey()))
+                .orElse(List.of(countryCode));
     }
 }
