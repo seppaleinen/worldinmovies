@@ -2,8 +2,11 @@
 
 ### Mongo restore
 ```bash
+docker exec -ti worldinmovies_mongo_1 mongoexport -d tmdb -c movie  --out datadump.json
+
 docker cp worldinmovies_backend_1:/app/datadump.json worldinmovies_mongo_1:/
 
-docker cp datadump.json worldinmovies_mongo_1:/ && 
+docker cp datadump.json worldinmovies_mongo_1:/ 
+
 docker exec -ti worldinmovies_mongo_1 mongoimport -d tmdb -c movie --mode upsert --file datadump.json
 ```
