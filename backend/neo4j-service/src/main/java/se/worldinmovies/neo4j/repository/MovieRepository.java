@@ -12,7 +12,7 @@ import java.util.List;
 public interface MovieRepository extends ReactiveNeo4jRepository<MovieEntity, Integer> {
     @Query(value = "MATCH (g:Genre)-[gr]->(m:Movie)<-[lr:original_language]-(l:Language) " +
             "WHERE l.iso in ($languageCode) " +
-            "RETURN DISTINCT * " +
+            "RETURN DISTINCT m " +
             "ORDER BY m.weight DESC " +
             "SKIP $skip LIMIT $limit")
     Flux<MovieEntity> findBestByLanguage(List<String> languageCode, int skip, int limit);
@@ -20,7 +20,7 @@ public interface MovieRepository extends ReactiveNeo4jRepository<MovieEntity, In
     @Query(value = "MATCH (l:Language)-[lr]->(m:Movie)-[cr:produced_by]->(c:Country) " +
             "WHERE c.iso = $countryCode " +
             "AND l.iso in ($languageCodes) " +
-            "RETURN  DISTINCT * " +
+            "RETURN  DISTINCT m " +
             "ORDER BY m.weight DESC " +
             "SKIP $skip LIMIT $limit")
     Flux<MovieEntity> findBestByProducerCountry(String countryCode, List<String> languageCodes, int skip, int limit);

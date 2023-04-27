@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
@@ -27,11 +28,8 @@ public class TmdbService {
                     .retrieve()
                     .bodyToFlux(clazz)
                     .retryWhen(Retry.backoff(3, Duration.ofSeconds(1)));
-        } catch (WebClientResponseException e) {
-            System.out.println("ResponseException: " + e.getMessage());
-            throw e;
-        } catch (WebClientRequestException e) {
-            System.out.println("RequestException: " + e.getMessage());
+        } catch (WebClientException e) {
+            log.error("ResponseException: " + e.getMessage());
             throw e;
         }
     }

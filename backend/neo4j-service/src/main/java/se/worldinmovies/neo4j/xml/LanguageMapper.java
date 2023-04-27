@@ -1,9 +1,11 @@
 package se.worldinmovies.neo4j.xml;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
-import java.io.File;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,22 +13,23 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 public class LanguageMapper {
     private static final Map<String, List<String>> languagesToCountryMap = new ConcurrentHashMap<>();
+    private static final Resource resourceFile = new ClassPathResource("territory-info.xml");
 
     public LanguageMapper() {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(TerritoryInfo.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            File territoryXml = Paths.get(LanguageMapper.class.getClassLoader().getResource("territory-info.xml").getPath()).toFile();
-            TerritoryInfo territoryInfo = (TerritoryInfo) jaxbUnmarshaller.unmarshal(territoryXml);
+            TerritoryInfo territoryInfo = (TerritoryInfo) jaxbUnmarshaller.unmarshal(resourceFile.getInputStream());
             languagesToCountryMap.putAll(territoryInfo.getTerritoryList()
                     .stream()
                     .collect(Collectors.groupingBy(TerritoryInfo.Territory::getType,
                             Collectors.flatMapping(LanguageMapper::streamLanguagesFromTerritory,
                                     Collectors.toList()))));
         } catch (Exception e) {
-            //Ignore
+            log.error("Something terrible has happened: {}", e.getMessage());
         }
     }
 

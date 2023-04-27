@@ -16,6 +16,7 @@ public class LanguageTest {
     public void setup() {
         this.languageMapper = new LanguageMapper();
     }
+
     @Test
     void testSE() {
         List<String> language = languageMapper.getLanguagesFromCountryCode("SE");

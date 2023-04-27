@@ -1,5 +1,6 @@
 package se.worldinmovies.neo4j;
 
+import lombok.extern.slf4j.Slf4j;
 import org.neo4j.driver.Driver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +35,7 @@ import static org.springframework.data.neo4j.repository.config.ReactiveNeo4jRepo
 @EnableTransactionManagement
 @EnableKafka
 @Configuration
+@Slf4j
 public class Config {
     @Bean(name = "tmdbWebClient")
     public WebClient webClient(@Value("${tmdb_url}") String tmdbUrl, WebClient.Builder webClientBuilder) {

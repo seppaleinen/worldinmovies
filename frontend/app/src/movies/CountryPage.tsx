@@ -12,20 +12,20 @@ const CountryPage = inject('movieStore')
 (observer(({movieStore}: { movieStore?: MovieStore }) => {
 
     const navigate = useNavigate();
-    const backendUrl = process.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : process.env.REACT_APP_BACKEND_URL;
+    const neoUrl = process.env.REACT_APP_NEO_URL === undefined ? '/neo' : process.env.REACT_APP_NEO_URL;
     const params = useParams();
     const [toggleRankedMovies, setToggleRankedMovies] = useState<string>('best')
     const [movies, setMovies] = useState<Movie[]>([])
 
     useEffect(() => {
-        axios.get(backendUrl + "/view/best/" + params.countryCode!.toUpperCase(), {timeout: 10000})
+        axios.get(neoUrl + "/view/best/" + params.countryCode!.toUpperCase(), {timeout: 10000})
             .then((response: AxiosResponse) => {
-                setMovies(response.data.result);
+                setMovies(response.data);
             })
             .catch(function (error: any) {
                 console.log(error);
             });
-    })
+    }, [])
 
     const renderTopMovies = (store: MovieStore) => {
         const data = toggleRankedMovies === 'best' ?
@@ -40,7 +40,7 @@ const CountryPage = inject('movieStore')
                         <img className={styles.poster} src={`https://image.tmdb.org/t/p/w200/${item.poster_path}`}
                              alt={item.en_title}/>
                         <div className={styles.movieCardText}>
-                            <div>{item.original_title} ({item.release_date.slice(0, 4)})</div>
+                            <div>{item.original_title} {item.release_date ?  "(" + item.release_date.slice(0, 4) + ")" : null}</div>
                             {item.en_title ? <div className={styles.englishTitle}>'{item.en_title}'</div> : null}
                             <div>{item.vote_average}</div>
                         </div>

@@ -16,7 +16,7 @@ const MovieDetails = (props: Props) => {
             .catch(function (error: any) {
                 console.error(error);
             });
-    })
+    }, [])
     if (movie) {
         return (
             <div className={styles.container}>

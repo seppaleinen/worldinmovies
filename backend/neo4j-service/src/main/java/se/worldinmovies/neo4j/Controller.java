@@ -1,18 +1,23 @@
 package se.worldinmovies.neo4j;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import se.worldinmovies.neo4j.entity.MovieEntity;
 import se.worldinmovies.neo4j.repository.MovieRepository;
 import se.worldinmovies.neo4j.xml.LanguageMapper;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @Slf4j
 public class Controller {
@@ -36,10 +41,11 @@ public class Controller {
     @GetMapping(value = "/view/best/{countryCode}")
     Flux<JsonMovie> findBestFromCountry(@PathVariable String countryCode,
                                         @RequestParam(value = "by", required = false, defaultValue = "PRODUCED_BY") By by) {
-        final List<String> languagesFromCountryCode = languageMapper.getLanguagesFromCountryCode(countryCode);
+        List<String> languagesFromCountryCode = languageMapper.getLanguagesFromCountryCode(countryCode);
+        String newCountryCode = CountryMapper.getOldFromNew(countryCode);
         Flux<MovieEntity> a;
         switch (by) {
-            case PRODUCED_BY -> a = movieRepository.findBestByProducerCountry(countryCode, languagesFromCountryCode,
+            case PRODUCED_BY -> a = movieRepository.findBestByProducerCountry(newCountryCode, languagesFromCountryCode,
                             0, 25);
             case LANGUAGE -> a = movieRepository.findBestByLanguage(languagesFromCountryCode, 0, 25);
             default -> a = Flux.empty();
@@ -48,10 +54,10 @@ public class Controller {
                 .distinct(JsonMovie::id);
     }
 
-    record Status(long total, long fetched, double percentageDone) {
+    record Status(long total, long fetched, @JsonProperty("percentageDone") BigDecimal percentageDone) {
         static Status createFromEntity(long count, Status tmdbStatus) {
             double percentage = ((double) count / (double) tmdbStatus.total) * 100;
-            return new Status(tmdbStatus.fetched, count, percentage);
+            return new Status(tmdbStatus.fetched, count, new BigDecimal(String.valueOf(percentage)).setScale(2, RoundingMode.HALF_UP));
         }
     }
 
@@ -61,7 +67,7 @@ public class Controller {
                             String enTitle,
                             String posterPath,
                             String releaseDate,
-                            double voteAverage,
+                            BigDecimal voteAverage,
                             int voteCount) {
         static JsonMovie createFromEntity(MovieEntity movie) {
             return new JsonMovie(
@@ -71,7 +77,7 @@ public class Controller {
                     movie.getEngTitle(),
                     movie.getPosterPath(),
                     movie.getReleaseDate(),
-                    movie.getVoteAverage(),
+                    new BigDecimal(String.valueOf(movie.getVoteAverage())).setScale(1, RoundingMode.HALF_UP),
                     movie.getVoteCount());
         }
     }

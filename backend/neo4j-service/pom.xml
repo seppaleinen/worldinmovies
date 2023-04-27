@@ -160,6 +160,9 @@
                     <profiles>
                         <profile>local</profile>
                     </profiles>
+                    <image>
+                        <builder>dashaun/builder:tiny</builder>
+                    </image>
                 </configuration>
             </plugin>
         </plugins>
