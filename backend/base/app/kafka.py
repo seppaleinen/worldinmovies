@@ -46,7 +46,7 @@ def kafka_consumer():
                             new_movie_ids = []
                             for new_id in values:
                                 if str(new_id) not in [str(found_id) for found_id in found_ids]:
-                                    new_movie_ids.append(x)
+                                    new_movie_ids.append(x["id"])
                             for new_movie_id in new_movie_ids:
                                 movie = Movie(id=new_movie_id, fetched=True)
                                 movie.add_fetched_info(found[new_movie_id])
