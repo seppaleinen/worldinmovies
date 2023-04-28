@@ -36,7 +36,9 @@ public class Controller {
     }
 
     @GetMapping(value = "/view/best/{countryCode}")
-    Flux<JsonMovie> findBestFromCountry(@PathVariable String countryCode) {
+    Flux<JsonMovie> findBestFromCountry(@PathVariable String countryCode,
+                                        @RequestParam(value = "skip", required = false, defaultValue = "0") int skip,
+                                        @RequestParam(value = "limit", required = false, defaultValue = "25") int    limit) {
         List<String> languagesFromCountryCode = languageMapper.getLanguagesFromCountryCode(countryCode);
         List<String> newCountryCode = CountryMapper.getOldFromNew(countryCode);
 
@@ -50,8 +52,8 @@ public class Controller {
         Map<String, Object> params = Map.of(
                 "countryCode", newCountryCode,
                 "languageCodes", languagesFromCountryCode,
-                "skip", 0,
-                "limit", 25);
+                "skip", skip,
+                "limit", limit);
 
         return neo4jTemplate.findAll(query, params, MovieEntity.class)
                 .map(JsonMovie::createFromEntity);
@@ -71,7 +73,8 @@ public class Controller {
                             String posterPath,
                             String releaseDate,
                             BigDecimal voteAverage,
-                            int voteCount) {
+                            int voteCount,
+                            BigDecimal weight) {
         static JsonMovie createFromEntity(MovieEntity movie) {
             return new JsonMovie(
                     movie.getImdbId(),
@@ -81,7 +84,8 @@ public class Controller {
                     movie.getPosterPath(),
                     movie.getReleaseDate(),
                     new BigDecimal(String.valueOf(movie.getVoteAverage())).setScale(1, RoundingMode.HALF_UP),
-                    movie.getVoteCount());
+                    movie.getVoteCount(),
+                    new BigDecimal(String.valueOf(movie.getWeight())));
         }
     }
 }

@@ -16,7 +16,7 @@ const MovieDetails = (props: Props) => {
             .catch(function (error: any) {
                 console.error(error);
             });
-    }, [])
+    }, [params, tmdbUrl])
     if (movie) {
         return (
             <div className={styles.container}>
