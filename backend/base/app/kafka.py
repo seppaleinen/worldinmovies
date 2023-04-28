@@ -11,7 +11,7 @@ from django.db import transaction
 from collections import defaultdict
 
 kafka_url = 'kafka:9092' if os.getenv('ENVIRONMENT', 'docker') == 'docker' else 'localhost:9093'
-tmdb_url = 'tmdb:8020' if os.getenv('ENVIRONMENT', 'docker') == 'docker' else 'http://localhost:8020'
+tmdb_url = 'http://tmdb:8020' if os.getenv('ENVIRONMENT', 'docker') == 'docker' else 'http://localhost:8020'
 
 
 def kafka_consumer():
