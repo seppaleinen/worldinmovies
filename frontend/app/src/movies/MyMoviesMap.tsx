@@ -6,11 +6,13 @@ import {IMapObject} from "@react-jvectormap/core/dist/types";
 import customWorldMapJson from './customworldmap.json';
 import {useNavigate} from "react-router-dom";
 import MovieStore from "../stores/MovieStore";
+import {MyMovie} from "../Types";
+import mapCountry from "../CountryMapper";
 
 const MyMoviesMap = inject('movieStore')
-(observer(({movieStore}: { movieStore?: MovieStore}) => {
-    let myRef: RefObject<IMapObject> = React.createRef();
-    const [myMovies, setMyMovies] = useState<{}>({})
+(observer(({movieStore}: { movieStore?: MovieStore }) => {
+    const myRef: RefObject<IMapObject> = React.createRef();
+    const [myMovies, setMyMovies] = useState<Record<string, MyMovie[]>>(movieStore!.myMovies)
     const navigate = useNavigate();
 
     const onRegionClick = (event: any, code: string) => {
@@ -20,25 +22,25 @@ const MyMoviesMap = inject('movieStore')
         navigate("/country/" + code);
     };
 
-    useEffect(() => {
-        movieStore!.hydrateStore().then(() => {
-            setMyMovies(movieStore!.myMovies);
-            // @ts-ignore
-            let mapObject = myRef.current!.getMapObject();
-            const generateColors = () => {
-                let colors: Record<string, string> = {}, key;
+    const generateColors = (mapObject: any) => {
+        let colors: Record<string, string> = {}, key;
 
-                if (myRef?.current) {
-                    for (key in mapObject.regions) {
-                        const found = myMovies !== undefined && key in myMovies;
-                        colors[key] = (found ? 'seen' /* light green */ : 'unseen' /* gray */);
-                    }
-                }
-                return colors;
-            };
-            mapObject.series.regions[0].setValues(generateColors());
-        });
-    }, [myMovies, movieStore, myRef])
+        if (myRef?.current) {
+            for (key in mapObject.regions) {
+                let mappedCountries = mapCountry(key);
+                const found = mappedCountries.some(b => myMovies !== undefined && b in myMovies && myMovies[b].length !== 0)
+                colors[key] = (found ? 'seen' /* light green */ : 'unseen' /* gray */);
+            }
+        }
+        return colors;
+    };
+
+    useEffect(() => {
+        // @ts-ignore
+        let mapObject = myRef.current!.getMapObject();
+        mapObject.series.regions[0].setValues(generateColors(mapObject));
+
+    }, [myMovies])
 
     return (
         <div className="map-container inner-map-container">

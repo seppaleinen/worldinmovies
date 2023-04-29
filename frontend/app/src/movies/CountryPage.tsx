@@ -63,7 +63,7 @@ const CountryPage = inject('movieStore')
                                      alt={item.en_title}/>
                                 <div className={styles.movieCardText}>
                                     <div>{item.original_title} {item.release_date ? "(" + item.release_date.slice(0, 4) + ")" : null}</div>
-                                    {item.en_title && item.en_title !== item.original_title ?
+                                    {item.en_title && item.en_title.trim() !== item.original_title.trim() ?
                                         <div className={styles.englishTitle}>'{item.en_title}'</div> : null}
                                     <div>{item.vote_average}</div>
                                 </div>

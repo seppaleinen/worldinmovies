@@ -10,7 +10,7 @@ RUN find src/
 
 RUN mvn -s settings.xml clean install -DskipTests
 
-FROM --platform=linux/arm64 amazoncorretto:17-al2023 as prod
+FROM amazoncorretto:17-al2023 as prod
 
 ENV TZ Europe/Stockholm
 

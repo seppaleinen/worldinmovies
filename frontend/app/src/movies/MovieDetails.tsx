@@ -2,11 +2,16 @@ import styles from "./MovieDetails.module.scss"
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import axios, {AxiosResponse} from "axios";
+import MovieStore from "../stores/MovieStore";
+import {inject, observer} from "mobx-react";
+import {checkMark} from "../Svgs";
 
-const MovieDetails = (props: Props) => {
+const MovieDetails = inject('movieStore')
+(observer(({movieStore}: { movieStore?: MovieStore }) => {
     const params = useParams();
     const tmdbUrl = process.env.REACT_APP_TMDB_URL === undefined ? '/tmdb' : process.env.REACT_APP_TMDB_URL;
     const [movie, setMovie] = useState<any>()
+    const [seen, setSeen] = useState<boolean>(movieStore!.hasSeen(params.movieId!));
 
     useEffect(() => {
         axios.get(tmdbUrl + "/movie/" + params.movieId, {timeout: 5000})
@@ -16,8 +21,23 @@ const MovieDetails = (props: Props) => {
             .catch(function (error: any) {
                 console.error(error);
             });
-    }, [params, tmdbUrl])
+    }, [params, tmdbUrl]);
+
+    const seenit = () => {
+        console.log("CLICKED");
+        setSeen(!seen);
+        let store = movieStore!;
+        let movieId = params.movieId!;
+        let countries = movie.production_countries.map((a: any) => a.iso_3166_1)
+        if(seen) {
+            store.removeSeen(countries, movieId);
+        } else {
+            store.addSeen(countries, movie);
+        }
+    }
+
     if (movie) {
+        const seenClass = seen ? styles.seen : styles.notseen;
         return (
             <div className={styles.container}>
                 <div className={styles.upperArea}>
@@ -67,7 +87,9 @@ const MovieDetails = (props: Props) => {
                                 {Math.round(movie.vote_average)}/10
                             </div>
                         </div>
-                        <div className={`${styles.button} ${styles.seenit}`}>I've seen it</div>
+
+                        <div onClick={() => seenit()}
+                             className={`${styles.button} ${styles.seenit} ${seenClass}`}>I've seen it{seen ? checkMark() : null}</div>
                     </div>
                 </div>
 
@@ -90,9 +112,7 @@ const MovieDetails = (props: Props) => {
             <div className={styles.container}>Could not get movie data</div>
         )
     }
-}
+}))
 
-export interface Props {
-}
 
 export default MovieDetails;
