@@ -44,7 +44,10 @@ const MovieDetails = inject('movieStore')
                          alt={movie.title}/>
                 </div>
                 <h1 className={styles.title}>{`${movie.original_title} (${movie.release_date.slice(0, 4)})`}</h1>
-                <div className={`${styles.title} ${styles.eng_title}`}>´{movie.title}´</div>
+                {movie.title !== movie.original_title ?
+                    <div className={`${styles.title} ${styles.eng_title}`}>´{movie.title}´</div>
+                    : null
+                }
                 <div className={styles.countries}>
                     {movie.production_countries
                         .map((item: any) => {
