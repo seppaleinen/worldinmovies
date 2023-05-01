@@ -1,6 +1,6 @@
 import styles from "./MovieDetails.module.scss"
 import React, {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
+import {NavLink, useParams} from "react-router-dom";
 import axios, {AxiosResponse} from "axios";
 import MovieStore from "../stores/MovieStore";
 import {inject, observer} from "mobx-react";
@@ -11,7 +11,7 @@ const MovieDetails = inject('movieStore')
     const params = useParams();
     const tmdbUrl = process.env.REACT_APP_TMDB_URL === undefined ? '/tmdb' : process.env.REACT_APP_TMDB_URL;
     const [movie, setMovie] = useState<any>()
-    const [seen, setSeen] = useState<boolean>(movieStore!.hasSeen(params.movieId!));
+    const [hasSeen, setHasSeen] = useState<boolean>(movieStore!.hasSeen(params.movieId!));
 
     useEffect(() => {
         axios.get(tmdbUrl + "/movie/" + params.movieId, {timeout: 5000})
@@ -23,13 +23,12 @@ const MovieDetails = inject('movieStore')
             });
     }, [params, tmdbUrl]);
 
-    const seenit = () => {
-        console.log("CLICKED");
-        setSeen(!seen);
+    const toggleSeenButton = () => {
+        setHasSeen(!hasSeen);
         let store = movieStore!;
         let movieId = params.movieId!;
         let countries = movie.production_countries.map((a: any) => a.iso_3166_1)
-        if(seen) {
+        if (hasSeen) {
             store.removeSeen(countries, movieId);
         } else {
             store.addSeen(countries, movie);
@@ -37,63 +36,62 @@ const MovieDetails = inject('movieStore')
     }
 
     if (movie) {
-        const seenClass = seen ? styles.seen : styles.notseen;
+        const seenClass = hasSeen ? styles.seen : styles.notseen;
         return (
             <div className={styles.container}>
-                <div className={styles.upperArea}>
-                    <img className={styles.poster} src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
+                <div className={styles.poster}>
+                    <img src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
                          alt={movie.title}/>
-                    <div className={styles.upperTextArea}>
-                        <div className={styles.titles}>
-                            <div className={styles.title}>{movie.title} ({movie.release_date.slice(0, 4)})</div>
-                            <div className={styles.countries}>
-                                {movie.production_countries
-                                    .map((item: any) => {
-                                        return item.iso_3166_1 === 'US' ? 'USA' : item.name
-                                    })
-                                    .map((name: string) => {
-                                        return <div key={name}
-                                                    className={`${styles.country} ${styles.button}`}>{name}</div>
-                                    })}
-                            </div>
-                        </div>
-                        <div className={styles.plot}>{movie.overview}</div>
-                        <div className={styles.bold}>
-                            <h4>Director: </h4>
-                            <div className={styles.notbold}>
-                                {movie.credits.crew.filter((p: any) => {
-                                    return p.job === 'Director'
-                                })
-                                    .map((item: any) => {
-                                        return <div key={item.credit_id}>{item.name}</div>
-                                    })}
-                            </div>
-                        </div>
-                        <div className={styles.bold}>
-                            <h4>Writers: </h4>
-                            <div className={styles.notbold}>
-                                {movie.credits.crew
-                                    .filter((p: any) => {
-                                        return p.department === 'Writing'
-                                    })
-                                    .map((item: any) => {
-                                        return <div key={item.credit_id}>{item.name} ({item.job})</div>
-                                    })}
-                            </div>
-                        </div>
-                        <div className={styles.bold}>
-                            <h4>Ratings: </h4>
-                            <div className={styles.notbold}>
-                                {Math.round(movie.vote_average)}/10
-                            </div>
-                        </div>
-
-                        <div onClick={() => seenit()}
-                             className={`${styles.button} ${styles.seenit} ${seenClass}`}>I've seen it{seen ? checkMark() : null}</div>
+                </div>
+                <h1 className={styles.title}>{`${movie.original_title} (${movie.release_date.slice(0, 4)})`}</h1>
+                <div className={`${styles.title} ${styles.eng_title}`}>´{movie.title}´</div>
+                <div className={styles.countries}>
+                    {movie.production_countries
+                        .map((item: any) => {
+                            let iso = item.iso_3166_1 === 'US' ? 'USA' : item.name
+                            return <NavLink key={iso}
+                                            className={`${styles.button}`}
+                                            to={`/country/${item.iso_3166_1}`}>{iso}
+                            </NavLink>
+                        })}
+                </div>
+                <div className={styles.plot}>{movie.overview}</div>
+                <div className={`${styles.bold} ${styles.directors}`}>
+                    <h4>Director: </h4>
+                    <div className={styles.notbold}>
+                        {movie.credits.crew.filter((p: any) => {
+                            return p.job === 'Director'
+                        })
+                            .map((item: any) => {
+                                return <div key={item.credit_id}>{item.name}</div>
+                            })}
+                    </div>
+                </div>
+                <div className={`${styles.bold} ${styles.writers}`}>
+                    <h4>Writers: </h4>
+                    <div className={styles.notbold}>
+                        {movie.credits.crew
+                            .filter((p: any) => {
+                                return p.department === 'Writing'
+                            })
+                            .map((item: any) => {
+                                return <div key={item.credit_id}>{item.name} ({item.job})</div>
+                            })}
+                    </div>
+                </div>
+                <div className={`${styles.bold} ${styles.ratings}`}>
+                    <h4>Ratings: </h4>
+                    <div className={styles.notbold}>
+                        {Math.round(movie.vote_average)}/10
                     </div>
                 </div>
 
-                <div>{movie.runtime} minutes</div>
+                <div onClick={() => toggleSeenButton()}
+                     className={`${styles.button} ${styles.seenit} ${seenClass}`}>I've seen
+                    it{hasSeen ? checkMark() : null}
+                </div>
+
+                <div className={styles.runtime}>{movie.runtime} minutes</div>
 
                 <div className={styles.genres}>
                     {movie.genres

@@ -1,58 +1,72 @@
 .container {
   padding: clamp(16px, 2.4vw, 24px) clamp(24px, 5vw, 80px);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.upperArea {
-  display: flex;
-  flex-direction: row;
-  position: relative;
+  display: inline-grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: repeat(auto-fit, 1fr);
+  grid-gap: 8px;
+  align-items: normal;
+  grid-template-areas:
+  "title title"
+  "poster produced_by"
+  "poster plot"
+  "poster directors"
+  "poster writers"
+  "poster ratings"
+  "poster seenit"
+  "eng_title eng_title"
+  "runtime ."
+  "genres .";
 }
 
 .poster {
-  height: auto;
-  width: clamp(100px, 40%, 300px);
+  grid-area: poster;
+  width: clamp(100px, 80%, 300px);
+  aspect-ratio: 16/9;
+
+  img {
+    width: 100%;
+  }
 }
 
 .countries {
+  grid-area: produced_by;
   display: flex;
-  flex-direction: row;
   gap: 8px;
-}
-
-.upperTextArea {
-  display: flex;
-  flex-direction: column;
-  padding: 0 8px;
-  max-width: 80%;
 }
 
 .title {
+  grid-area: title;
   font-size: 2rem;
+
+  padding: 8px 16px;
+  margin: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  align-items: center;
+  width: fit-content;
 }
 
-.titles {
-  grid-area: title;
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-
-  div:not(.countries) {
-    padding: 8px 16px;
-    border-radius: 8px;
-    background: var(--accent);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    min-width: fit-content;
-  }
+.eng_title {
+  grid-area: eng_title;
+  font-size: 1.2rem;
+  width: fit-content;
 }
 
 .plot {
   grid-area: plot;
   padding: 8px 0;
+}
+
+.directors {
+  grid-area: directors;
+}
+
+.writers {
+  grid-area: writers;
+}
+
+.ratings {
+  grid-area: ratings;
 }
 
 .button {
@@ -62,6 +76,7 @@
   padding: 8px 8px;
   width: fit-content;
   border-radius: 8px;
+  height: fit-content;
 }
 
 .bold {
@@ -79,11 +94,11 @@
 }
 
 .seenit {
-  position: absolute;
-  bottom: 0;
-  display: flex;
-  flex-direction: row;
+  grid-area: seenit;
   gap: 4px;
+  display: flex;
+  align-self: center;
+  justify-self: end;
 
   svg {
     height: 18px;
@@ -105,10 +120,36 @@
   box-shadow: inset 0 4px 4px rgba(0, 0, 0, 0.25);
 }
 
-.notseen {
+
+.runtime {
+  grid-area: runtime;
 }
 
-.checkmark {
-  width: 24px;
-  height: 24px;
+.genres {
+  grid-area: genres;
+}
+
+
+@media (max-width: 600px) {
+  .container {
+    grid-template-columns: repeat(auto-fit, 1fr);
+    grid-template-rows: repeat(auto-fit, 1fr);
+    grid-template-areas:
+    "title title"
+    "poster plot"
+    "eng_title eng_title"
+    "produced_by seenit"
+    "genres genres"
+    "runtime ."
+    "directors ."
+    "writers ratings";
+  }
+
+  .title {
+    font-size: 1.2rem;
+  }
+
+  .eng_title {
+    font-size: 1rem;
+  }
 }
