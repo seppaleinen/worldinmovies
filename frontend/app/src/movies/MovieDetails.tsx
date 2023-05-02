@@ -1,7 +1,6 @@
 import styles from "./MovieDetails.module.scss"
 import React, {useEffect, useState} from "react";
 import {Link, useParams} from "react-router-dom";
-import axios, {AxiosResponse} from "axios";
 import MovieStore from "../stores/MovieStore";
 import {inject, observer} from "mobx-react";
 import {checkMark} from "../Svgs";
@@ -14,13 +13,10 @@ const MovieDetails = inject('movieStore')
     const [hasSeen, setHasSeen] = useState<boolean>(movieStore!.hasSeen(params.movieId!));
 
     useEffect(() => {
-        axios.get(tmdbUrl + "/movie/" + params.movieId, {timeout: 5000})
-            .then((response: AxiosResponse) => {
-                setMovie(response.data[0])
-            })
-            .catch(function (error: any) {
-                console.error(error);
-            });
+        fetch(`${tmdbUrl}/movie/${params.movieId}`)
+            .then(response => response.json())
+            .then(json => setMovie(json[0]))
+            .catch(error => console.error(error));
     }, [params, tmdbUrl]);
 
     const toggleSeenButton = () => {

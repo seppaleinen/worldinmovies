@@ -1,8 +1,5 @@
-import React from 'react';
+import React, {lazy, Suspense} from 'react';
 import './index.scss';
-import Home from './Home';
-import MyMoviesMap from "./movies/MyMoviesMap";
-import Import from "./import/Import";
 import {Provider} from "mobx-react";
 import * as serviceWorker from './serviceWorker';
 import * as Sentry from '@sentry/browser';
@@ -10,11 +7,15 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import MovieStore from "./stores/MovieStore";
 import {createRoot} from "react-dom/client";
 import Header from "./Header";
-import TraktImport from "./import/TraktImport";
-import ImdbImport from "./import/ImdbImport";
-import CountryPage from "./movies/CountryPage";
-import MovieDetails from "./movies/MovieDetails";
-import Admin from "./admin/Admin";
+
+const Home = lazy(() => import('./Home'));
+const Import = lazy(() => import('./import/Import'));
+const ImdbImport = lazy(() => import('./import/ImdbImport'));
+const TraktImport = lazy(() => import('./import/TraktImport'));
+const MyMoviesMap = lazy(() => import('./movies/MyMoviesMap'));
+const MovieDetails = lazy(() => import('./movies/MovieDetails'));
+const CountryPage = lazy(() => import('./movies/CountryPage'));
+const Admin = lazy(() => import('./admin/Admin'));
 
 
 const sentryUrl = process.env.REACT_APP_SENTRY_URL;
@@ -26,6 +27,12 @@ const stores = {
     movieStore: new MovieStore()
 }
 
+const wrapInSuspense = (component: any) => {
+    return <Suspense fallback={<div>Loading...</div>}>
+        {component}
+    </Suspense>
+}
+
 const Main = () => {
     return (
         <div>
@@ -33,14 +40,14 @@ const Main = () => {
             <Provider {...stores}>
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/" index element={<Home />} />
-                        <Route path="/map" element={<MyMoviesMap />} />
-                        <Route path="/import" element={<Import />} />
-                        <Route path="/import/trakt" element={<TraktImport />} />
-                        <Route path="/import/imdb" element={<ImdbImport />} />
-                        <Route path="/admin" element={<Admin />} />
-                        <Route path="/country/:countryCode" element={<CountryPage />} />
-                        <Route path="/movie/:movieId" element={<MovieDetails/>} />
+                        <Route path="/" index element={wrapInSuspense(<Home/>)}/>
+                        <Route path="/map" element={wrapInSuspense(<MyMoviesMap/>)}/>
+                        <Route path="/import" element={wrapInSuspense(<Import/>)}/>
+                        <Route path="/import/trakt" element={wrapInSuspense(<TraktImport/>)}/>
+                        <Route path="/import/imdb" element={wrapInSuspense(<ImdbImport/>)}/>
+                        <Route path="/admin" element={wrapInSuspense(<Admin/>)}/>
+                        <Route path="/country/:countryCode" element={wrapInSuspense(<CountryPage/>)}/>
+                        <Route path="/movie/:movieId" element={wrapInSuspense(<MovieDetails/>)}/>
                     </Routes>
                 </BrowserRouter>
             </Provider>

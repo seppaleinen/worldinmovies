@@ -8,7 +8,7 @@ const Welcome = () => {
             <div className={styles.mainContainer}>
                 {worldMapLogo(styles.worldmaplogosvg)}
                 <div>
-                    <h1>Welcome to the World in Movies</h1>
+                    <h1>Discover the World through Film</h1>
                     <div>
                         <h4>
                             If you're searching for recommendations on foreign movies,
