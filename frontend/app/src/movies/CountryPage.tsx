@@ -4,7 +4,7 @@ import {Movie, MyMovie} from "../Types";
 import MovieStore, {StoreType} from "../stores/MovieStore";
 import styles from './CountryPage.module.scss';
 import axios, {AxiosResponse} from "axios";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useParams} from "react-router-dom";
 import customWorldMapJson from './customworldmap.json';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -14,7 +14,6 @@ const limit = 20;
 const CountryPage = inject('movieStore')
 (observer(({movieStore}: { movieStore?: MovieStore }) => {
 
-    const navigate = useNavigate();
     const neoUrl = process.env.REACT_APP_NEO_URL === undefined ? '/neo' : process.env.REACT_APP_NEO_URL;
     const params = useParams();
     const [toggleRankedMovies, setToggleRankedMovies] = useState<string>('best')
@@ -56,8 +55,7 @@ const CountryPage = inject('movieStore')
                     {movies
                         .sort((a: Movie, b: Movie) => (a.weight > b.weight) ? -1 : 1)
                         .map((item: Movie) =>
-                            <div className={styles.movieCard} key={item.id ? item.id : item.imdb_id}
-                                 onClick={() => navigate("/movie/" + item.id)}>
+                            <Link to={`/movie/${item.id}`} key={item.id ? item.id : item.imdb_id} className={styles.movieCard}>
                                 <img className={styles.poster}
                                      src={`https://image.tmdb.org/t/p/w200/${item.poster_path}`}
                                      alt={item.en_title}/>
@@ -67,7 +65,7 @@ const CountryPage = inject('movieStore')
                                         <div className={styles.englishTitle}>'{item.en_title}'</div> : null}
                                     <div>{item.vote_average}</div>
                                 </div>
-                            </div>
+                            </Link>
                         )}
                 </section>
             </InfiniteScroll>

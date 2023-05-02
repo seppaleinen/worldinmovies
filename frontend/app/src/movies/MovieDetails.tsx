@@ -1,6 +1,6 @@
 import styles from "./MovieDetails.module.scss"
 import React, {useEffect, useState} from "react";
-import {NavLink, useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import axios, {AxiosResponse} from "axios";
 import MovieStore from "../stores/MovieStore";
 import {inject, observer} from "mobx-react";
@@ -36,7 +36,6 @@ const MovieDetails = inject('movieStore')
     }
 
     if (movie) {
-        const seenClass = hasSeen ? styles.seen : styles.notseen;
         return (
             <div className={styles.container}>
                 <div className={styles.poster}>
@@ -52,10 +51,10 @@ const MovieDetails = inject('movieStore')
                     {movie.production_countries
                         .map((item: any) => {
                             let iso = item.iso_3166_1 === 'US' ? 'USA' : item.name
-                            return <NavLink key={iso}
+                            return <Link key={iso}
                                             className={`${styles.button}`}
                                             to={`/country/${item.iso_3166_1}`}>{iso}
-                            </NavLink>
+                            </Link>
                         })}
                 </div>
                 <div className={styles.plot}>{movie.overview}</div>
@@ -90,7 +89,7 @@ const MovieDetails = inject('movieStore')
                 </div>
 
                 <div onClick={() => toggleSeenButton()}
-                     className={`${styles.button} ${styles.seenit} ${seenClass}`}>I've seen
+                     className={`${styles.button} ${styles.seenit} ${hasSeen ? styles.seen : null}`}>I've seen
                     it{hasSeen ? checkMark() : null}
                 </div>
 
@@ -106,7 +105,6 @@ const MovieDetails = inject('movieStore')
                         })}
                 </div>
             </div>
-
         )
     } else {
         return (
