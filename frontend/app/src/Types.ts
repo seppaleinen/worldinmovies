@@ -5,6 +5,10 @@ export interface MyMovieMapState {
 }
 
 export interface Movie {
+    credits?: any;
+    alternative_titles?: any;
+    spoken_languages?: any;
+    production_companies?: any;
     id: number;
     imdb_id: string;
     original_title: string;

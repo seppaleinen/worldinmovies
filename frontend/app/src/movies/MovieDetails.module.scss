@@ -14,7 +14,9 @@
   "poster seenit"
   "eng_title eng_title"
   "runtime ."
-  "genres .";
+  "genres ."
+  "details-section ."
+  "details details";
 }
 
 .poster {
@@ -64,6 +66,15 @@
 
 .ratings {
   grid-area: ratings;
+}
+
+.rating {
+  border: var(--accent);
+  border-style: solid;
+  border-radius: 8px;
+  border-width: 3px;
+  height: fit-content;
+  padding: 4px 4px;
 }
 
 .button {
@@ -126,6 +137,64 @@
   grid-area: genres;
 }
 
+.detailsContainer {
+  grid-area: details-section;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.detailsContainer > .detailHeader:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
+}
+
+.isActive {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
+}
+
+.detailsContent {
+  grid-area: details;
+
+  div {
+    display: flex;
+    flex: auto;
+  }
+
+  .values {
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+
+    h4 {
+      margin: 8px 0;
+    }
+
+    div {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .value {
+    margin: 2px;
+    font-size: 1rem;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--accent);
+    align-items: center;
+    height: fit-content;
+    width: fit-content;
+  }
+}
+
 
 @media (max-width: 600px) {
   .container {
@@ -139,7 +208,9 @@
     "genres genres"
     "runtime ."
     "directors ."
-    "writers ratings";
+    "writers ratings"
+    "details-section ."
+    "details details";
   }
 
   .title {

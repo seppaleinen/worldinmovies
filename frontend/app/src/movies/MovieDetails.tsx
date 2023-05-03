@@ -4,6 +4,7 @@ import {Link, useParams} from "react-router-dom";
 import MovieStore from "../stores/MovieStore";
 import {inject, observer} from "mobx-react";
 import {checkMark} from "../Svgs";
+import {Movie} from "../Types";
 
 const MovieDetails = inject('movieStore')
 (observer(({movieStore}: { movieStore?: MovieStore }) => {
@@ -11,6 +12,7 @@ const MovieDetails = inject('movieStore')
     const tmdbUrl = process.env.REACT_APP_TMDB_URL === undefined ? '/tmdb' : process.env.REACT_APP_TMDB_URL;
     const [movie, setMovie] = useState<any>()
     const [hasSeen, setHasSeen] = useState<boolean>(movieStore!.hasSeen(parseInt(params.movieId!)));
+    const [active, setActive] = useState("Details");
 
     useEffect(() => {
         fetch(`${tmdbUrl}/movie/${params.movieId}`)
@@ -31,6 +33,19 @@ const MovieDetails = inject('movieStore')
         }
     }
 
+    const isActive = (name: string) => {
+        return active === name;
+    }
+
+    const changeDetailsTo = (name: string) => {
+        setActive(name);
+    }
+
+    const createDetailDiv = (name: string) => {
+        return <div onClick={() => changeDetailsTo(name)}
+                    className={`${styles.detailHeader} ${isActive(name) ? styles.isActive : null}`}>{name}</div>
+    }
+
     if (movie) {
         return (
             <div className={styles.container}>
@@ -47,8 +62,8 @@ const MovieDetails = inject('movieStore')
                         .map((item: any) => {
                             let iso = item.iso_3166_1 === 'US' ? 'USA' : item.name
                             return <Link key={iso}
-                                            className={`${styles.button}`}
-                                            to={`/country/${item.iso_3166_1}`}>{iso}
+                                         className={`${styles.button}`}
+                                         to={`/country/${item.iso_3166_1}`}>{iso}
                             </Link>
                         })}
                 </div>
@@ -78,8 +93,9 @@ const MovieDetails = inject('movieStore')
                 </div>
                 <div className={`${styles.bold} ${styles.ratings}`}>
                     <h4>Ratings: </h4>
-                    <div className={styles.notbold}>
-                        {Math.round(movie.vote_average)}/10
+                    <div className={`${styles.notbold} ${styles.rating}`}>
+                        <div>TMDB</div>
+                        {`${Math.round(movie.vote_average * 10) / 10} / 10`}
                     </div>
                 </div>
 
@@ -99,6 +115,18 @@ const MovieDetails = inject('movieStore')
                             return <div key={a} className={styles.button}>{a}</div>
                         })}
                 </div>
+
+                <div className={styles.detailsContainer}>
+                    {createDetailDiv("Cast")}
+                    {createDetailDiv("Crew")}
+                    {createDetailDiv("Details")}
+                </div>
+                <div className={styles.detailsContent}>
+                    {active === "Cast" ? createCastPage(movie) : null}
+                    {active === "Crew" ? createCrewPage(movie) : null}
+                    {active === "Details" ? createDetailsPage(movie) : null}
+                </div>
+
             </div>
         )
     } else {
@@ -107,6 +135,59 @@ const MovieDetails = inject('movieStore')
         )
     }
 }))
+
+const createDetailsPage = (movie: Movie) => {
+    return <div>
+        <div className={`${styles.values}`}>
+            <h4>Studios: </h4>
+            <div>
+                {movie.production_companies
+                    .map((item: any) => {
+                        return <div className={`${styles.value}`} key={item.id}>{item.name}</div>
+                    })}
+            </div>
+        </div>
+        <div className={`${styles.values}`}>
+            <h4>Languages: </h4>
+            <div>
+                {movie.spoken_languages
+                    .map((item: any) => {
+                        return <div className={`${styles.value}`} key={item.id}>{item.name}</div>
+                    })}
+            </div>
+        </div>
+        <div className={`${styles.values}`}>
+            <h4>Alternative titles: </h4>
+            <div>
+                {movie.alternative_titles.titles
+                    .map((item: any) => {
+                        return <div className={`${styles.value}`} key={item.iso_3166_1}>{item.title}</div>
+                    })}
+            </div>
+        </div>
+    </div>
+}
+
+const createCastPage = (movie: Movie) => {
+    return <div>
+        Cast
+    </div>
+}
+
+const createCrewPage = (movie: Movie) => {
+    return <div>
+        <div className={`${styles.values}`}>
+            <h4>Producers: </h4>
+            <div>
+                {movie.credits.crew
+                    .filter((crew: any) => crew.job === 'Producer')
+                    .map((item: any) => {
+                        return <div className={`${styles.value}`} key={item.credit_id}>{item.name}</div>
+                    })}
+            </div>
+        </div>
+    </div>
+}
 
 
 export default MovieDetails;
