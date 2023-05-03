@@ -137,7 +137,7 @@ const MovieDetails = inject('movieStore')
 }))
 
 const createDetailsPage = (movie: Movie) => {
-    return <div>
+    return <div className={styles.horizontalDetails}>
         <div className={`${styles.values}`}>
             <h4>Studios: </h4>
             <div>
@@ -152,7 +152,7 @@ const createDetailsPage = (movie: Movie) => {
             <div>
                 {movie.spoken_languages
                     .map((item: any) => {
-                        return <div className={`${styles.value}`} key={item.id}>{item.name}</div>
+                        return <div className={`${styles.value}`} key={item.iso_639_1}>{item.name}</div>
                     })}
             </div>
         </div>
@@ -161,7 +161,8 @@ const createDetailsPage = (movie: Movie) => {
             <div>
                 {movie.alternative_titles.titles
                     .map((item: any) => {
-                        return <div className={`${styles.value}`} key={item.iso_3166_1}>{item.title}</div>
+                        return <div className={`${styles.value}`}
+                                    key={`${item.iso_3166_1}-${item.title}`}>{item.title}</div>
                     })}
             </div>
         </div>
@@ -169,18 +170,61 @@ const createDetailsPage = (movie: Movie) => {
 }
 
 const createCastPage = (movie: Movie) => {
-    return <div>
-        Cast
+    return <div className={styles.castPage}>
+        <div className={`${styles.values}`}>
+            {movie.credits.cast
+                .sort((a: any, b: any) => (a.order > b.order) ? 1 : ((b.order > a.order) ? -1 : 0))
+                .map((item: any) => {
+                    return <div className={`${styles.value}`} key={item.credit_id}>
+                        <div>
+                            {item.profile_path ? <img src={`https://image.tmdb.org/t/p/w200/${item.profile_path}`}
+                                                      alt={item.name}/> : null}
+                        </div>
+                        <h4>
+                            {item.name}
+                        </h4>
+                        <div>
+                            {item.character}
+                        </div>
+                    </div>
+                })}
+        </div>
     </div>
 }
 
+const createCrewDiv = (title: string, jobTitle: string, groupedCrew: Record<string, any[]>) => {
+    return <div className={`${styles.values}`}>
+        <h4>{`${title}: `}</h4>
+        <div>
+            {groupedCrew[jobTitle]
+                .map((item: any) => {
+                    return <div className={`${styles.value}`} key={item.credit_id}>{item.name}</div>
+                })}
+        </div>
+    </div>;
+}
+
 const createCrewPage = (movie: Movie) => {
-    return <div>
+    const groupedCrew: Record<string, any[]> = movie.credits.crew.reduce((groups: any, item: any) => {
+        const group = (groups[item.job] || []);
+        group.push(item);
+        groups[item.job] = group;
+        return groups;
+    }, {});
+
+    return <div className={styles.verticalDetails}>
+        {createCrewDiv("Producers", "Producer", groupedCrew)}
+        {createCrewDiv("Editor", "Editor", groupedCrew)}
+        {createCrewDiv("Cinematography", "Director of Photography", groupedCrew)}
+        {createCrewDiv('Production Design', 'Production Design', groupedCrew)}
+        {createCrewDiv('Set Decoration', 'Set Decoration', groupedCrew)}
+        {createCrewDiv('Original Music Composer', 'Original Music Composer', groupedCrew)}
         <div className={`${styles.values}`}>
-            <h4>Producers: </h4>
+            <h4>Sound: </h4>
             <div>
-                {movie.credits.crew
-                    .filter((crew: any) => crew.job === 'Producer')
+                {Object.values(groupedCrew)
+                    .flatMap(a => a)
+                    .filter(value => ['Sound Designer', 'Sound Recordist', 'Sound Editor', 'Sound Re-Recording Mixer', 'Sound Engineer'].includes(value.job))
                     .map((item: any) => {
                         return <div className={`${styles.value}`} key={item.credit_id}>{item.name}</div>
                     })}
