@@ -5,7 +5,7 @@ export interface MyMovieMapState {
 }
 
 export interface Movie {
-    id: string;
+    id: number;
     imdb_id: string;
     original_title: string;
     release_date: string;

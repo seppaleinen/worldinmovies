@@ -3,11 +3,10 @@ import {makePersistable, startPersisting, hydrateStore} from 'mobx-persist-store
 import {Movie, MyMovie} from "../Types";
 
 export interface StoreType {
-    movies: Movie[];
-    myMovies: Record<string, MyMovie[]>;
     startStore: () => void;
     hydrateStore: () => Promise<void>;
     setMovie: (movies: Movie[]) => void;
+    importMovies: (movies: Record<string, MyMovie[]>) => void;
 }
 
 export default class MovieStore implements StoreType {
@@ -39,17 +38,24 @@ export default class MovieStore implements StoreType {
     }
 
     @action
-    hasSeen(movieId: string) {
+    hasSeen(movieId: number) {
         return Object.values(this.myMovies)
             .flatMap(a => a)
-            .some(a => movieId == a.id);
+            .some(a => {
+                return movieId === a.id;
+            });
     }
 
     @action
-    removeSeen(countries: string[], movieId: string) {
+    importMovies(movies: Record<string, MyMovie[]>) {
+        this.myMovies = movies;
+    }
+
+    @action
+    removeSeen(countries: string[], movieId: number) {
         countries.forEach(country => {
             this.myMovies[country] = this.myMovies[country]
-                .filter(movie => movie.id != movieId);
+                .filter(movie => movie.id !== movieId);
         });
     }
 

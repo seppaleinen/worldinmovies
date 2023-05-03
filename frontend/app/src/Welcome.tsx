@@ -11,13 +11,17 @@ const Welcome = () => {
                     <h1>Discover the World through Film</h1>
                     <div>
                         <h4>
-                            If you're searching for recommendations on foreign movies,
+                            At Worldinmovies, we're passionate about helping movie lovers discover foreign films from
+                            around the world.
+                        </h4>
+
+                        <h4>
+                            With our user-friendly platform, you can easily explore new cultures and expand your
+                            horizons through the magic of cinema.
                         </h4>
                         <h4>
-                            or just curious about how well travelled you are in the movie world.
-                        </h4>
-                        <h4>
-                            This is the page for you.
+                            Join us on a journey of discovery and let the power of film transport you to new places and
+                            perspectives.
                         </h4>
                     </div>
                 </div>

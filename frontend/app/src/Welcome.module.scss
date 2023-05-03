@@ -1,7 +1,7 @@
 .mainContainer {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: left;
   align-items: center;
   padding: clamp(16px, 2.4vw, 24px) clamp(24px, 5vw, 80px);
   gap: clamp(8px, 3vw, 24px);

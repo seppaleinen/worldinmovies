@@ -20,7 +20,7 @@ const ImdbImport = inject("movieStore")(observer(({movieStore}:{movieStore?: Mov
         data.append('file', event.target.files[0])
         axios.post(backendUrl + "/ratings", data)
             .then((res: AxiosResponse<RatingsResponse>) => {
-                movieStore!.myMovies = res.data.found;
+                movieStore!.importMovies(res.data.found);
             })
             .catch((error: any) => {
                 console.error(error);

@@ -1,22 +1,20 @@
 import React from 'react';
-import './Import.scss';
+import styles from './Import.module.scss';
 import { useNavigate } from 'react-router-dom';
-
-export interface ImportProps {
-}
 
 const Import = () => {
     const navigate = useNavigate();
     return (
-        <div>
-            <div className="mainText">
+        <div className={styles.container}>
+            <div className={styles.mainText}>
                 <h2>Import</h2>
-                Choose how you want to import your data
+                If you have some service where you log which movies you’ve seen
+                and want to try and import them here, to see an updated map of which countries you’ve “visited”
             </div>
-            <div className="images">
-                <img className="image" src="/trakt-wide-red-black.png" alt="Trakt"
+            <div className={styles.images}>
+                <img className={styles.image} src="/trakt-wide-red-black.png" alt="Trakt"
                      onClick={() => navigate('/import/trakt')}/>
-                <img className="image" src="/IMDB-Logo.jpeg" alt="IMDB"
+                <img className={styles.image} src="/IMDB-Logo.jpeg" alt="IMDB"
                      onClick={() => navigate("/import/imdb")}/>
             </div>
         </div>

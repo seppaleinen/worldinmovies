@@ -10,7 +10,7 @@ const MovieDetails = inject('movieStore')
     const params = useParams();
     const tmdbUrl = process.env.REACT_APP_TMDB_URL === undefined ? '/tmdb' : process.env.REACT_APP_TMDB_URL;
     const [movie, setMovie] = useState<any>()
-    const [hasSeen, setHasSeen] = useState<boolean>(movieStore!.hasSeen(params.movieId!));
+    const [hasSeen, setHasSeen] = useState<boolean>(movieStore!.hasSeen(parseInt(params.movieId!)));
 
     useEffect(() => {
         fetch(`${tmdbUrl}/movie/${params.movieId}`)
@@ -22,7 +22,7 @@ const MovieDetails = inject('movieStore')
     const toggleSeenButton = () => {
         setHasSeen(!hasSeen);
         let store = movieStore!;
-        let movieId = params.movieId!;
+        let movieId: number = parseInt(params.movieId!);
         let countries = movie.production_countries.map((a: any) => a.iso_3166_1)
         if (hasSeen) {
             store.removeSeen(countries, movieId);
