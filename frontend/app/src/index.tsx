@@ -2,7 +2,6 @@ import React, {lazy, Suspense} from 'react';
 import './index.scss';
 import {Provider} from "mobx-react";
 import * as serviceWorker from './serviceWorker';
-import * as Sentry from '@sentry/browser';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import MovieStore from "./stores/MovieStore";
 import {createRoot} from "react-dom/client";
@@ -17,11 +16,6 @@ const MovieDetails = lazy(() => import('./movies/MovieDetails'));
 const CountryPage = lazy(() => import('./movies/CountryPage'));
 const Admin = lazy(() => import('./admin/Admin'));
 
-
-const sentryUrl = process.env.REACT_APP_SENTRY_URL;
-if (sentryUrl !== undefined && sentryUrl.length !== 0) {
-    Sentry.init({dsn: sentryUrl});
-}
 
 const stores = {
     movieStore: new MovieStore()

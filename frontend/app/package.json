@@ -4,10 +4,8 @@
   "private": true,
   "dependencies": {
     "@react-jvectormap/core": "^1.0.4",
-    "@react-jvectormap/world": "^1.1.2",
     "@react-rxjs/core": "^0.10.3",
     "@react-rxjs/utils": "^0.9.5",
-    "@sentry/browser": "^7.34.0",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.11.18",
     "@types/react": "^18.0.27",
@@ -33,7 +31,8 @@
     "test": "react-scripts test --watchAll=false --passWithNoTests",
     "eject": "react-scripts eject",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "analyze": "react-scripts build && source-map-explorer 'build/static/js/*.js'"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -56,6 +55,7 @@
     "chai": "^4.3.7",
     "cypress": "^12.4.1",
     "jest": "^29.4.0",
-    "sass": "^1.58.3"
+    "sass": "^1.58.3",
+    "source-map-explorer": "^2.5.3"
   }
 }

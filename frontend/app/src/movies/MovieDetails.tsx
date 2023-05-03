@@ -34,15 +34,14 @@ const MovieDetails = inject('movieStore')
     if (movie) {
         return (
             <div className={styles.container}>
-                <div className={styles.poster}>
-                    <img src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
-                         alt={movie.title}/>
-                </div>
                 <h1 className={styles.title}>{`${movie.original_title} (${movie.release_date.slice(0, 4)})`}</h1>
                 {movie.title !== movie.original_title ?
                     <div className={`${styles.title} ${styles.eng_title}`}>´{movie.title}´</div>
                     : null
                 }
+                <div className={styles.poster}>
+                    <img src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`} alt={movie.title}/>
+                </div>
                 <div className={styles.countries}>
                     {movie.production_countries
                         .map((item: any) => {

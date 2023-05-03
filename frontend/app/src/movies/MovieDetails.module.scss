@@ -1,9 +1,8 @@
 .container {
   padding: clamp(16px, 2.4vw, 24px) clamp(24px, 5vw, 80px);
-  display: inline-grid;
-  grid-template-columns: auto auto;
-  grid-template-rows: repeat(auto-fit, 1fr);
-  grid-gap: 8px;
+  display: grid;
+  grid-template-columns: clamp(160px, 30%, 320px) clamp(240px, 50%, 800px);
+  grid-gap: 16px;
   align-items: normal;
   grid-template-areas:
   "title title"
@@ -20,7 +19,6 @@
 
 .poster {
   grid-area: poster;
-  width: clamp(100px, 80%, 300px);
   aspect-ratio: 16/9;
 
   img {
@@ -54,7 +52,6 @@
 
 .plot {
   grid-area: plot;
-  padding: 8px 0;
 }
 
 .directors {
@@ -151,5 +148,9 @@
 
   .eng_title {
     font-size: 1rem;
+  }
+
+  .seenit {
+    justify-self: end;
   }
 }

@@ -4,7 +4,7 @@ import {Movie, MyMovie} from "../Types";
 import MovieStore, {StoreType} from "../stores/MovieStore";
 import styles from './CountryPage.module.scss';
 import axios, {AxiosResponse} from "axios";
-import {Link, useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 import {useParams} from "react-router-dom";
 import customWorldMapJson from './customworldmap.json';
 import InfiniteScroll from 'react-infinite-scroll-component';
