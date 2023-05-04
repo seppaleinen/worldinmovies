@@ -16,7 +16,7 @@ tmdb_url = 'http://tmdb:8020' if os.getenv('ENVIRONMENT', 'docker') == 'docker' 
 
 def kafka_consumer():
     consumer = KafkaConsumer(
-        'data_dump',
+        'movie',
         bootstrap_servers=[kafka_url],
         auto_offset_reset='earliest',
         enable_auto_commit=True,
