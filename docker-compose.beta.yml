@@ -1,7 +1,0 @@
-version: '3'
-
-services:
-  backend:
-    image: seppaleinen/worldinmovies_backend:beta
-  webapp:
-    image: seppaleinen/worldinmovies_webapp:beta

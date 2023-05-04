@@ -21,18 +21,18 @@ services:
       start_period: 3s
 
   mongo:
-    image: mongo:jammy
+    image: mongo:6-jammy
     volumes:
       - "mongo_data:/data/db"
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
 
   neo4j:
     image: neo4j:5
     container_name: neo4j
     ports:
-      - "7474:7474"
-      - "7687:7687"
+      - "127.0.0.1:7474:7474"
+      - "127.0.0.1:7687:7687"
     environment:
       - TZ=Europe/Stockholm
       - NEO4J_AUTH=${NEO4J_AUTH:-neo4j/secretpassword}
@@ -43,7 +43,7 @@ services:
     image: redis:6.2-alpine
     container_name: redis
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
 
   kafka:
     image: docker.io/bitnami/kafka:3.4
@@ -53,8 +53,8 @@ services:
     expose:
       - 9092
     ports:
-      - "9092:9092"
-      - "9093:9093"
+      - "127.0.0.1:9092:9092"
+      - "127.0.0.1:9093:9093"
     volumes:
       - "kafka_data:/bitnami"
     environment:
@@ -83,7 +83,7 @@ services:
     expose:
       - 8020
     ports:
-      - "8020:8020"
+      - "127.0.0.1:8020:8020"
     environment:
       - TMDB_API=${TMDB_API}
     depends_on:
@@ -96,7 +96,7 @@ services:
     image: seppaleinen/worldinmovies_neo4j
     build: backend/neo4j-service/
     ports:
-      - "8082:8082"
+      - "127.0.0.1:8082:8082"
     restart: on-failure
     depends_on:
       - neo4j
@@ -111,7 +111,7 @@ services:
     expose:
       - 8000
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     depends_on:
       - db
       - kafka
