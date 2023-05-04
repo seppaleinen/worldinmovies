@@ -3,7 +3,6 @@ import {inject, observer} from "mobx-react";
 import {Movie, MyMovie} from "../Types";
 import MovieStore, {StoreType} from "../stores/MovieStore";
 import styles from './CountryPage.module.scss';
-import axios, {AxiosResponse} from "axios";
 import {Link} from "react-router-dom";
 import {useParams} from "react-router-dom";
 import customWorldMapJson from './customworldmap.json';
@@ -26,10 +25,14 @@ const CountryPage = inject('movieStore')
 
     const fetchData = () => {
         if (toggleRankedMovies === 'best') {
-            axios.get(`${neoUrl}/view/best/${params.countryCode!.toUpperCase()}?skip=${skip}&limit=${limit}`, {timeout: 10000})
-                .then((response: AxiosResponse) => {
-                    setMovies(prevState => prevState.concat(response.data));
-                    setSkip(skip + response.data.length);
+            fetch(`${neoUrl}/view/best/${params.countryCode!.toUpperCase()}?skip=${skip}&limit=${limit}`,
+                {
+                    signal: AbortSignal.timeout(10000)
+                })
+                .then(resp => resp.json())
+                .then(response => {
+                    setMovies(prevState => prevState.concat(response));
+                    setSkip(skip + response.length);
                 })
                 .catch(function (error: any) {
                     console.log(error);
@@ -55,7 +58,8 @@ const CountryPage = inject('movieStore')
                     {movies
                         .sort((a: Movie, b: Movie) => (a.weight > b.weight) ? -1 : 1)
                         .map((item: Movie) =>
-                            <Link to={`/movie/${item.id}`} key={item.id ? item.id : item.imdb_id} className={styles.movieCard}>
+                            <Link to={`/movie/${item.id}`} key={item.id ? item.id : item.imdb_id}
+                                  className={styles.movieCard}>
                                 <img className={styles.poster}
                                      src={`https://image.tmdb.org/t/p/w200/${item.poster_path}`}
                                      alt={item.en_title}/>

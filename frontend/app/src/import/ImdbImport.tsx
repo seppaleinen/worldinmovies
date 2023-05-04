@@ -1,16 +1,14 @@
 import React from 'react';
-import axios, {AxiosResponse} from 'axios';
 import './ImdbImport.scss';
 import {inject, observer} from "mobx-react";
 import MovieStore, {StoreType} from "../stores/MovieStore";
-import {RatingsResponse} from "../Types";
 import {useNavigate} from "react-router-dom";
 
 export interface FileUploadProps {
     movieStore?: StoreType;
 }
 
-const ImdbImport = inject("movieStore")(observer(({movieStore}:{movieStore?: MovieStore}) => {
+const ImdbImport = inject("movieStore")(observer(({movieStore}: { movieStore?: MovieStore }) => {
     const backendUrl = process.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : process.env.REACT_APP_BACKEND_URL;
     const navigate = useNavigate();
 
@@ -18,9 +16,14 @@ const ImdbImport = inject("movieStore")(observer(({movieStore}:{movieStore?: Mov
         document.getElementById("earth")!.style.display = "block";
         const data = new FormData()
         data.append('file', event.target.files[0])
-        axios.post(backendUrl + "/ratings", data)
-            .then((res: AxiosResponse<RatingsResponse>) => {
-                movieStore!.importMovies(res.data.found);
+        fetch(`${backendUrl}/ratings`,
+            {
+                method: 'POST',
+                body: data
+            })
+            .then(resp => resp.json())
+            .then(res => {
+                movieStore!.importMovies(res.found);
             })
             .catch((error: any) => {
                 console.error(error);

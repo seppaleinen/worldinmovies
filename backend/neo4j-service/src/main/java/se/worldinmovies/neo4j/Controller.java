@@ -3,6 +3,8 @@ package se.worldinmovies.neo4j;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,6 +15,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -36,9 +39,9 @@ public class Controller {
     }
 
     @GetMapping(value = "/view/best/{countryCode}")
-    Flux<JsonMovie> findBestFromCountry(@PathVariable String countryCode,
-                                        @RequestParam(value = "skip", required = false, defaultValue = "0") int skip,
-                                        @RequestParam(value = "limit", required = false, defaultValue = "25") int    limit) {
+    ResponseEntity<Flux<JsonMovie>> findBestFromCountry(@PathVariable String countryCode,
+                                                       @RequestParam(value = "skip", required = false, defaultValue = "0") int skip,
+                                                       @RequestParam(value = "limit", required = false, defaultValue = "25") int    limit) {
         List<String> languagesFromCountryCode = languageMapper.getLanguagesFromCountryCode(countryCode);
         List<String> newCountryCode = CountryMapper.getOldFromNew(countryCode);
 
@@ -55,8 +58,12 @@ public class Controller {
                 "skip", skip,
                 "limit", limit);
 
-        return neo4jTemplate.findAll(query, params, MovieEntity.class)
-                .map(JsonMovie::createFromEntity);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl
+                        .maxAge(30, TimeUnit.MINUTES)
+                        .mustRevalidate())
+                .body(neo4jTemplate.findAll(query, params, MovieEntity.class)
+                .map(JsonMovie::createFromEntity));
     }
 
     record Status(long total, long fetched, @JsonProperty("percentageDone") BigDecimal percentageDone) {
