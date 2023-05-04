@@ -196,10 +196,10 @@ const createCrewDiv = (title: string, jobTitle: string, groupedCrew: Record<stri
     return <div className={`${styles.values}`}>
         <h4>{`${title}: `}</h4>
         <div>
-            {groupedCrew[jobTitle]
+            {groupedCrew[jobTitle] ? groupedCrew[jobTitle]
                 .map((item: any) => {
                     return <div className={`${styles.value}`} key={item.credit_id}>{item.name}</div>
-                })}
+                }) : null}
         </div>
     </div>;
 }
