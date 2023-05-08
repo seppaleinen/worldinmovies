@@ -58,4 +58,11 @@ public class LanguageTest {
         assertEquals(1, language.size(), language.toString());
         assertTrue(language.stream().anyMatch(a -> a.equals("en")));
     }
+
+    @Test
+    void testTW() {
+        List<String> language = languageMapper.getLanguagesFromCountryCode("TW");
+        assertEquals(1, language.size(), language.toString());
+        assertTrue(language.stream().anyMatch(a -> a.equals("zh")), language.toString());
+    }
 }

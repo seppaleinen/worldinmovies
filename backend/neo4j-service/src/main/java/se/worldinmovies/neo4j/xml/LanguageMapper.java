@@ -39,10 +39,12 @@ public class LanguageMapper {
                     if(languagePopulations.stream().anyMatch(a -> a.getOfficialStatus() != null)) {
                         return languagePopulations.stream()
                                 .filter(a -> a.getOfficialStatus() != null)
-                                .map(TerritoryInfo.Territory.LanguagePopulation::getType);
+                                .map(TerritoryInfo.Territory.LanguagePopulation::getType)
+                                .map(a -> a.split("_")[0]);
                     } else {
                         return languagePopulations.stream()
-                                .map(TerritoryInfo.Territory.LanguagePopulation::getType);
+                                .map(TerritoryInfo.Territory.LanguagePopulation::getType)
+                                .map(a -> a.split("_")[0]);
                     }
                 })
                 .orElse(Stream.empty());
