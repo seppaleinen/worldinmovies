@@ -1,27 +1,55 @@
-import React, {useEffect, useState} from 'react';
+import React, {Ref, useCallback, useEffect, useState} from 'react';
 import {inject, observer} from "mobx-react";
 import {Movie, MyMovie} from "../Types";
 import MovieStore, {StoreType} from "../stores/MovieStore";
 import styles from './CountryPage.module.scss';
 import {Link} from "react-router-dom";
 import {useParams} from "react-router-dom";
-import customWorldMapJson from './customworldmap.json';
+import customWorldMapJson from './countrycodes.json';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import {filterIcon} from "../Svgs";
 
 const limit = 20;
+const neoUrl = process.env.REACT_APP_NEO_URL === undefined ? '/neo' : process.env.REACT_APP_NEO_URL;
 
 const CountryPage = inject('movieStore')
 (observer(({movieStore}: { movieStore?: MovieStore }) => {
 
-    const neoUrl = process.env.REACT_APP_NEO_URL === undefined ? '/neo' : process.env.REACT_APP_NEO_URL;
+    const dialogRef: Ref<HTMLDialogElement> = React.createRef();
     const params = useParams();
+
     const [toggleRankedMovies, setToggleRankedMovies] = useState<string>('best')
     const [movies, setMovies] = useState<Movie[]>([])
     const [skip, setSkip] = useState<number>(0);
+    const [showModal, setShowModal] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+
 
     useEffect(() => {
         fetchData();
     }, [toggleRankedMovies]);
+
+    const closeWhenClickOutsideDialog = useCallback((event: any) => {
+        const dialog = document.getElementById("dialog") as HTMLDialogElement;
+        const dialogIcon = document.getElementById("dialog-svg") as HTMLElement;
+        const clickedElement = event.target as HTMLElement;
+        setShowModal((show) => {
+            if (show && !dialog.contains(clickedElement) && !dialogIcon.contains(clickedElement)) {
+                return false;
+            }
+            return show;
+        });
+    }, [setShowModal])
+
+    useEffect(() => {
+        if (showModal) {
+            document.addEventListener("click", closeWhenClickOutsideDialog, false);
+        }
+        const dialogElement = document.getElementById("dialog") as HTMLDialogElement;
+        showModal ? dialogElement.show() : dialogElement.close();
+        return () => document.removeEventListener("click", closeWhenClickOutsideDialog, false);
+
+    }, [showModal, closeWhenClickOutsideDialog]);
 
     const fetchData = () => {
         if (toggleRankedMovies === 'best') {
@@ -30,39 +58,38 @@ const CountryPage = inject('movieStore')
                     signal: AbortSignal.timeout(10000)
                 })
                 .then(resp => resp.json())
-                .then(response => {
-                    setMovies(prevState => prevState.concat(response));
-                    setSkip(skip + response.length);
-                })
-                .catch(function (error: any) {
-                    console.log(error);
-                });
+                .then(response => handleResults(response))
+                .catch(error => console.log(error));
         } else {
-            let fetched = movieStore!.myMovies[params.countryCode!].slice()
+            handleResults(movieStore!.myMovies[params.countryCode!].slice()
                 .sort((a: Movie, b: Movie) => (a.weight > b.weight) ? -1 : 1)
-                .slice(skip, (skip + limit));
-            setSkip(skip + fetched.length);
-            setMovies(prevState => prevState.concat(fetched));
+                .slice(skip, (skip + limit)));
         }
     };
+
+    const handleResults = (result: any[]) => {
+        setSkip(skip + result.length);
+        setMovies(prevState => prevState.concat(result));
+        setHasMore(result.length > 0);
+    }
 
     const renderTopMovies = () => {
         return (
             <InfiniteScroll
                 dataLength={movies.length}
-                next={fetchData}
-                hasMore={true}
+                next={() => fetchData()}
+                hasMore={hasMore}
                 loader={<h4>Loading...</h4>}
             >
                 <section className={styles.containingSection}>
-                    {movies
+                    {movies.length > 0 ? movies
                         .sort((a: Movie, b: Movie) => (a.weight > b.weight) ? -1 : 1)
                         .map((item: Movie) =>
                             <Link to={`/movie/${item.id}`} key={item.id ? item.id : item.imdb_id}
                                   className={styles.movieCard}>
-                                <img className={styles.poster}
-                                     src={`https://image.tmdb.org/t/p/w200/${item.poster_path}`}
-                                     alt={item.en_title}/>
+                                {item.poster_path ? <img className={styles.poster}
+                                                         src={`https://image.tmdb.org/t/p/w200/${item.poster_path}`}
+                                                         alt={item.en_title}/> : null}
                                 <div className={styles.movieCardText}>
                                     <div>{item.original_title} {item.release_date ? "(" + item.release_date.slice(0, 4) + ")" : null}</div>
                                     {item.en_title && item.en_title.trim() !== item.original_title.trim() ?
@@ -70,32 +97,46 @@ const CountryPage = inject('movieStore')
                                     <div>{item.vote_average}</div>
                                 </div>
                             </Link>
-                        )}
+                        ) : <div>Could not find any movies</div>}
                 </section>
             </InfiniteScroll>
         );
     }
 
     const handleClick = (newState: string) => {
-        setToggleRankedMovies(newState);
-        setMovies([]);
-        setSkip(0);
+        if (newState !== toggleRankedMovies) {
+            setMovies([]);
+            setSkip(0);
+            setToggleRankedMovies(newState);
+            setHasMore(true);
+        }
+    }
+
+    const clickyFilter = () => {
+        setShowModal(!showModal);
     }
 
     return (
         <div className={styles.container}>
             <div className={styles.title}>
-                <h1>{customWorldMapJson.content.paths[params.countryCode! as keyof Object]?.name}</h1>
+                <h1>{String(customWorldMapJson[params.countryCode! as keyof Object])}</h1>
             </div>
             <div className={styles.toggle}>
                 <h2 onClick={() => handleClick('best')}
-                    className={toggleRankedMovies === 'best' ? styles.activeToggle : styles.inactiveToggle}>Highest
+                    className={toggleRankedMovies === 'best' ? styles.activeToggle : styles.inactive}>Highest
                     rated movies</h2>
                 {movieStore!.myMovies[params.countryCode!] ?
                     <h2 onClick={() => handleClick('my')}
                         className={toggleRankedMovies === 'my' ? styles.activeToggle : styles.inactiveToggle}>My
-                        highest rated movies</h2> : ''
+                        highest rated movies</h2> : null
                 }
+            </div>
+            <div className={styles.filters}>
+                <div id={"dialog-svg"} onClick={() => clickyFilter()} className={styles.filter}>{filterIcon()}</div>
+                <dialog id={"dialog"} ref={dialogRef}>
+                    <button onClick={() => clickyFilter()}>Close</button>
+                    <div>Hejhej</div>
+                </dialog>
             </div>
             {renderTopMovies()}
         </div>

@@ -61,3 +61,11 @@ export const checkMark = () => {
         </g>
     </svg>
 }
+
+export const filterIcon = () => {
+    return <svg viewBox="0 0 24 24" fill="none"  className={styles.svgStroke}>
+        <path d="M4 7H20" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M7 12L17 12" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M11 17H13" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+}

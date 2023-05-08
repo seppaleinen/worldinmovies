@@ -1,7 +1,7 @@
 .container {
-  padding: clamp(16px, 2.4vw, 24px) clamp(24px, 5vw, 80px);
+  padding: 0 clamp(24px, 5vw, 80px);
   display: grid;
-  grid-template-columns: clamp(160px, 30%, 320px) clamp(240px, 50%, 800px);
+  grid-template-columns: clamp(160px, 30%, 320px) clamp(160px, 50%, 800px);
   grid-gap: 16px;
   align-items: normal;
   grid-template-areas:
@@ -168,7 +168,7 @@
     flex: auto;
     flex-direction: row;
     justify-content: flex-start;
-    gap: 16px;
+    gap: clamp(8px, 3%, 40px);
 
     .values {
       display: flex;
@@ -186,7 +186,7 @@
     }
 
     .value {
-      font-size: 1rem;
+      font-size: clamp(0.8rem, 2vw, 1rem);
       margin-bottom: 4px;
       padding: 8px 16px;
       border-radius: 8px;
@@ -220,7 +220,7 @@
     }
 
     .value {
-      font-size: 1rem;
+      font-size: clamp(0.8rem, 2vw, 1rem);
       margin: 2px;
       padding: 4px 8px;
       border-radius: 8px;
@@ -243,6 +243,7 @@
 
     .value {
       width: 100px;
+      font-size: clamp(0.8rem, 2vw, 1rem);
 
       h4 {
         font-size: 1rem;

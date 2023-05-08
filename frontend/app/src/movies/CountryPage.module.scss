@@ -87,6 +87,16 @@
   width: fit-content;
 }
 
+.filters {
+  align-self: flex-start;
+  margin-left: clamp(24px, 5vw, 80px);
+}
+
+.filter {
+  width: 40px;
+  height: 40px;
+}
+
 @media (max-width: 768px) {
   .movieCard,
   .poster {
