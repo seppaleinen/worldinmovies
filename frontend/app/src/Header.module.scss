@@ -6,6 +6,7 @@ header {
   justify-content: space-between;
   position: sticky;
   padding: clamp(16px, 2.4vw, 24px) clamp(24px, 5vw, 80px);
+  z-index: 1;
 }
 
 nav {

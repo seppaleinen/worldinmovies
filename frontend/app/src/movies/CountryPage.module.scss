@@ -90,11 +90,34 @@
 .filters {
   align-self: flex-start;
   margin-left: clamp(24px, 5vw, 80px);
+  display: flex;
+  flex-direction: column;
 }
 
 .filter {
   width: 40px;
   height: 40px;
+}
+
+dialog {
+  padding: 8px 8px;
+  width: clamp(280px, 50%, 400px);
+  z-index: 1;
+  border-style: none;
+  border-radius: 8px;
+  background: var(--complement);
+  float: left;
+
+  .closeDialog {
+    position: relative;
+    top: 0;
+    float: right;
+  }
+
+  .genres {
+    background: none;
+    margin-right: 32px;
+  }
 }
 
 @media (max-width: 768px) {

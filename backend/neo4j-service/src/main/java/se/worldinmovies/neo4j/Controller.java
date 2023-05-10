@@ -13,8 +13,10 @@ import se.worldinmovies.neo4j.xml.LanguageMapper;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -40,30 +42,50 @@ public class Controller {
 
     @GetMapping(value = "/view/best/{countryCode}")
     ResponseEntity<Flux<JsonMovie>> findBestFromCountry(@PathVariable String countryCode,
-                                                       @RequestParam(value = "skip", required = false, defaultValue = "0") int skip,
-                                                       @RequestParam(value = "limit", required = false, defaultValue = "25") int    limit) {
+                                                        @RequestParam(value = "skip", required = false, defaultValue = "0") int skip,
+                                                        @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
+                                                        @RequestParam(value = "genres", required = false) List<Integer> genres) {
         List<String> languagesFromCountryCode = languageMapper.getLanguagesFromCountryCode(countryCode);
         List<String> newCountryCode = CountryMapper.getOldFromNew(countryCode);
 
-        String query = "MATCH (l:Language)-[lr]->(m:Movie)-[cr:produced_by]->(c:Country) " +
-                "WHERE c.iso in ($countryCode) " +
-                "AND l.iso in ($languageCodes) " +
-                "RETURN DISTINCT m " +
-                "ORDER BY m.weight DESC " +
-                "SKIP $skip LIMIT $limit";
+        String defaultQuery = "MATCH (l:Language)-[lr]->(m:Movie)-[cr:produced_by]->(c:Country) " +
+                "            WHERE c.iso IN $countryCode " +
+                "            AND l.iso IN $languageCodes " +
+                "                RETURN DISTINCT m " +
+                "                ORDER BY m.weight DESC " +
+                "                SKIP $skip LIMIT $limit";
+        String queryWithGenres = "MATCH (l:Language)-[lr]->(m:Movie)-[cr:produced_by]->(c:Country), (g:Genre)-[gr]->(m) WITH c,l,m,g,count(g) as count " +
+                "            WHERE c.iso IN $countryCode " +
+                "            AND l.iso IN $languageCodes " +
+                "            AND g.id IN $genres " +
+                "            AND count=$genreCount " +
+                "                RETURN DISTINCT m " +
+                "                ORDER BY m.weight DESC " +
+                "                SKIP $skip LIMIT $limit";
+        String query = Optional.ofNullable(genres)
+                .filter(a -> !a.isEmpty())
+                .map(a -> queryWithGenres)
+                .orElse(defaultQuery);
 
-        Map<String, Object> params = Map.of(
+        System.out.println("Genres: " + genres + ":" + query);
+
+        Map<String, Object> params = new HashMap<>(Map.of(
                 "countryCode", newCountryCode,
                 "languageCodes", languagesFromCountryCode,
                 "skip", skip,
-                "limit", limit);
+                "limit", limit
+        ));
+        if (Optional.ofNullable(genres).map(List::size).orElse(0) > 0) {
+            params.put("genres", genres);
+            params.put("genreCount", genres.size());
+        }
 
         return ResponseEntity.ok()
                 .cacheControl(CacheControl
                         .maxAge(30, TimeUnit.MINUTES)
                         .mustRevalidate())
                 .body(neo4jTemplate.findAll(query, params, MovieEntity.class)
-                .map(JsonMovie::createFromEntity));
+                        .map(JsonMovie::createFromEntity));
     }
 
     record Status(long total, long fetched, @JsonProperty("percentageDone") BigDecimal percentageDone) {
@@ -74,14 +96,14 @@ public class Controller {
     }
 
     record JsonMovie(String imdbId,
-                            int id,
-                            String originalTitle,
-                            String enTitle,
-                            String posterPath,
-                            String releaseDate,
-                            BigDecimal voteAverage,
-                            int voteCount,
-                            BigDecimal weight) {
+                     int id,
+                     String originalTitle,
+                     String enTitle,
+                     String posterPath,
+                     String releaseDate,
+                     BigDecimal voteAverage,
+                     int voteCount,
+                     BigDecimal weight) {
         static JsonMovie createFromEntity(MovieEntity movie) {
             return new JsonMovie(
                     movie.getImdbId(),

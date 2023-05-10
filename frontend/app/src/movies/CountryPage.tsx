@@ -6,11 +6,22 @@ import styles from './CountryPage.module.scss';
 import {Link} from "react-router-dom";
 import {useParams} from "react-router-dom";
 import customWorldMapJson from './countrycodes.json';
+import genresJson from './genres.json';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import {filterIcon} from "../Svgs";
+import {closeIcon, filterIcon} from "../Svgs";
+import Select, {InputActionMeta} from 'react-select';
 
 const limit = 20;
 const neoUrl = process.env.REACT_APP_NEO_URL === undefined ? '/neo' : process.env.REACT_APP_NEO_URL;
+
+const sortMovies = () => {
+    return (a: Movie, b: Movie) => {
+        if (a.weight > b.weight) return -1;
+        if (a.weight > b.weight) return 1;
+        // If weight is the same. sort on votecount
+        return a.vote_count > b.vote_count ? -1 : 1;
+    };
+}
 
 const CountryPage = inject('movieStore')
 (observer(({movieStore}: { movieStore?: MovieStore }) => {
@@ -23,18 +34,20 @@ const CountryPage = inject('movieStore')
     const [skip, setSkip] = useState<number>(0);
     const [showModal, setShowModal] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+    const [chosenGenres, setChosenGenres] = useState<number[]>([])
 
 
     useEffect(() => {
         fetchData();
-    }, [toggleRankedMovies]);
+    }, [toggleRankedMovies, chosenGenres]);
 
     const closeWhenClickOutsideDialog = useCallback((event: any) => {
         const dialog = document.getElementById("dialog") as HTMLDialogElement;
         const dialogIcon = document.getElementById("dialog-svg") as HTMLElement;
         const clickedElement = event.target as HTMLElement;
         setShowModal((show) => {
-            if (show && !dialog.contains(clickedElement) && !dialogIcon.contains(clickedElement)) {
+            if (show && !dialog.contains(clickedElement.parentElement) && !dialogIcon.contains(clickedElement) && !clickedElement.id.includes("react-select-2")) {
+                console.log("Did not contain")
                 return false;
             }
             return show;
@@ -52,8 +65,9 @@ const CountryPage = inject('movieStore')
     }, [showModal, closeWhenClickOutsideDialog]);
 
     const fetchData = () => {
+        const genres = chosenGenres.length > 0 ? `&genres=${chosenGenres}` : "";
         if (toggleRankedMovies === 'best') {
-            fetch(`${neoUrl}/view/best/${params.countryCode!.toUpperCase()}?skip=${skip}&limit=${limit}`,
+            fetch(`${neoUrl}/view/best/${params.countryCode!.toUpperCase()}?skip=${skip}&limit=${limit}${genres}`,
                 {
                     signal: AbortSignal.timeout(10000)
                 })
@@ -62,7 +76,7 @@ const CountryPage = inject('movieStore')
                 .catch(error => console.log(error));
         } else {
             handleResults(movieStore!.myMovies[params.countryCode!].slice()
-                .sort((a: Movie, b: Movie) => (a.weight > b.weight) ? -1 : 1)
+                .sort(sortMovies())
                 .slice(skip, (skip + limit)));
         }
     };
@@ -70,7 +84,7 @@ const CountryPage = inject('movieStore')
     const handleResults = (result: any[]) => {
         setSkip(skip + result.length);
         setMovies(prevState => prevState.concat(result));
-        setHasMore(result.length > 0);
+        setHasMore(result.length >= limit);
     }
 
     const renderTopMovies = () => {
@@ -83,7 +97,7 @@ const CountryPage = inject('movieStore')
             >
                 <section className={styles.containingSection}>
                     {movies.length > 0 ? movies
-                        .sort((a: Movie, b: Movie) => (a.weight > b.weight) ? -1 : 1)
+                        .sort(sortMovies())
                         .map((item: Movie) =>
                             <Link to={`/movie/${item.id}`} key={item.id ? item.id : item.imdb_id}
                                   className={styles.movieCard}>
@@ -116,6 +130,39 @@ const CountryPage = inject('movieStore')
         setShowModal(!showModal);
     }
 
+    const onChange = (newValue: any) => {
+        setChosenGenres(prevState => {
+            const newState = newValue.map((a: any) => Number(a.value));
+            if(newState !== prevState) {
+                setMovies([]);
+                setSkip(0);
+                setHasMore(true);
+            }
+            return newState;
+        });
+    }
+
+    const createGenresDropdown = () => {
+        const option = genresJson
+            .map(a => JSON.parse(`{"value": "${a.id}", "label": "${a.name}"}`))
+        return (
+            <Select
+                defaultValue={[]}
+                name="genres"
+                isMulti
+                isClearable
+                isSearchable
+                hideSelectedOptions
+                options={option}
+                controlShouldRenderValue
+                onChange={onChange}
+                placeholder={"Choose genres"}
+                className="basic-multi-select"
+                classNamePrefix="select"
+            />
+        )
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.title}>
@@ -134,8 +181,10 @@ const CountryPage = inject('movieStore')
             <div className={styles.filters}>
                 <div id={"dialog-svg"} onClick={() => clickyFilter()} className={styles.filter}>{filterIcon()}</div>
                 <dialog id={"dialog"} ref={dialogRef}>
-                    <button onClick={() => clickyFilter()}>Close</button>
-                    <div>Hejhej</div>
+                    <div className={styles.closeDialog} onClick={() => clickyFilter()}>{closeIcon()}</div>
+                    <div className={styles.genres}>
+                        {createGenresDropdown()}
+                    </div>
                 </dialog>
             </div>
             {renderTopMovies()}
