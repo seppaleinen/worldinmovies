@@ -1,0 +1,28 @@
+config:
+  target: "https://localhost"
+  tls:
+    rejectUnauthorized: false
+  # Enable the Playwright engine:
+  phases:
+    - name: 'warmup'
+      duration: 10
+      arrivalRate: 1
+    - name: 'rampUp'
+      duration: 10
+      arrivalRate: 1
+      rampTo: 5
+    - name: 'load'
+      duration: 30
+      arrivalRate: 5
+  engines:
+    playwright:
+      launchOptions:
+        headless: true
+      contextOptions:
+        ignoreHTTPSErrors: true
+  processor: "./tests/flows.spec.ts"
+scenarios:
+  - name: Scenario
+    engine: playwright
+    flowFunction: "scenario"
+    flow: []

@@ -67,8 +67,6 @@ public class Controller {
                 .map(a -> queryWithGenres)
                 .orElse(defaultQuery);
 
-        System.out.println("Genres: " + genres + ":" + query);
-
         Map<String, Object> params = new HashMap<>(Map.of(
                 "countryCode", newCountryCode,
                 "languageCodes", languagesFromCountryCode,
