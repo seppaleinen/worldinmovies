@@ -12,7 +12,7 @@ config:
       arrivalRate: 1
       rampTo: 5
     - name: 'load'
-      duration: 30
+      duration: 5
       arrivalRate: 5
   engines:
     playwright:

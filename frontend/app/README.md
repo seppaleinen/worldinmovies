@@ -18,4 +18,10 @@ npm run start
 npm run build && serve -s build
 
 npm run test
+
+
+
+artillery run hello-world.yml
+npx playwright test --ui
+npx playwright test
 ```
