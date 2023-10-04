@@ -221,6 +221,5 @@ def generate_datadump(request):
         for x in Movie.objects.all().iterator():
             f.write(json.dumps({"fetched": x.fetched,
                                 "_id": x.id,
-                                "data": json.loads(x.raw_response),
                                 "fetched_date": {"$date": datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}}))
     return HttpResponse("Done")
