@@ -21,6 +21,8 @@ FROM base
 ENV ENVIRONMENT docker
 ENV PYTHONUNBUFFERED 1
 ENV TZ Europe/Stockholm
+ENV PIP_DISABLE_PIP_VERSION_CHECK 1
+ENV PYTHONDONTWRITEBYTECODE 1
 
 COPY --from=builder /install /usr/local
 RUN apk --no-cache add libpq curl

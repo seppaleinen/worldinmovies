@@ -17,17 +17,17 @@ Basically will be handling
 
 ### DB Migration Guide
 ```bash
-docker exec -ti worldinmovies_db_1 pg_dump -U postgres postgres --clean --file=/tmp/dbexport.pgsql
+docker exec -ti worldinmovies-db-1 pg_dump -U postgres postgres --clean --file=/tmp/dbexport.pgsql
 
-docker cp worldinmovies_db_1:/tmp/dbexport.pgsql .
+docker cp worldinmovies-db-1:/tmp/dbexport.pgsql .
 
 rsync --progress dbexport.pgsql <ssh-server>:<path>
 
 ssh <ssh-server>
 
-docker cp dbexport.pgsql worldinmovies_db_1:/
+docker cp dbexport.pgsql worldinmovies-db-1:/
 
-docker exec -ti worldinmovies_db_1 psql -d postgres -U postgres -f /tmp/dbexport.pgsql
+docker exec -ti worldinmovies-db-1 psql -d postgres -U postgres -f /tmp/dbexport.pgsql
 ```
 
 Installation
