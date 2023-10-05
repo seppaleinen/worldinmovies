@@ -129,6 +129,9 @@ def __fetch_movie_with_id(id, index):
 def fetch_tmdb_data_concurrently():
     movie_ids = Movie.objects.filter(fetched__exact=False).values_list('id')
     length = len(movie_ids)
+    if not length or length == 0:
+        print("No new movies to import. Going back to sleep")
+        return
     print("Starting import of %s unfetched movies" % length)
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         future_to_url = (executor.submit(__fetch_movie_with_id, movie_id, index) for index, movie_id in enumerate(movie_ids))
