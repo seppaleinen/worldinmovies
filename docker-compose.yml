@@ -26,7 +26,6 @@ services:
       - "mongo_data:/data/db"
     ports:
       - "127.0.0.1:27017:27017"
-    command: --wiredTigerCacheSizeGB 1.5
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 30s
@@ -43,8 +42,10 @@ services:
     environment:
       - TZ=Europe/Stockholm
       - NEO4J_AUTH=${NEO4J_AUTH:-neo4j/secretpassword}
-#      - NEO4J_server_memory_pagecache_size=2G
-#      - NEO4J_server_memory_heap_max__size=3500M
+      - NEO4J_server_memory_heap_initial__size=3600m
+      - NEO4J_server_memory_heap_max__size=3600m
+      - NEO4J_server_memory_pagecache_size=4g
+      - NEO4J_server_jvm_additional='-XX:+ExitOnOutOfMemoryError'
     healthcheck:
       start_period: 15s
       interval: 30s
@@ -102,7 +103,7 @@ services:
       test: [ "CMD-SHELL", "kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --topic movie --describe" ]
       interval: 30s
       timeout: 2s
-      retries: 1
+      retries: 2
       start_period: 15s
 
 
