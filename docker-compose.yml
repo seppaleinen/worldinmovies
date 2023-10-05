@@ -118,7 +118,7 @@ services:
       - "127.0.0.1:8020:8020"
     environment:
       - TMDB_API=${TMDB_API}
-      - SENTRY_API=${SENTRY_API:-}
+      - SENTRY_API=${SENTRY_API_TMDB:-}
     depends_on:
       mongo:
         condition: service_healthy
@@ -168,7 +168,7 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
     environment:
-      - SENTRY_API=${SENTRY_API:-}
+      - SENTRY_API=${SENTRY_API_IMDB:-}
     depends_on:
       db:
         condition: service_healthy
@@ -202,7 +202,7 @@ services:
       - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL:-}
       - REACT_APP_TMDB_URL=${REACT_APP_TMDB_URL:-}
       - REACT_APP_NEO_URL=${REACT_APP_NEO_URL:-}
-      - REACT_SENTRY_API=${SENTRY_API:-}
+      - REACT_SENTRY_API=${SENTRY_API_WEB:-}
     healthcheck:
       test: ['CMD', 'nc', '-vz', '-w1', 'localhost', '443']
       interval: 10s
