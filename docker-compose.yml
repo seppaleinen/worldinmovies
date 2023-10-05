@@ -15,10 +15,10 @@ services:
       - PGUSER=postgres
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready", "-d", "postgres" ]
-      interval: 20s
-      timeout: 60s
-      retries: 5
-      start_period: 3s
+      interval: 30s
+      timeout: 5s
+      retries: 1
+      start_period: 5s
 
   mongo:
     image: mongo:6-jammy
@@ -26,12 +26,13 @@ services:
       - "mongo_data:/data/db"
     ports:
       - "127.0.0.1:27017:27017"
+    command: --wiredTigerCacheSizeGB 1.5
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 1s
-      timeout: 5s
-      retries: 10
-      start_period: 1s
+      interval: 30s
+      timeout: 20s
+      retries: 1
+      start_period: 10s
 
   neo4j:
     image: neo4j:5
@@ -45,11 +46,11 @@ services:
 #      - NEO4J_server_memory_pagecache_size=2G
 #      - NEO4J_server_memory_heap_max__size=3500M
     healthcheck:
-      start_period: 3s
-      interval: 1s
+      start_period: 15s
+      interval: 30s
       test: [ "CMD", "/var/lib/neo4j/bin/neo4j", "status" ]
       timeout: 10s
-      retries: 10
+      retries: 1
 
 
   # Queues
@@ -61,9 +62,10 @@ services:
       - "127.0.0.1:6379:6379"
     healthcheck:
       test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
-      interval: 1s
+      interval: 30s
       timeout: 3s
-      retries: 10
+      retries: 1
+      start_period: 10s
 
 
   kafka:
@@ -98,9 +100,10 @@ services:
       - KAFKA_CFG_DEFAULT_REPLICATION_FACTOR=1
     healthcheck:
       test: [ "CMD-SHELL", "kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --topic movie --describe" ]
-      interval: 2s
+      interval: 30s
       timeout: 2s
-      retries: 15
+      retries: 1
+      start_period: 15s
 
 
   # Backends
@@ -123,9 +126,10 @@ services:
     restart: on-failure
     healthcheck:
       test: [ "CMD-SHELL", "curl --fail http://localhost:8020/health" ]
-      interval: 1s
+      interval: 30s
       timeout: 2s
-      retries: 15
+      retries: 5
+      start_period: 10s
 
 
   neo4jservice:
@@ -145,9 +149,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: "curl --fail --silent localhost:8082/actuator/health | grep UP || exit 1"
-      interval: 1s
+      interval: 30s
       timeout: 10s
-      retries: 30
+      retries: 5
+      start_period: 10s
 
 
   # Rename to imdb_import
@@ -168,9 +173,10 @@ services:
     restart: on-failure
     healthcheck:
       test: [ "CMD-SHELL", "curl --fail http://localhost:8000/health" ]
-      interval: 1s
+      interval: 30s
       timeout: 2s
-      retries: 15
+      retries: 5
+      start_period: 10s
 
   # Frontend
   webapp:
@@ -192,10 +198,10 @@ services:
       - REACT_APP_NEO_URL=${REACT_APP_NEO_URL}
     healthcheck:
       test: ['CMD', 'nc', '-vz', '-w1', 'localhost', '443']
-      interval: 1s
+      interval: 10s
       timeout: 5s
-      retries: 20
-      start_period: 2s
+      retries: 5
+      start_period: 5s
 
 volumes:
   pgdata:
