@@ -105,6 +105,11 @@
             <artifactId>guava</artifactId>
             <version>32.0.0-jre</version>
         </dependency>
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-spring-boot-starter-jakarta</artifactId>
+            <version>6.30.0</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

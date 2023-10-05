@@ -1,4 +1,6 @@
-import os, sys
+import os
+import sys
+import sentry_sdk
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -61,7 +63,6 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-environment = os.getenv('ENVIRONMENT', 'localhost')
 if 'test' in sys.argv:
     PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
     DATABASES = {
@@ -125,6 +126,18 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
+
+sentryApi = os.getenv('SENTRY_API', '')
+if sentryApi:
+    sentry_sdk.init(
+        dsn=sentryApi,
+
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production,
+        traces_sample_rate=1.0,
+        profiles_sample_rate=1.0,
+    )
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Stockholm'

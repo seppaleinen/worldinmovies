@@ -1,6 +1,7 @@
 import mongoengine
 import os
 import mongomock
+import sentry_sdk
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -103,6 +104,18 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+sentryApi = os.getenv('SENTRY_API', '')
+if sentryApi:
+    sentry_sdk.init(
+        dsn=sentryApi,
+
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production,
+        traces_sample_rate=1.0,
+        profiles_sample_rate=1.0,
+    )
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

@@ -13,6 +13,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - PGUSER=postgres
+      - TZ=Europe/Stockholm
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready", "-d", "postgres" ]
       interval: 30s
@@ -117,6 +118,7 @@ services:
       - "127.0.0.1:8020:8020"
     environment:
       - TMDB_API=${TMDB_API}
+      - SENTRY_API=${SENTRY_API:-}
     depends_on:
       mongo:
         condition: service_healthy
@@ -130,7 +132,7 @@ services:
       interval: 30s
       timeout: 2s
       retries: 5
-      start_period: 10s
+      start_period: 15s
 
 
   neo4jservice:
@@ -139,6 +141,8 @@ services:
     ports:
       - "127.0.0.1:8082:8082"
     restart: on-failure
+    environment:
+      - SENTRY_API=${SENTRY_API:-}
     depends_on:
       neo4j:
         condition: service_healthy
@@ -153,17 +157,17 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 10s
+      start_period: 20s
 
 
   # Rename to imdb_import
   backend:
     image: seppaleinen/worldinmovies_backend
     build: backend/base/
-    expose:
-      - 8000
     ports:
       - "127.0.0.1:8000:8000"
+    environment:
+      - SENTRY_API=${SENTRY_API:-}
     depends_on:
       db:
         condition: service_healthy
@@ -177,7 +181,7 @@ services:
       interval: 30s
       timeout: 2s
       retries: 5
-      start_period: 10s
+      start_period: 15s
 
   # Frontend
   webapp:
@@ -194,15 +198,25 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
-      - REACT_APP_TMDB_URL=${REACT_APP_TMDB_URL}
-      - REACT_APP_NEO_URL=${REACT_APP_NEO_URL}
+      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL:-}
+      - REACT_APP_TMDB_URL=${REACT_APP_TMDB_URL:-}
+      - REACT_APP_NEO_URL=${REACT_APP_NEO_URL:-}
+      - REACT_SENTRY_API=${SENTRY_API:-}
     healthcheck:
       test: ['CMD', 'nc', '-vz', '-w1', 'localhost', '443']
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 5s
+
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "127.0.0.1:9999:8080"
+
 
 volumes:
   pgdata:
