@@ -142,7 +142,7 @@ services:
       - "127.0.0.1:8082:8082"
     restart: on-failure
     environment:
-      - SENTRY_API=${SENTRY_API:-}
+      - SENTRY_API=${SENTRY_API_NEO4J:-}
       - SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN:-}
     depends_on:
       neo4j:
