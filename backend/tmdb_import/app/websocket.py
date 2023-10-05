@@ -1,7 +1,7 @@
 import datetime
 
 from channels.generic.websocket import AsyncWebsocketConsumer
-
+from websockets.exceptions import ConnectionClosedOK
 
 data = []
 
@@ -17,7 +17,10 @@ class TextRoomConsumer(AsyncWebsocketConsumer):
         global data
         data = data[:-1]
         data.append(event)
-        await self.send(text_data=event)
+        try:
+            await self.send(text_data=event)
+        except ConnectionClosedOK:
+            print("Client has disconnected from ws. Ignoring")
 
     async def connect(self):
         await self.channel_layer.group_add(self.groupId, self.channel_name)
