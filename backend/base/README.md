@@ -27,7 +27,7 @@ ssh <ssh-server>
 
 docker cp dbexport.pgsql worldinmovies-db-1:/
 
-docker exec -ti worldinmovies-db-1 psql -d postgres -U postgres -f /tmp/dbexport.pgsql
+docker exec -ti worldinmovies_db_1 psql -d postgres -U postgres -f /dbexport.pgsql
 ```
 
 Installation

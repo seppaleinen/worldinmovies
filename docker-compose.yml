@@ -26,6 +26,12 @@ services:
       - "mongo_data:/data/db"
     ports:
       - "127.0.0.1:27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+      start_period: 1s
 
   neo4j:
     image: neo4j:5
@@ -36,6 +42,15 @@ services:
     environment:
       - TZ=Europe/Stockholm
       - NEO4J_AUTH=${NEO4J_AUTH:-neo4j/secretpassword}
+#      - NEO4J_server_memory_pagecache_size=2G
+#      - NEO4J_server_memory_heap_max__size=3500M
+    healthcheck:
+      start_period: 3s
+      interval: 1s
+      test: [ "CMD", "/var/lib/neo4j/bin/neo4j", "status" ]
+      timeout: 10s
+      retries: 10
+
 
   # Queues
 
@@ -44,6 +59,12 @@ services:
     container_name: redis
     ports:
       - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 1s
+      timeout: 3s
+      retries: 10
+
 
   kafka:
     image: docker.io/bitnami/kafka:3.4
@@ -75,6 +96,12 @@ services:
       - KAFKA_CFG_LISTENERS=LOCAL://:9093,CONTROLLER://:9094,DOCKER://:9092
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=DOCKER
       - KAFKA_CFG_DEFAULT_REPLICATION_FACTOR=1
+    healthcheck:
+      test: [ "CMD-SHELL", "kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --topic movie --describe" ]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
 
   # Backends
   tmdb:
@@ -87,10 +114,19 @@ services:
     environment:
       - TMDB_API=${TMDB_API}
     depends_on:
-      - mongo
-      - kafka
-      - redis
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: on-failure
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost:8020/health" ]
+      interval: 1s
+      timeout: 2s
+      retries: 15
+
 
   neo4jservice:
     image: seppaleinen/worldinmovies_neo4j
@@ -99,10 +135,20 @@ services:
       - "127.0.0.1:8082:8082"
     restart: on-failure
     depends_on:
-      - neo4j
-      - kafka
-      - tmdb
-      - backend
+      neo4j:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      tmdb:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent localhost:8082/actuator/health | grep UP || exit 1"
+      interval: 1s
+      timeout: 10s
+      retries: 30
+
 
   # Rename to imdb_import
   backend:
@@ -113,18 +159,30 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:
-      - db
-      - kafka
-      - redis
+      db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: on-failure
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost:8000/health" ]
+      interval: 1s
+      timeout: 2s
+      retries: 15
 
   # Frontend
   webapp:
     image: seppaleinen/worldinmovies_webapp
     build: frontend/app/
     depends_on:
-      - backend
-      - tmdb
+      backend:
+        condition: service_healthy
+      tmdb:
+        condition: service_healthy
+      neo4jservice:
+        condition: service_healthy
     ports:
       - "80:80"
       - "443:443"
@@ -134,10 +192,10 @@ services:
       - REACT_APP_NEO_URL=${REACT_APP_NEO_URL}
     healthcheck:
       test: ['CMD', 'nc', '-vz', '-w1', 'localhost', '443']
-      interval: 10s
+      interval: 1s
       timeout: 5s
-      retries: 3
-      start_period: 5s
+      retries: 20
+      start_period: 2s
 
 volumes:
   pgdata:
