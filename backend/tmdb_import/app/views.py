@@ -13,58 +13,37 @@ from app.kafka import produce
 def import_status(request):
     result = Movie.objects().aggregate([
         {
-            '$facet': {
-                'Total': [
-                    {
-                        '$match': {
-                            '_id': {
-                                '$exists': True
-                            }
+            '$group': {
+                '_id': None,
+                'Total': {
+                    '$sum': 1
+                },
+                'Fetched': {
+                    '$sum': {
+                        '$cond': {
+                            'if': '$fetched', 'then': 1, 'else': 0
                         }
-                    }, {
-                        '$count': 'count'
                     }
-                ],
-                'Fetched': [
-                    {
-                        '$match': {
-                            'fetched': {
-                                '$eq': True
-                            }
-                        }
-                    }, {
-                        '$count': 'count'
-                    }
-                ]
-            }
-        }, {
-            '$unwind': {
-                'path': '$Total'
-            }
-        }, {
-            '$unwind': {
-                'path': '$Fetched'
+                }
             }
         }, {
             '$project': {
-                'total': '$Total.count',
-                'fetched': '$Fetched.count',
-                'percentage_done': {
+                '_id': 0,
+                'Total': 1,
+                'Fetched': 1,
+                'Percentage': {
                     '$multiply': [
-                        {
-                            '$divide': [
-                                '$Fetched.count', '$Total.count'
-                            ]
-                        }, 100
+                        {'$divide': ['$Fetched', '$Total']},
+                        100
                     ]
                 }
             }
         }
     ])
     for row in result:
-        return HttpResponse(json.dumps({"total": row['total'],
-                                    "fetched": row['fetched'],
-                                    "percentageDone": row['percentage_done']}),
+        return HttpResponse(json.dumps({"total": row['Total'],
+                                    "fetched": row['Fetched'],
+                                    "percentageDone": row['Percentage']}),
                             content_type='application/json')
 
 
