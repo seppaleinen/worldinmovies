@@ -143,6 +143,7 @@ services:
     restart: on-failure
     environment:
       - SENTRY_API=${SENTRY_API:-}
+      - SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN:-}
     depends_on:
       neo4j:
         condition: service_healthy

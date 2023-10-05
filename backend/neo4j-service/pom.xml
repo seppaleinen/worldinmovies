@@ -177,4 +177,39 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>run-sentry-if-SENTRY_AUTH_TOKEN-is-set</id>
+            <activation>
+                <property>
+                    <name>env.SENTRY_AUTH_TOKEN</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.sentry</groupId>
+                        <artifactId>sentry-maven-plugin</artifactId>
+                        <version>0.0.4</version>
+                        <configuration>
+                            <!-- for showing output of sentry-cli -->
+                            <debugSentryCli>true</debugSentryCli>
+                            <org>david-eriksson</org>
+                            <project>neo4j-service</project>
+                            <authToken>${env.SENTRY_AUTH_TOKEN:-}</authToken>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>uploadSourceBundle</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
