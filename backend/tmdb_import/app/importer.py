@@ -11,11 +11,13 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from mongoengine import DoesNotExist
 from requests.adapters import HTTPAdapter
+from sentry_sdk import monitor
 from urllib3.util.retry import Retry
 from app.models import Movie, SpokenLanguage, Genre, ProductionCountries
 from app.kafka import produce
 
 
+@monitor(monitor_slug='base_import')
 def base_import():
     download_files()
     import_genres()
@@ -126,6 +128,7 @@ def __fetch_movie_with_id(id, index):
         raise Exception("Response: %s, Content: %s" % (response.status_code, response.content))
 
 
+@monitor(monitor_slug='fetch_tmdb_data_concurrently')
 def fetch_tmdb_data_concurrently():
     movie_ids = Movie.objects.filter(fetched__exact=False).values_list('id')
     length = len(movie_ids)
@@ -243,6 +246,7 @@ def check_which_movies_needs_update(start_date, end_date):
         print("Response: %s:%s" % (response.status_code, response.content))
 
 
+@monitor(monitor_slug='cron_endpoint_for_checking_updateable_movies')
 def cron_endpoint_for_checking_updateable_movies():
     start_date = (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
     end_date = (datetime.date.today()).strftime("%Y-%m-%d")
