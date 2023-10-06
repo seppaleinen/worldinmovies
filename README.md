@@ -46,13 +46,12 @@ I've decided against using java, as it's too resource consuming for the basic se
 Dependencies:
 
 * Docker https://docs.docker.com/engine/installation/
-* Docker-compose https://docs.docker.com/compose/install/
 
 ```bash
-docker-compose pull
-docker-compose up --build
-docker-compose kill #To stop the running services
-docker-compose down #To stop and cleanup after running services
+docker compose pull
+docker compose up --build
+docker compose kill #To stop the running services
+docker compose down #To stop and cleanup after running services
 ```
 
 ## Examples

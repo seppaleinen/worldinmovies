@@ -26,5 +26,5 @@ urlpatterns = [
     path('status',                          views.import_status, name='import_status'),
     path('view/best/<str:country_code>',    views.get_best_movies_from_country),
     path('generate/generate_datadump',      views.generate_datadump),
-    re_path(r'^health/',                    include('health_check.urls'))
+    #re_path(r'^health/',                    include('health_check.urls'))
 ]
