@@ -11,8 +11,9 @@ backend.log
 *.gz
 !**/testdata/*.gz
 **/datadump.json
+persistent-data/*-data/**/*
+**/venv/**
 
 .DS_Store
 .idea/
-postgres-data/
 backend/logs/

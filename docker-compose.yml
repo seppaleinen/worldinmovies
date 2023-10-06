@@ -6,8 +6,7 @@ services:
   db:
     image: postgres:16-alpine
     volumes:
-      - pgdata:/var/lib/postgresql
-      - ./postgres-data:/tmp/
+      - ./persistent-data/postgres-data:/var/lib/postgresql
     ports:
       - "127.0.0.1:5433:5432"
     environment:
@@ -24,7 +23,7 @@ services:
   mongo:
     image: mongo:6-jammy
     volumes:
-      - "mongo_data:/data/db"
+      - "./persistent-data/mongo-data:/data/db"
     ports:
       - "127.0.0.1:27017:27017"
     healthcheck:
@@ -48,7 +47,7 @@ services:
       - NEO4J_server_memory_pagecache_size=4g
       - NEO4J_server_jvm_additional='-XX:+ExitOnOutOfMemoryError'
     healthcheck:
-      start_period: 15s
+      start_period: 20s
       interval: 30s
       test: [ "CMD", "/var/lib/neo4j/bin/neo4j", "status" ]
       timeout: 10s
@@ -81,7 +80,8 @@ services:
       - "127.0.0.1:9092:9092"
       - "127.0.0.1:9093:9093"
     volumes:
-      - "kafka_data:/bitnami"
+      - "./persistent-data/kafka-data:/bitnami"
+    restart: unless-stopped
     environment:
       - TZ=Europe/Stockholm
       - ALLOW_ANONYMOUS_LOGIN=yes
@@ -101,11 +101,11 @@ services:
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=DOCKER
       - KAFKA_CFG_DEFAULT_REPLICATION_FACTOR=1
     healthcheck:
-      test: [ "CMD-SHELL", "kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --topic movie --describe" ]
+      test: [ "CMD-SHELL", "kafka-topics.sh --bootstrap-server kafka:9092 --topic movie --create --if-not-exists && kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --topic movie --describe" ]
       interval: 30s
-      timeout: 2s
+      timeout: 5s
       retries: 2
-      start_period: 15s
+      start_period: 10s
 
 
   # Backends
@@ -126,7 +126,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    restart: on-failure
+    restart: unless-stopped
     healthcheck:
       test: [ "CMD-SHELL", "curl --fail http://localhost:8020/health" ]
       interval: 30s
@@ -140,7 +140,7 @@ services:
     build: backend/neo4j-service/
     ports:
       - "127.0.0.1:8082:8082"
-    restart: on-failure
+    restart: unless-stopped
     environment:
       - SENTRY_API=${SENTRY_API_NEO4J:-}
       - SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN:-}
@@ -176,7 +176,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    restart: on-failure
+    restart: unless-stopped
     healthcheck:
       test: [ "CMD-SHELL", "curl --fail http://localhost:8000/health" ]
       interval: 30s
@@ -223,6 +223,4 @@ volumes:
   pgdata:
   certs:
   kafka_data:
-    driver: local
   mongo_data:
-    driver: local
