@@ -201,10 +201,6 @@ def fetch_imdb_titles(request):
         return HttpResponse(json.dumps({"Message": "IMDB titles process already started"}))
 
 
-def movie_details(request, imdb_id):
-    return HttpResponse(Movie.objects.get(imdb_id=imdb_id).raw_response)
-
-
 def get_imdb_votes(request, ids):
     movie_ids = list(map(lambda x: int(x), ids.split(',')))
     data_list = Movie.objects.filter(pk__in=movie_ids)

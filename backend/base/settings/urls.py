@@ -21,7 +21,6 @@ urlpatterns = [
     path('import/imdb/ratings',             views.fetch_imdb_ratings),
     path('import/imdb/titles',              views.fetch_imdb_titles),
     path('ratings',                         views.ratings, name='ratings'),
-    path('movie/imdb/<str:imdb_id>',        views.movie_details),
     path('votes/<str:ids>',                 views.get_imdb_votes),
     path('status',                          views.import_status, name='import_status'),
     path('view/best/<str:country_code>',    views.get_best_movies_from_country),
