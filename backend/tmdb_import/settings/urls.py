@@ -18,5 +18,5 @@ urlpatterns = [
     path('dump/countries',                  views.dump_countries),
     path('dump/movies',                     views.generate_kafka_dump),
     re_path(r'^status$',                    views.import_status),
-    re_path(r'^health/',                    include('health_check.urls'))
+    re_path(r'^health/',                    include('health_check.urls')) # Should remove to mitigate ddos-risk
 ]
