@@ -72,4 +72,51 @@ describe('IMDB Service endpoints', () => {
                     })
             })
     });
+
+    it('Get Votes For Movie Endpoint', () => {
+        const expectedResponse = {
+            id: Cypress._.isNumber,
+            imdb_vote_average: Cypress._.isNumber,
+            imdb_vote_count: Cypress._.isNumber,
+            vote_average: Cypress._.isNumber,
+            vote_count: Cypress._.isNumber,
+            weighted_rating: Cypress._.isNumber
+        }
+        cy.request(`${imdbUrl}/votes/9322,1700`)
+            .then((resp) => {
+                expect(resp.status).to.eq(200);
+                expect(resp.body.length).to.be.greaterThan(0);
+                resp.body.forEach(movie => {
+                    expect(movie).to.have.all.keys(expectedResponse);
+                })
+            })
+    });
+
+
+    it('Get Best Movies From Country Endpoint', () => {
+        const expectedResponse = {
+            result: Cypress._.isArray,
+            total_result: Cypress._.isNumber
+        }
+        const expectedMovie = {
+            en_title: Cypress._.isString,
+            id: Cypress._.isNumber,
+            imdb_id: Cypress._.isString,
+            original_title: Cypress._.isString,
+            poster_path: Cypress._.isString,
+            release_date: Cypress._.isString,
+            vote_average: Cypress._.isNumber,
+            vote_count: Cypress._.isNumber
+        }
+        cy.request(`${imdbUrl}/view/best/SE`)
+            .then((resp) => {
+                expect(resp.status).to.eq(200);
+                expect(resp.body).to.have.all.keys(expectedResponse);
+                expect(resp.body.result.length).to.be.greaterThan(0);
+                resp.body.result.forEach(movie => {
+                    expect(movie).to.have.all.keys(expectedMovie);
+                })
+            })
+    });
+
 })
