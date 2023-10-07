@@ -1,0 +1,39 @@
+config:
+  target: "https://localhost"
+  plugins:
+    expect:
+      reportFailuresAsErrors: true
+      outputFormat: prettyError
+      expectDefault200: true
+  tls:
+    rejectUnauthorized: false
+  # Enable the Playwright engine:
+  environments:
+    production:
+      target: "https://worldinmovies.duckdns.org"
+      phases:
+        - duration: 1200
+          arrivalRate: 10
+    local:
+      target: "https://localhost"
+      phases:
+        - duration: 1200
+          arrivalRate: 20
+  phases:
+    - name: 'Breaking test'
+      duration: 120
+      rampTo: 50
+  engines:
+    playwright:
+      aggregateByName: true
+      launchOptions:
+        headless: true
+      contextOptions:
+        ignoreHTTPSErrors: true
+  processor: "./playwright-flows.spec.ts"
+scenarios:
+  - name: Web Scenario
+    engine: playwright
+    flowFunction: "scenario"
+    flow:
+      - log: "Current environment is {{ $environment }}"

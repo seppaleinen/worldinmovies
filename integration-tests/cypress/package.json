@@ -3,15 +3,21 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "open": "cypress open",
-    "test": "cypress run"
+    "cypress:open": "cypress open",
+    "cypress:test": "cypress run",
+    "playwright:open": "playwright test --ui",
+    "playwright:test": "playwright test",
+    "artillery:run": "artillery run --output test-results/artillery-report.json artillery/*-scenarios.yml && artillery report test-results/artillery-report.json"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@playwright/test": "^1.38.1",
     "@types/node": "^20.8.2",
+    "artillery": "^2.0.0-37",
     "cypress": "^13.3.0",
+    "playwright": "^1.38.1",
     "typescript": "^5.2.2"
   }
 }

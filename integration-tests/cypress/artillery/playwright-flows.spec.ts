@@ -1,35 +1,43 @@
 
 module.exports = { scenario, mainPage, map, country, details };
 
-const url = 'https://localhost';
+const playwrightUrl = 'https://localhost';
 
 async function scenario(page) {
-    const randomCountry = countries[Math.floor(Math.random() * countries.length)]
-    await page.goto(`${url}`);
+    const randomCountry = "US"
+    await page.goto(`${playwrightUrl}`);
+    await page.waitForTimeout(3000);
     await page.getByRole('link', { name: 'World Map' }).click();
+    await page.waitForTimeout(3000);
     await page.locator(`path[data-code="${randomCountry}"]`).click();
+    await page.waitForTimeout(3000);
     await page.locator('a[href^="/movie/"]').first().click();
-    await page.getByText('I\'ve seen it').click();
+    await page.waitForTimeout(3000);
+    await page.getByText("I've seen it").click();
+    await page.waitForTimeout(3000);
     await page.getByText('Cast', { exact: true }).click();
+    await page.waitForTimeout(1000);
     await page.getByText('Crew', { exact: true }).click();
+    await page.waitForTimeout(1000);
     await page.getByText('Details', { exact: true }).click();
+    await page.waitForTimeout(3000);
     await page.locator('a[href^="/country/"]').first().click();
 }
 
 async function mainPage(page) {
-    await page.goto(`${url}`);
+    await page.goto(`${playwrightUrl}`);
 }
 
 async function map(page) {
-    await page.goto(`${url}/map`);
+    await page.goto(`${playwrightUrl}/map`);
 }
 
 async function country(page) {
-    await page.goto(`${url}/country/SE`);
+    await page.goto(`${playwrightUrl}/country/SE`);
 }
 
 async function details(page) {
-    await page.goto(`${url}/movie/475557`);
+    await page.goto(`${playwrightUrl}/movie/475557`);
 }
 
 const countries = [
