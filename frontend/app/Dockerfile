@@ -15,17 +15,17 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
 # install and cache app dependencies
-COPY package.json /app/
-COPY tsconfig.json /app/
+COPY vite-env.d.ts vite.config.ts tsconfig.json package.json index.html /app/
 RUN npm install --silent --production
 
 ADD public/ /app/public/
 ADD src/ /app/src/
 
+RUN ls -lh .
 RUN npm run build
 
 
-FROM nginx:stable-alpine3.17-slim as prod
+FROM nginx:stable-alpine-slim as prod
 
 ENV TZ=Europe/Stockholm
 RUN addgroup -g 1000 -S www-data ; adduser -u 1000 -D -S -G www-data www-data
@@ -42,7 +42,7 @@ COPY nginx/certs/live/worldinmovies.duckdns.org/fakefile \
     nginx/certs/live/worldinmovies.duckdns.org/privkey.pe? \
     /etc/letsencrypt/live/worldinmovies.duckdns.org/
 
-COPY --from=builder /app/build/     /var/www/app/
+COPY --from=builder /app/dist/     /var/www/app/
 
 COPY ./nginx/ssl-params.conf        /etc/nginx/ssl-params.conf
 COPY ./nginx/sites-enabled/         /etc/nginx/sites-enabled

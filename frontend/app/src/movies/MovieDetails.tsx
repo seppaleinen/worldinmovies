@@ -9,7 +9,7 @@ import {Movie} from "../Types";
 const MovieDetails = inject('movieStore')
 (observer(({movieStore}: { movieStore?: MovieStore }) => {
     const params = useParams();
-    const tmdbUrl = process.env.REACT_APP_TMDB_URL === undefined ? '/tmdb' : process.env.REACT_APP_TMDB_URL;
+    const tmdbUrl = import.meta.env.REACT_APP_TMDB_URL === undefined ? '/tmdb' : import.meta.env.REACT_APP_TMDB_URL;
     const [movie, setMovie] = useState<any>()
     const [hasSeen, setHasSeen] = useState<boolean>(movieStore!.hasSeen(parseInt(params.movieId!)));
     const [active, setActive] = useState("Details");

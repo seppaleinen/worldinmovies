@@ -9,7 +9,7 @@ export interface FileUploadProps {
 }
 
 const ImdbImport = inject("movieStore")(observer(({movieStore}: { movieStore?: MovieStore }) => {
-    const backendUrl = process.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : process.env.REACT_APP_BACKEND_URL;
+    const backendUrl = import.meta.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : import.meta.env.REACT_APP_BACKEND_URL;
     const navigate = useNavigate();
 
     const onChangeHandler = (event: any) => {

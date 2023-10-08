@@ -1,6 +1,8 @@
 package se.worldinmovies.neo4j;
 
 import lombok.extern.slf4j.Slf4j;
+
+import org.neo4j.cypherdsl.core.renderer.Dialect;
 import org.neo4j.driver.Driver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -23,12 +25,12 @@ import se.worldinmovies.neo4j.entity.CountryEntity;
 import se.worldinmovies.neo4j.entity.GenreEntity;
 import se.worldinmovies.neo4j.entity.LanguageEntity;
 import se.worldinmovies.neo4j.xml.LanguageMapper;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static org.neo4j.cypherdsl.core.renderer.Configuration.newConfig;
 import static org.springframework.data.neo4j.repository.config.ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_TRANSACTION_MANAGER_BEAN_NAME;
 
 @EnableReactiveNeo4jRepositories
@@ -64,6 +66,14 @@ public class Config {
             ReactiveDatabaseSelectionProvider databaseNameProvider) {
         return new ReactiveNeo4jTransactionManager(driver, databaseNameProvider);
     }
+
+    @Bean
+    org.neo4j.cypherdsl.core.renderer.Configuration cypherDslConfiguration() {
+        return org.neo4j.cypherdsl.core.renderer.Configuration.newConfig()
+                .withDialect(Dialect.NEO4J_5).build();
+    }
+
+
 
     @Bean
     public LanguageMapper languageMapper() {

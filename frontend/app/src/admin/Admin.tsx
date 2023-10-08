@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import styles from './Admin.module.scss';
 
-const baseUrl = process.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : process.env.REACT_APP_BACKEND_URL;
-const tmdbUrl = process.env.REACT_APP_TMDB_URL === undefined ? '/tmdb' : process.env.REACT_APP_TMDB_URL;
-const neoUrl = process.env.REACT_APP_NEO_URL === undefined ? '/neo' : process.env.REACT_APP_NEO_URL;
+const baseUrl = import.meta.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : import.meta.env.REACT_APP_BACKEND_URL;
+const tmdbUrl = import.meta.env.REACT_APP_TMDB_URL === undefined ? '/tmdb' : import.meta.env.REACT_APP_TMDB_URL;
+const neoUrl = import.meta.env.REACT_APP_NEO_URL === undefined ? '/neo' : import.meta.env.REACT_APP_NEO_URL;
 const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
 
 const Admin = () => {

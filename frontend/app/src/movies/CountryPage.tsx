@@ -9,10 +9,10 @@ import customWorldMapJson from './countrycodes.json';
 import genresJson from './genres.json';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {closeIcon, filterIcon} from "../Svgs";
-import Select, {InputActionMeta} from 'react-select';
+import Select from 'react-select';
 
 const limit = 20;
-const neoUrl = process.env.REACT_APP_NEO_URL === undefined ? '/neo' : process.env.REACT_APP_NEO_URL;
+const neoUrl = import.meta.env.REACT_APP_NEO_URL === undefined ? '/neo' : import.meta.env.REACT_APP_NEO_URL;
 
 const sortMovies = () => {
     return (a: Movie, b: Movie) => {
@@ -29,6 +29,7 @@ const CountryPage = inject('movieStore')
     const dialogRef: Ref<HTMLDialogElement> = React.createRef();
     const params = useParams();
 
+    const [fetching, setFetching] = useState<boolean>(true)
     const [toggleRankedMovies, setToggleRankedMovies] = useState<string>('best')
     const [movies, setMovies] = useState<Movie[]>([])
     const [skip, setSkip] = useState<number>(0);
@@ -67,13 +68,15 @@ const CountryPage = inject('movieStore')
     const fetchData = () => {
         const genres = chosenGenres.length > 0 ? `&genres=${chosenGenres}` : "";
         if (toggleRankedMovies === 'best') {
+            setFetching(true);
             fetch(`${neoUrl}/view/best/${params.countryCode!.toUpperCase()}?skip=${skip}&limit=${limit}${genres}`,
                 {
                     signal: AbortSignal.timeout(10000)
                 })
                 .then(resp => resp.json())
                 .then(response => handleResults(response))
-                .catch(error => console.log(error));
+                .catch(error => console.log(error))
+                .finally(() => setFetching(false));
         } else {
             handleResults(movieStore!.myMovies[params.countryCode!].slice()
                 .sort(sortMovies())
@@ -96,7 +99,7 @@ const CountryPage = inject('movieStore')
                 loader={<h4>Loading...</h4>}
             >
                 <section className={styles.containingSection}>
-                    {movies.length > 0 ? movies
+                    {movies.length > 0 || !fetching ? movies
                         .sort(sortMovies())
                         .map((item: Movie) =>
                             <Link to={`/movie/${item.id}`} key={item.id ? item.id : item.imdb_id}

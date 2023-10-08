@@ -1,3 +1,4 @@
+import React from 'react'
 import './Button.module.scss';
 
 export const Button = (string: string, svg: JSX.Element, p: () => void, className='button') => {

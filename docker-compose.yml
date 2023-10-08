@@ -5,6 +5,7 @@ services:
 
   db:
     image: postgres:16-alpine
+    container_name: postgres
     volumes:
       - ./persistent-data/postgres-data:/var/lib/postgresql
     ports:
@@ -21,7 +22,8 @@ services:
       start_period: 5s
 
   mongo:
-    image: mongo:6-jammy
+    image: mongo:7-jammy
+    container_name: mongo
     volumes:
       - "./persistent-data/mongo-data:/data/db"
     ports:
@@ -42,10 +44,8 @@ services:
     environment:
       - TZ=Europe/Stockholm
       - NEO4J_AUTH=${NEO4J_AUTH:-neo4j/secretpassword}
-      - NEO4J_server_memory_heap_initial__size=3600m
-      - NEO4J_server_memory_heap_max__size=3600m
-      - NEO4J_server_memory_pagecache_size=4g
-      - NEO4J_server_jvm_additional='-XX:+ExitOnOutOfMemoryError'
+    volumes:
+      - "./persistent-data/neo4j-data:/var/lib/neo4j/data"
     healthcheck:
       start_period: 20s
       interval: 30s
@@ -57,7 +57,7 @@ services:
   # Queues
 
   redis:
-    image: redis:6.2-alpine
+    image: redis:7-alpine
     container_name: redis
     ports:
       - "127.0.0.1:6379:6379"
@@ -131,12 +131,13 @@ services:
       test: [ "CMD-SHELL", "curl --fail http://localhost:8020/health" ]
       interval: 30s
       timeout: 2s
-      retries: 5
+      retries: 1
       start_period: 15s
 
 
   neo4jservice:
     image: seppaleinen/worldinmovies_neo4j
+#    image: docker.io/library/neo4j-service:0.0.1-SNAPSHOT
     build: backend/neo4j-service/
     ports:
       - "127.0.0.1:8082:8082"
@@ -155,9 +156,9 @@ services:
         condition: service_healthy
     healthcheck:
       test: "curl --fail --silent localhost:8082/actuator/health | grep UP || exit 1"
-      interval: 30s
+      interval: 10s
       timeout: 10s
-      retries: 5
+      retries: 1
       start_period: 20s
 
 
@@ -181,7 +182,7 @@ services:
       test: [ "CMD-SHELL", "curl --fail http://localhost:8000/health" ]
       interval: 30s
       timeout: 2s
-      retries: 5
+      retries: 1
       start_period: 15s
 
   # Frontend
@@ -224,3 +225,4 @@ volumes:
   certs:
   kafka_data:
   mongo_data:
+  neo4j_data:

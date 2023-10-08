@@ -1,15 +1,10 @@
-# Backend
+# IMDB Import
 
-This part will be the backend handling imports and serving data to the front-end.
+This is the part handling data regarding IMDB
+Primarily it will try to fetch data from IMDB when a new movie gets fetched from TMDB
+and the data-points it collects are alternative titles, and votes
 
-In future, this might be separated into different backend systems but for now will be one big chunk.
-
-
-Basically will be handling
-* Import
-  - Daily file export from TMDB with all movie ids that are available
-  - Fetching movie data from TMDB, dependent on the movie ids received from the daily file
-* Serving Frontend
+It also handles user-rating imports.
 
 
 ### Notes
@@ -17,17 +12,17 @@ Basically will be handling
 
 ### DB Migration Guide
 ```bash
-docker exec -ti worldinmovies-db-1 pg_dump -U postgres postgres --clean --file=/tmp/dbexport.pgsql
+docker exec -ti postgres pg_dump -U postgres postgres --clean --file=/tmp/dbexport.pgsql
 
-docker cp worldinmovies-db-1:/tmp/dbexport.pgsql .
+docker cp postgres:/tmp/dbexport.pgsql .
 
 rsync --progress dbexport.pgsql <ssh-server>:<path>
 
 ssh <ssh-server>
 
-docker cp dbexport.pgsql worldinmovies-db-1:/
+docker cp dbexport.pgsql postgres:/
 
-docker exec -ti worldinmovies_db_1 psql -d postgres -U postgres -f /dbexport.pgsql
+docker exec -ti postgres psql -d postgres -U postgres -f /dbexport.pgsql
 ```
 
 Installation
