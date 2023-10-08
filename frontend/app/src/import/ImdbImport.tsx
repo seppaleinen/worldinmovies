@@ -9,14 +9,14 @@ export interface FileUploadProps {
 }
 
 const ImdbImport = inject("movieStore")(observer(({movieStore}: { movieStore?: MovieStore }) => {
-    const backendUrl = import.meta.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : import.meta.env.REACT_APP_BACKEND_URL;
+    const imdbUrl = import.meta.env.REACT_APP_IMDB_URL === undefined ? '/imdb' : import.meta.env.REACT_APP_IMDB_URL;
     const navigate = useNavigate();
 
     const onChangeHandler = (event: any) => {
         document.getElementById("earth")!.style.display = "block";
         const data = new FormData()
         data.append('file', event.target.files[0])
-        fetch(`${backendUrl}/ratings`,
+        fetch(`${imdbUrl}/ratings`,
             {
                 method: 'POST',
                 body: data

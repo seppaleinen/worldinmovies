@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import styles from './Admin.module.scss';
 
-const baseUrl = import.meta.env.REACT_APP_BACKEND_URL === undefined ? '/backend' : import.meta.env.REACT_APP_BACKEND_URL;
+const imdbUrl = import.meta.env.REACT_APP_IMDB_URL === undefined ? '/imdb' : import.meta.env.REACT_APP_IMDB_URL;
 const tmdbUrl = import.meta.env.REACT_APP_TMDB_URL === undefined ? '/tmdb' : import.meta.env.REACT_APP_TMDB_URL;
 const neoUrl = import.meta.env.REACT_APP_NEO_URL === undefined ? '/neo' : import.meta.env.REACT_APP_NEO_URL;
 const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
@@ -18,7 +18,7 @@ const Admin = () => {
                 backend = tmdbUrl;
                 break;
             case 'imdb':
-                backend = baseUrl;
+                backend = imdbUrl;
                 break;
             case 'neo':
                 backend = neoUrl;
@@ -90,11 +90,11 @@ const Admin = () => {
                     </button>
                 </div>
                 <div className={toggle === 'imdb' ? styles.show : styles.hide}>
-                    <button className="button" onClick={() => triggerImport(baseUrl + '/import/imdb/ratings')}>Import
+                    <button className="button" onClick={() => triggerImport(imdbUrl + '/import/imdb/ratings')}>Import
                         IMDB
                         Ratings
                     </button>
-                    <button className="button" onClick={() => triggerImport(baseUrl + '/import/imdb/titles')}>Import
+                    <button className="button" onClick={() => triggerImport(imdbUrl + '/import/imdb/titles')}>Import
                         IMDB
                         Titles
                     </button>
