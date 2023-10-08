@@ -232,10 +232,10 @@ def check_which_movies_needs_update(start_date, end_date):
     if response.status_code == 200:
         data = json.loads(response.content)
         for movie in __log_progress(data['results'], "TMDB Changes"):
-            if not movie['adult']:
+            if not movie['adult'] and movie['id']:
                 try:
                     db = Movie.objects.get(pk=movie['id'])
-                    if db.fetched_date.strftime("%Y-%m-%d") < end_date:
+                    if db.fetched and db.fetched_date.strftime("%Y-%m-%d") < end_date:
                         Movie.objects.filter(pk=movie['id']).update(fetched=False)
                         __send_data_to_channel("Scheduling movieId:%s for update" % movie['id'], layer=layer)
                     else:
