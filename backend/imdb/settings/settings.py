@@ -30,8 +30,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'app',
     'corsheaders',
+    'django_crontab',
 ]
 
+CRONJOBS = [
+    ('0 1 * * *', 'app.importer.import_imdb_ratings', '>> /tmp/scheduled_job.log'),
+    ('0 13 * * *', 'app.importer.import_imdb_alt_titles', '>> /tmp/scheduled_job.log'),
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

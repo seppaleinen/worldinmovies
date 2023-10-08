@@ -4,7 +4,9 @@ import gzip
 import json
 import requests
 import sys
+import sentry_sdk
 
+from sentry_sdk.crons import monitor
 from django.db import transaction
 from app.models import Movie, AlternativeTitle
 from asgiref.sync import async_to_sync
@@ -24,6 +26,7 @@ def __chunks(__list, n):
         yield __list[i:i + n]
 
 
+@monitor(monitor_slug='import_imdb_ratings')
 def import_imdb_ratings():
     """Data-dump of imdbs ratings of all films
        TSV Headers are: tconst, averageRating, numVotes
@@ -66,6 +69,7 @@ def import_imdb_ratings():
         __send_data_to_channel(layer=layer, message=f"Exception: {response.status_code} - {response.content}")
 
 
+@monitor(monitor_slug='import_imdb_alt_titles')
 def import_imdb_alt_titles():
     """titleId ordering title region language types attributes isOriginalTitle
     columns of interest: titleId, title, region
