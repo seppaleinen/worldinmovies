@@ -16,31 +16,12 @@ I've decided against using java, as it's too resource consuming for the basic se
 
 ## TODO
 
-* Graph Database
-* Maybe one DB for getting all the data from TMDB, then a cron-job or something
-    to process the data into graph-db, or like a pre-sorted list of
-    "best movies of every country" so that we don't have to terrorize postgres so much
-* Better page layout (welcome, world, country, user, import)
-* CSS grid instead of tables and muck
-* Check if possible to use graph-db to create aggravated queries like
-  Movies from france, from the 90's, with the actor "Gerard Depardieux"
-* Paginate "best of each country" list
-* Github action for creating docker images
 * Fixing jest tests
-* Using websockets for the import responses (so that the result will 
-  be visible even after restarted browser)
 * Estimate how many users can view page before timeouts
 
 ## Performance Metrics
 
 
-```docker stats worldinmovies_webapp_1 worldinmovies_backend_1 worldinmovies_db_1 ```
-
-| CONTAINER ID |           NAME          |  CPU % |    MEM USAGE / LIMIT   |   MEM % |      NET I/O   | BLOCK I/O       | PIDS |
-|:------------:|:-----------------------:|:------:|:----------------------:|:-------:|:--------------:|:---------------:|:----:|
-| faa56a493bf0 | worldinmovies_webapp_1  |  0.00% | 18.16MiB / 3.732GiB    |  0.48%  | 2.69MB / 654kB | 34.9MB / 0B     | 11   |
-| 56cee9abd0ea | worldinmovies_backend_1 |  0.03% | 279.8MiB / 3.732GiB    |  7.32%  | 2.63MB / 494kB | 19.3MB / 0B     | 10   |
-| 764ee594592b | worldinmovies_db_1      |  0.00% | 27.04MiB / 3.732GiB    |  0.71%  | 2.71MB / 221kB | 5.89GB / 8.37GB | 16   |
 
 ## To start
 Dependencies:
