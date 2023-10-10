@@ -202,7 +202,7 @@ services:
       - REACT_APP_IMDB_URL=${REACT_APP_IMDB_URL:-}
       - REACT_APP_TMDB_URL=${REACT_APP_TMDB_URL:-}
       - REACT_APP_NEO_URL=${REACT_APP_NEO_URL:-}
-      - REACT_SENTRY_API=${SENTRY_API_WEB:-}
+      - REACT_APP_SENTRY_API=${SENTRY_API_WEB:-}
     healthcheck:
       test: ['CMD', 'nc', '-vz', '-w1', 'localhost', '443']
       interval: 10s
