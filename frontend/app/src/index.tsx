@@ -16,7 +16,7 @@ import Header from "./Header";
 import * as Sentry from "@sentry/react";
 
 
-const sentryDsn = import.meta.env.REACT_SENTRY_API;
+const sentryDsn = import.meta.env.REACT_APP_SENTRY_API;
 if (sentryDsn !== undefined) {
     Sentry.init({
         dsn: sentryDsn,
