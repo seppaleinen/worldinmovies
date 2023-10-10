@@ -37,7 +37,7 @@ if (sentryDsn !== undefined) {
 
         // Set tracesSampleRate to 1.0 to capture 100%
         // of transactions for performance monitoring.
-        tracesSampleRate: 1.0,
+        tracesSampleRate: 0.1,
 
         // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
         //tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/],
