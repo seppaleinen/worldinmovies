@@ -13,7 +13,7 @@ uvicorn==0.23.2
 websockets==11.0.3
 channels_redis~=4.1.0
 
-hypercorn==0.14.4
+hypercorn[uvloop]==0.14.4
 
 # MongoDB
 pymongo[snappy,gssapi,srv,tls]==4.5.0
