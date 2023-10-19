@@ -24,5 +24,5 @@ docker exec -ti mongo mongoimport -d tmdb -c movie --mode upsert --file datadump
 
 ```bash
 # Generate new protobuf classes from proto-file
-python -m grpc_tools.protoc -I./app/proto --python_out=./app/proto/ --grpc_python_out=./app/proto/ ./app/proto/movies.proto
+python3 -m grpc_tools.protoc -I./app/proto --python_out=./app/proto/ --grpc_python_out=./app/proto/ ./app/proto/movies.proto
 ```

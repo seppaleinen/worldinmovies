@@ -13,15 +13,12 @@ uvicorn==0.23.2
 websockets==11.0.3
 channels_redis~=4.1.0
 
-sonora==0.2.3
-protobuf==4.24.4
-grpcio==1.59.0
-grpcio-tools==1.59.0
+hypercorn==0.14.4
 
+# MongoDB
 pymongo[snappy,gssapi,srv,tls]==4.5.0
 dnspython==2.4.2
 mongoengine==0.27.0
-
 
 # For tests
 responses==0.23.3
