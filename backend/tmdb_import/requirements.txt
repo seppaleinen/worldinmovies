@@ -13,13 +13,14 @@ uvicorn==0.23.2
 websockets==11.0.3
 channels_redis~=4.1.0
 
+hypercorn[uvloop]==0.14.4
+
+# MongoDB
 pymongo[snappy,gssapi,srv,tls]==4.5.0
 dnspython==2.4.2
 mongoengine==0.27.0
 
-
 # For tests
 responses==0.23.3
 pylint-django==2.5.3
-urllib3==2.0.6
 mongomock~=4.1.2

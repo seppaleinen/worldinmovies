@@ -8,6 +8,8 @@ from channels.layers import get_channel_layer
 from kafka import KafkaProducer, KafkaConsumer
 
 kafka_url = 'kafka:9092' if os.getenv('ENVIRONMENT', 'docker') == 'docker' else 'localhost:9093'
+kafka_topic = 'movie' if os.getenv('KAFKA_TOPIC', 'movie') is None else os.getenv('KAFKA_TOPIC', 'movie')
+
 producer = KafkaProducer(bootstrap_servers=kafka_url,
                          key_serializer=lambda x: x.encode('utf-8'),
                          value_serializer=lambda x: repr(x).encode('utf-8'))
@@ -19,7 +21,7 @@ def produce(event_type, message, topic='movie'):
 
 def kafka_consumer():
     consumer = KafkaConsumer(
-        'movie',
+        kafka_topic,
         group_id="tmdb",
         bootstrap_servers=kafka_url,
         auto_offset_reset='earliest',

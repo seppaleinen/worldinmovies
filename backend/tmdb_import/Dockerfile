@@ -1,4 +1,4 @@
-FROM python:3.11-alpine as base
+FROM python:3.11-slim as base
 
 FROM base as builder
 
@@ -6,14 +6,12 @@ RUN mkdir /install
 WORKDIR /install
 
 RUN \
- apk update && \
- apk add --no-cache tzdata  && \
- apk add --no-cache --virtual .build-deps gcc libffi-dev g++ snappy-dev krb5-pkinit krb5-dev krb5
+ apt-get update -y && \
+ apt-get install -y tzdata gcc libffi-dev g++ krb5-pkinit libsnappy-dev libkrb5-dev
 
 ADD requirements.txt .
 
-RUN pip install --prefix=/install --no-cache-dir -r requirements.txt && \
-    apk --purge del .build-deps
+RUN pip install --prefix=/install --no-cache-dir -r requirements.txt
 
 FROM base
 
@@ -24,10 +22,10 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
 COPY --from=builder /install /usr/local
-RUN apk --no-cache add libpq curl
+RUN apt-get update -y && apt-get install -y libpq-dev curl
 
 ADD .. /app
 
 WORKDIR /app
 
-ENTRYPOINT ["/bin/sh", "-c", "python manage.py crontab add && crond & gunicorn --config=gunicorn.config.py -k uvicorn.workers.UvicornWorker --reload settings.asgi"]
+ENTRYPOINT ["/bin/sh", "-c", "python manage.py crontab add && crond & hypercorn --config hypercorn.config.toml settings.asgi:application"]

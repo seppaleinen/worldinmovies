@@ -44,3 +44,16 @@ pylint --load-plugins pylint_django app/ settings/
 
 pg_restore -U postgres -f /worldinmovies.db.pgsql
 ```
+
+```bash
+# Generate new protobuf classes from proto-file
+python3 -m grpc_tools.protoc -I./app/proto --python_out=./app/proto/ --grpc_python_out=./app/proto/ ./app/proto/movies.proto
+```
+
+```bash
+# To run hypercorn
+hypercorn --config hypercorn.config.toml settings.asgi:application
+
+# Gunicorn
+gunicorn --config=gunicorn.config.py -k uvicorn.workers.UvicornWorker --reload settings.asgi
+```

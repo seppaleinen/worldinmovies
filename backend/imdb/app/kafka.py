@@ -12,16 +12,18 @@ from collections import defaultdict
 
 kafka_url = 'kafka:9092' if os.getenv('ENVIRONMENT', 'docker') == 'docker' else 'localhost:9093'
 tmdb_url = 'http://tmdb:8020' if os.getenv('ENVIRONMENT', 'docker') == 'docker' else 'http://localhost:8020'
+kafka_topic = 'movie' if not os.getenv('KAFKA_TOPIC', 'movie') else os.getenv('KAFKA_TOPIC', 'movie')
 
 
 def kafka_consumer():
     consumer = KafkaConsumer(
-        'movie',
+        kafka_topic,
         bootstrap_servers=[kafka_url],
         auto_offset_reset='earliest',
         enable_auto_commit=True,
+        group_id='imdb',
         key_deserializer=lambda x: x.decode('utf-8'),
-        value_deserializer=lambda x: x.decode('utf-8'))
+        value_deserializer=lambda x: int(x.decode('utf-8')))
     layer = get_channel_layer()
     while True:
         for events in consumer.poll(timeout_ms=10000, max_records=25).values():
