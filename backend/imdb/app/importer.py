@@ -4,7 +4,6 @@ import gzip
 import json
 import requests
 import sys
-import sentry_sdk
 
 from sentry_sdk.crons import monitor
 from django.db import transaction

@@ -35,7 +35,7 @@ INSTALLED_APPS = [
 
 CRONJOBS = [
     ('0 1 * * *', 'app.importer.import_imdb_ratings', '>> /tmp/scheduled_job.log'),
-    ('0 13 * * *', 'app.importer.import_imdb_alt_titles', '>> /tmp/scheduled_job.log'),
+    ('0 0 * * 1', 'app.importer.import_imdb_alt_titles', '>> /tmp/scheduled_job.log'),
 ]
 
 MIDDLEWARE = [
@@ -184,6 +184,10 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'WARN',
             'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
         },
     }
 }
