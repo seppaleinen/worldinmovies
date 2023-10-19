@@ -29,4 +29,4 @@ ADD .. /app
 
 WORKDIR /app
 
-ENTRYPOINT ["/bin/sh", "-c", "cron && python manage.py crontab add && python manage.py makemigrations && python manage.py migrate && gunicorn --config=gunicorn.config.py -k uvicorn.workers.UvicornWorker --reload settings.asgi"]
+ENTRYPOINT ["/bin/sh", "-c", "cron && python manage.py crontab add && python manage.py makemigrations && python manage.py migrate && hypercorn --config hypercorn.config.toml settings.asgi:application"]

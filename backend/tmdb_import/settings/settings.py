@@ -168,6 +168,10 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-
+        'kafka.conn': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
     }
 }

@@ -1,0 +1,7 @@
+bind = "0.0.0.0:8000"
+#insecure_bind = "127.0.0.1:8021"
+certfile = "cert.pem"
+keyfile = "key.pem"
+#h11_max_incomplete_size = 4
+worker_class = "uvloop"
+workers = 3
