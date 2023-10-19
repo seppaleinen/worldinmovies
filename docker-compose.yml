@@ -169,6 +169,7 @@ services:
       - "127.0.0.1:8000:8000"
     environment:
       - SENTRY_API=${SENTRY_API_IMDB:-}
+      - KAFKA_TOPIC=${KAFKA_TOPIC:-}
     depends_on:
       db:
         condition: service_healthy
