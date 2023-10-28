@@ -9,7 +9,7 @@ import simplejson
 from app.importer import import_imdb_ratings, import_imdb_alt_titles
 from app.models import Movie
 from django.db import connection
-from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from fuzzywuzzy import fuzz
 
@@ -192,10 +192,10 @@ def fetch_imdb_ratings(request):
 
 
 def fetch_imdb_titles(request):
-    if 'import_imdb_alt_titles' not in [thread.name for thread in threading.enumerate()]:
-        thread = threading.Thread(target=import_imdb_alt_titles, name='import_imdb_alt_titles')
-        thread.daemon = True
-        thread.start()
+    if 'import_imdb_titles' not in [thread.name for thread in threading.enumerate()]:
+        t = threading.Thread(target=import_imdb_alt_titles, name='import_imdb_titles')
+        t.daemon = False
+        t.start()
         return HttpResponse(json.dumps({"Message": "Starting to process IMDB titles"}))
     else:
         return HttpResponse(json.dumps({"Message": "IMDB titles process already started"}))

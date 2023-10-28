@@ -49,8 +49,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
 CORS_ORIGIN_ALLOW_ALL = True
 # CORS_ORIGIN_WHITELIST = ('http://localhost', 'https://localhost', 'http://localhost:81')
 # ALLOWED_HOSTS=['http://localhost:3000', 'http://localhost:81', 'http://webapp:81', 'http://webapp:3000', 'http://localhost:8000', 'localhost:8000']
@@ -59,19 +57,26 @@ ROOT_URLCONF = 'settings.urls'
 ASGI_APPLICATION = 'settings.asgi.application'
 environment = os.getenv('ENVIRONMENT', 'docker')
 redis_url = 'redis' if environment == 'docker' else 'localhost'
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': "channels_redis.core.RedisChannelLayer",
-        'CONFIG': {
-            'hosts': [(redis_url, 6379)],
+if 'test' in sys.argv:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer"
         }
     }
-}
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': "channels_redis.core.RedisChannelLayer",
+            'CONFIG': {
+                'hosts': [(redis_url, 6379)],
+            }
+        }
+    }
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 if 'test' in sys.argv:
-    PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
+    print("TEST%s" % os.path.join(BASE_DIR, 'worldinmovies.db'))
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',

@@ -1,8 +1,10 @@
-import datetime, os, responses, io, gzip, time
+import os, responses, io, gzip, time
+import sys
 
 from django.test import TransactionTestCase
 from django.db import transaction
-from app.models import Movie, Genre, SpokenLanguage, ProductionCountries, AlternativeTitle
+from app.models import Movie, SpokenLanguage, ProductionCountries, AlternativeTitle
+from channels.testing import ApplicationCommunicator
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -36,7 +38,7 @@ class StatusTests(SuperClass):
         Movie(id=2, original_title="title2", popularity=36.213, fetched=False).save()
         Movie(id=3, original_title="title3", popularity=36.213, fetched=False).save()
 
-        response = self.client.get('/status')
+        response = self.client.get('/status', {}, True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'{"fetched": 0, "total": 3, "percentageDone": 0}')
 
@@ -45,7 +47,7 @@ class StatusTests(SuperClass):
         Movie(id=2, original_title="title2", popularity=36.213, fetched=False).save()
         Movie(id=3, original_title="title3", popularity=36.213, fetched=False).save()
 
-        response = self.client.get('/status')
+        response = self.client.get('/status', {}, True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'{"fetched": 1, "total": 3, "percentageDone": 33}')
 
@@ -54,12 +56,12 @@ class StatusTests(SuperClass):
         Movie(id=2, original_title="title2", popularity=36.213, fetched=True).save()
         Movie(id=3, original_title="title3", popularity=36.213, fetched=True).save()
 
-        response = self.client.get('/status')
+        response = self.client.get('/status', {}, True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'{"fetched": 3, "total": 3, "percentageDone": 100}')
 
     def test_status_0_fetched_out_of_0(self):
-        response = self.client.get('/status')
+        response = self.client.get('/status', {}, True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'{"fetched": 0, "total": 0, "percentageDone": 0}')
 
@@ -88,8 +90,8 @@ class MapImdbRatingsToWorldinMovies(SuperClass):
             "file": open('testdata/mini_ratings.csv', 'r', encoding='cp1252')
         }
 
-        response = self.client.post('/ratings', data=files, format='multipart/form-data')
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post('/ratings', data=files, format='multipart/form-data', follow=True)
+        self.assertEqual(response.status_code, 200, response.content)
         json = response.json()
         self.assertEqual(json['found']['US'][0]['original_title'], 'Lord of the Flies')
         self.assertEqual(json['found']['US'][0]['country_code'], 'US')
@@ -101,7 +103,7 @@ class MapImdbRatingsToWorldinMovies(SuperClass):
             "file": open('testdata/mini_ratings.csv', 'r', encoding='cp1252')
         }
 
-        response = self.client.post('/ratings', data=files, format='multipart/form-data')
+        response = self.client.post('/ratings', data=files, format='multipart/form-data', follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content.decode('utf-8'),
                          '{"found": {}, "not_found": [{"title": "Lord of the Flies", "year": "1990", "imdb_id": "tt0100054"}, {"title": "Misery", "year": "1990", "imdb_id": "tt0100157"}]}')
@@ -127,10 +129,12 @@ class ViewBestFromCountry(SuperClass):
                     i = i + 1
                     movie.save()
                     movie.production_countries.add(country)
+        wait_until(1)
 
-        response = self.client.get('/view/best/US')
+        response = self.client.get('/view/best/US', {}, True)
         json = response.json()
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json['result']), 10)
         for i in range(0, 9):
             self.assertEqual(json['result'][i], {"en_title": None, "id": i, "imdb_id": f"imdb_id{i}", "original_title": f"titlö{i}", "release_date": f"2019-01-0{i}",
                                              "poster_path": f"/path{i}", "vote_average": i + 0.5, "vote_count": 201})
@@ -147,7 +151,7 @@ class ImportImdbRatings(SuperClass):
 
         mock_response(self.url, "testdata/mini_ratings.tsv.gz")
 
-        response = self.client.get('/import/imdb/ratings')
+        response = self.client.get('/import/imdb/ratings', {}, True)
         self.assertEqual(response.status_code, 200)
         wait_until(20)
         self.assertEqual(len(responses.calls), 1)
@@ -157,7 +161,7 @@ class ImportImdbRatings(SuperClass):
     def test_import_imdb_ratings_no_match(self):
         mock_response(self.url, "testdata/mini_ratings.tsv.gz")
 
-        response = self.client.get('/import/imdb/ratings')
+        response = self.client.get('/import/imdb/ratings', {}, True)
         self.assertEqual(response.status_code, 200)
         wait_until(20)
         self.assertEqual(len(responses.calls), 1)
@@ -178,13 +182,47 @@ class ImportIMDBTitles(SuperClass):
 
         mock_response(self.url, string=string)
 
-        response = self.client.get('/import/imdb/titles')
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+        response = self.client.get('/import/imdb/titles', {}, True)
         self.assertEqual(response.status_code, 200)
-        wait_until(20)
+        self.assertTrue(wait_until2(3, "Done", captured_output))
+        sys.stdout = sys.__stdout__
+        print(captured_output.getvalue())
+
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.url)
         alt_titles = Movie.objects.get(pk=1).alternative_titles.all()
         self.assertEqual(3, len(alt_titles))
+
+    @responses.activate
+    def test_large(self):
+        movies = []
+        for x in range(6600):
+            imdb_id = "tt%s" % str(x).zfill(7)
+            movies.append(Movie(id=x, original_title='orig_title', popularity=123.0, fetched=True, imdb_id=imdb_id))
+        for i in range(0, len(movies), 10):
+            Movie.objects.bulk_create(movies[i:i + 10])
+
+        mock_response(self.url, "testdata/large_sample_alt_titles.tsv.gz")
+
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+        response = self.client.get('/import/imdb/titles', {}, True)
+
+        self.assertEqual(response.status_code, 200)
+        wait_until(2)
+
+        wait_until2(20, "Done", captured_output)
+        sys.stdout = sys.__stdout__
+        print(captured_output.getvalue())
+
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.url)
+        alt_titles = Movie.objects.get(pk=1).alternative_titles.all()
+        self.assertEqual(7, len(alt_titles))
+        self.assertEqual(13030, AlternativeTitle.objects.count())
+
 
     @responses.activate
     def test_filter_on_empty_region(self):
@@ -198,7 +236,7 @@ class ImportIMDBTitles(SuperClass):
 
         mock_response(self.url, string=string)
 
-        response = self.client.get('/import/imdb/titles')
+        response = self.client.get('/import/imdb/titles', {}, True)
         self.assertEqual(response.status_code, 200)
         wait_until(20)
         self.assertEqual(len(responses.calls), 1)
@@ -217,7 +255,7 @@ class ImportIMDBTitles(SuperClass):
 
         mock_response(self.url, string=string)
 
-        self.client.get('/import/imdb/titles')
+        self.client.get('/import/imdb/titles', {}, True)
 
         string = "titleId	ordering	title	region	language	types	attributes	isOriginalTitle\n"
         string += "tt0000001	2	Καρμενσίτα	GR	\\N	\\N	\\N	0\n"
@@ -228,10 +266,10 @@ class ImportIMDBTitles(SuperClass):
 
         responses.replace(responses.GET, self.url, body=out, status=200, content_type='binary/octet-stream')
 
-        response = self.client.get('/import/imdb/titles')
+        response = self.client.get('/import/imdb/titles', {}, True)
 
         self.assertEqual(response.status_code, 200)
-        wait_until(20)
+        wait_until(3)
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.url)
         alt_titles = Movie.objects.get(pk=1).alternative_titles.all()
@@ -243,6 +281,15 @@ def wait_until(timeout, period=0.25):
     mustend = time.time() + timeout
     while time.time() < mustend:
         if len(responses.calls) == 1:
+            return True
+        time.sleep(period)
+    return False
+
+
+def wait_until2(timeout, expected_text, captured_output, period=0.25):
+    mustend = time.time() + timeout
+    while time.time() < mustend:
+        if expected_text in captured_output.getvalue():
             return True
         time.sleep(period)
     return False

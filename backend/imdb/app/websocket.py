@@ -41,6 +41,7 @@ class Consumer(AsyncWebsocketConsumer):
     Triggers on groupsends to type: events
     """
     async def events(self, event):
+        print("SCOPE: %s" % self.scope)
         await self.send_data(event['message'])
 
 

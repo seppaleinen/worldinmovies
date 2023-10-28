@@ -5,7 +5,7 @@ from django.db import models
 
 class Movie(models.Model):
     id = models.IntegerField(db_index=True, primary_key=True)
-    original_title = models.CharField(max_length=500)
+    original_title = models.CharField(max_length=1000)
     popularity = models.DecimalField(decimal_places=3, max_digits=10)
     fetched = models.BooleanField(default=False)
     budget = models.BigIntegerField(null=True, blank=True)
@@ -76,8 +76,8 @@ class AlternativeTitle(models.Model):
     id = models.AutoField(primary_key=True)
     movie = models.ForeignKey(Movie, related_name='alternative_titles', on_delete=models.CASCADE, db_index=True)
     iso_3166_1 = models.CharField(max_length=50)
-    title = models.CharField(max_length=500)
-    type = models.CharField(max_length=500, blank=True, null=True)
+    title = models.CharField()
+    type = models.CharField(blank=True, null=True)
 
     def __str__(self):
         return f"iso:{self.iso_3166_1}, title:{self.title}"

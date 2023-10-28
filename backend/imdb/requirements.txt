@@ -10,15 +10,15 @@ kafka-python~=2.0.2
 channels~=4.0.0
 daphne~=4.0.0
 uvicorn==0.23.2
-websockets==11.0.3
+websockets==12.0
 channels_redis~=4.1.0
 
 hypercorn[uvloop]==0.14.4
 
 psycopg[binary]==3.1.12
 fuzzywuzzy[speedup]
-Babel==2.13.0
+Babel==2.13.1
 
 # For tests
 responses==0.23.3
-pylint-django==2.5.3
+pylint-django==2.5.5

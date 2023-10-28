@@ -2,6 +2,8 @@ import datetime
 import csv
 import gzip
 import json
+from itertools import chain, islice
+
 import requests
 import sys
 
@@ -40,30 +42,36 @@ def import_imdb_ratings():
         f.write(response.content)
     if response.status_code == 200:
         contents = __unzip_file('title.ratings.tsv.gz')
+        length = len(contents)
         reader = csv.reader(contents, delimiter='\t')
         all_imdb_ids = Movie.objects.filter(fetched=True) \
-            .exclude(imdb_id__isnull=True)\
-            .exclude(imdb_id__exact='')\
-            .all()\
+            .exclude(imdb_id__isnull=True) \
+            .exclude(imdb_id__exact='') \
+            .all() \
             .values_list('imdb_id', flat=True)
+        next(reader)
 
-        imdb_ids_length = len(all_imdb_ids)
         count = 0
-        for chunk in __chunks(list(reader), 100):
+        for chunk in chunks(__log_progress(reader, "Processing IMDB Titles", length), 100):
             movies = dict()
             for movie in chunk:
                 if movie[0] in all_imdb_ids:
                     movies[movie[0]] = movie
             data = Movie.objects.filter(imdb_id__in=movies.keys())
             with transaction.atomic():
+                bulk = []
                 for db_row in data:
                     data = movies[db_row.imdb_id]
                     db_row.imdb_vote_average = data[1]
                     db_row.imdb_vote_count = data[2]
                     db_row.weighted_rating = db_row.calculate_weighted_rating()
-                    db_row.save()
+                    bulk.append(db_row)
+                if bulk:
+                    with transaction.atomic():
+                        Movie.objects.bulk_update(bulk, ["imdb_vote_average", "imdb_vote_count", "weighted_rating"])
                 count += len(movies.keys())
-                __send_data_to_channel(layer=layer, message=f"Processed {len(movies.keys())} ratings out of {count}/{imdb_ids_length}")
+                __send_data_to_channel(layer=layer,
+                                       message=f"Processed {len(movies.keys())} ratings out of {count}/{length}")
     else:
         __send_data_to_channel(layer=layer, message=f"Exception: {response.status_code} - {response.content}")
 
@@ -84,55 +92,31 @@ def import_imdb_alt_titles():
         contents = __unzip_file('title.akas.tsv.gz')
         count = len(contents)
         csv.field_size_limit(sys.maxsize)
-        all_imdb_ids = Movie.objects.filter(fetched=True) \
-            .exclude(imdb_id__isnull=True) \
-            .exclude(imdb_id__exact='') \
-            .all() \
-            .values_list('imdb_id', flat=True)
 
         reader = csv.reader(contents, delimiter='\t', quoting=csv.QUOTE_NONE)
         print("Processing IMDB Titles")
         next(reader)  # Skip header
 
-        """
-        matches = dict()
-        for chunk in __chunks(list(reader), 100):
-            # matches = dict(map(lambda x: (x[0], x), filter(lambda y: y[0] in all_imdb_ids, chunk)))
-            for movie in list(filter(lambda x: x[0] in all_imdb_ids, chunk)):
-                matches.setdefault(movie[0], []).append(movie)
-        for id_chunks in __chunks(matches, 100):
-            a = dict()
-            titles = list(map(lambda x: x[2], id_chunks.values()))
-            titles_already_in_db = Movie.objects.filter(imdb_id__in=id_chunks.keys(), title__in=titles)
-            for title in titles_already_in_db.iterator():
-                a.setdefault(title.imdb_id, title.title)
-        """
-        alt_titles = []
-        counter = 0
-        for row in __log_progress(reader, "Processing IMDB Titles", count):
-            tconst = row[0]
-            if tconst in all_imdb_ids:
-                try:
-                    movie = Movie.objects.get(imdb_id=tconst)
-                    title = row[2]
-                    if row[3] != r'\N' and not movie.alternative_titles.filter(title=title).exists():
-                        alt_title = AlternativeTitle(movie_id=movie.id,
-                                                     iso_3166_1=row[3],
+        for chunk in chunks(__log_progress(reader, "Processing IMDB Titles", count), 100):
+            chunked_map = dict()
+            [chunked_map.setdefault(x[0], []).append({"alt_title": x[2], "iso": x[3]}) for x in chunk]
+            fetched_movies = Movie.objects.filter(imdb_id__in=chunked_map.keys())
+
+            alt_titles = []
+            for fetched in fetched_movies:
+                for alt in chunked_map.get(fetched.imdb_id):
+                    iso = alt['iso']
+                    title = alt['alt_title']
+                    if iso != r'\N' and not fetched.alternative_titles.filter(title=title).exists():
+                        alt_title = AlternativeTitle(movie_id=fetched.id,
+                                                     iso_3166_1=iso,
                                                      title=title,
                                                      type='IMDB')
                         alt_titles.append(alt_title)
-                        __send_data_to_channel(layer=layer, message=f"created {counter} alternative titles out of {len(all_imdb_ids)}")
-                except Movie.DoesNotExist:
-                    pass
-        print("Persisting IMDB Titles")
-        i = 0
-        alt_titles_len = len(alt_titles)
-        for alt_titles_chunk in __chunks(alt_titles, 50):
-            with transaction.atomic():
-                for title in alt_titles_chunk:
-                    title.save()
-                    i += 1
-            __send_data_to_channel(layer=layer, message=f"Persisted {i} out of {alt_titles_len} titles")
+            if alt_titles:
+                with transaction.atomic():
+                    AlternativeTitle.objects.bulk_create(alt_titles)
+        print("Done")
     else:
         __send_data_to_channel(layer=layer, message=f"Exception: {response.status_code} - {response.content}")
 
@@ -148,10 +132,17 @@ def __log_progress(iterable, message, length=None):
         if percentage != temp_perc:
             percentage = temp_perc
             __send_data_to_channel(layer=layer, message=f"{message} data handling in progress - {percentage}%")
-            print(f"{datetime.datetime.now().strftime(datetime_format)} - {message} data handling in progress - {percentage}%")
+            print(
+                f"{datetime.datetime.now().strftime(datetime_format)} - {message} data handling in progress - {percentage}%")
         count += 1
         yield i
 
 
 def __send_data_to_channel(message, layer=get_channel_layer()):
     async_to_sync(layer.group_send)('group', {"type": "events", "message": json.dumps(message)})
+
+
+def chunks(iterable, size=100):
+    iterator = iter(iterable)
+    for first in iterator:
+        yield chain([first], islice(iterator, size - 1))
