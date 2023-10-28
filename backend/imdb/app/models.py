@@ -1,4 +1,5 @@
 import decimal
+import math
 
 from django.db import models
 
@@ -16,10 +17,10 @@ class Movie(models.Model):
     release_date = models.CharField(max_length=10, null=True, blank=True)
     revenue = models.BigIntegerField(null=True, blank=True)
     runtime = models.IntegerField(null=True, blank=True)
-    vote_average = models.DecimalField(decimal_places=1, max_digits=10, null=True, blank=True)
-    vote_count = models.IntegerField(null=True, blank=True)
-    imdb_vote_average = models.DecimalField(decimal_places=1, max_digits=10, null=True, blank=True)
-    imdb_vote_count = models.IntegerField(null=True, blank=True)
+    vote_average = models.DecimalField(decimal_places=1, max_digits=5, null=False, blank=False, default=0)
+    vote_count = models.IntegerField(null=False, blank=False, default=0)
+    imdb_vote_average = models.DecimalField(decimal_places=1, max_digits=5, null=False, blank=False, default=0)
+    imdb_vote_count = models.IntegerField(null=False, blank=False, default=0)
     weighted_rating = models.DecimalField(decimal_places=1, max_digits=10, default=0)
 
     class Meta:
@@ -39,9 +40,9 @@ class Movie(models.Model):
         self.vote_average = fetched_movie['vote_average']
         self.vote_count = fetched_movie['vote_count']
         self.popularity = fetched_movie['popularity']
-        self.weighted_rating = self.calculate_weighted_rating()
+        self.weighted_rating = self.calculate_weighted_rating_log()
 
-    def calculate_weighted_rating(self):
+    def calculate_weighted_rating_bayes(self):
         """
         The formula for calculating the Top Rated 250 Titles gives a true Bayesian estimate:
         weighted rating (WR) = (v ÷ (v+m)) × R + (m ÷ (v+m)) × C where:
@@ -51,13 +52,24 @@ class Movie(models.Model):
         m = minimum votes required to be listed in the Top 250 (currently 25000)
         C = the mean vote across the whole report (currently 7.0)
         """
-        v = decimal.Decimal(self.vote_count if self.vote_count else 0) + \
-            decimal.Decimal(self.imdb_vote_count if self.imdb_vote_count else 0)
+        v = decimal.Decimal(self.vote_count) + \
+            decimal.Decimal(self.imdb_vote_count)
         m = decimal.Decimal(200)
-        r = decimal.Decimal(self.vote_average if self.vote_average else 0) + \
-            decimal.Decimal(self.imdb_vote_average if self.imdb_vote_average else 0)
+        r = decimal.Decimal(self.vote_average) + \
+            decimal.Decimal(self.imdb_vote_average)
         c = decimal.Decimal(4)
         return (v / (v + m)) * r + (m / (v + m)) * c
+
+    def calculate_weighted_rating_log(self):
+        """
+        New formula that should include minor movies with fewer votes
+        and in the beginning exponentially increase weight on votes, and then decreasingly
+        as at a certain point the amount of votes should not affect the result as much
+        f(x)= log2(x)
+        """
+        vote_count = self.vote_count + self.imdb_vote_count
+        vote_average = (self.vote_average + self.imdb_vote_average) / 2
+        return math.log2(vote_count) * vote_average
 
     def __str__(self):
         return f"id: {self.id}, original_title: {self.original_title}, fetched: {self.fetched}"
