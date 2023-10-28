@@ -76,7 +76,7 @@ else:
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 if 'test' in sys.argv:
-    print("TEST%s" % os.path.join(BASE_DIR, 'worldinmovies.db'))
+    PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -84,7 +84,7 @@ if 'test' in sys.argv:
             'CONN_MAX_AGE': 500,
         }
     }
-elif environment == 'localhost':
+if environment == 'localhost':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -105,15 +105,6 @@ elif environment == 'docker':
             'PASSWORD': 'postgres',
             'HOST': 'db',
             'PORT': 5432,
-            'CONN_MAX_AGE': 500,
-        }
-    }
-else:
-    PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'worldinmovies.db'),
             'CONN_MAX_AGE': 500,
         }
     }

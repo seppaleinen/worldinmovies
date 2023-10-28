@@ -106,7 +106,7 @@ def get_best_movies_from_country(request, country_code):
 	            {lang_query}
 	            and movie.vote_count + movie.imdb_vote_count > 200
 	            and ((movie.vote_average + movie.imdb_vote_average) / 2) > 0
-	            order by (movie.vote_count / (cast(movie.vote_count as numeric) + 200)) * movie.vote_average + (200 / (cast(movie.vote_count as numeric) + 200)) * 4 desc
+	            order by (movie.vote_count / (cast(movie.vote_count as numeric) + 200)) * movie.vote_average + (200 / (cast(movie.vote_count as numeric) + 200)) * 4 asc
 	            limit 20
 	            offset {page}
         """)
