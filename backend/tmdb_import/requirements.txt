@@ -1,4 +1,4 @@
-django==4.2.6
+django==4.2.7
 gunicorn==21.2.0
 requests==2.31.0
 sentry-sdk[django]==1.31.0
