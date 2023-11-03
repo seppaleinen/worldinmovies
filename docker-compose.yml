@@ -110,7 +110,7 @@ services:
 
   # Backends
   tmdb:
-    image: seppaleinen/worldinmovies_tmdb_import
+    image: seppaleinen/worldinmovies_tmdb
     build: backend/tmdb_import/
     expose:
       - 8020
